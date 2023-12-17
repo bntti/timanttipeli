@@ -1,4 +1,7 @@
 {
+    "name": "timanttipeli-backend",
+    "private": false,
+    "version": "1.0.0",
     "scripts": {
         "dev": "npx ts-node src/index.ts",
         "start": "node dist/index.js",
