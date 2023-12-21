@@ -161,15 +161,14 @@ const runServer = (): void => {
         ),
         (req, res) => {
             const roomId = parseInt(req.params.roomId);
-            let room = { ...rooms[roomId] };
+            const room = rooms[roomId];
             assert(room.data.roundInProgress); // Should be unnecessary
 
             if (req.body.vote === null) delete room.data.currentRound.votes[req.body.userName];
             else room.data.currentRound.votes[req.body.userName] = req.body.vote;
             if (Object.keys(room.data.currentRound.votes).length === room.data.currentRound.players.length) {
-                room = handleVotes(room);
+                handleVotes(room);
             }
-            rooms[roomId] = { ...room };
             res.json(room);
         }
     );

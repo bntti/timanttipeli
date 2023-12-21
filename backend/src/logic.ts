@@ -1,20 +1,28 @@
 import assert from 'assert';
 
-import { Card, Room } from './types';
+import { Card, RelicCard, Room } from './types';
 
 const USE_RELICS = true;
+
+const relicCards: RelicCard[] = [
+    { type: 'relic', value: 5 },
+    { type: 'relic', value: 7 },
+    { type: 'relic', value: 8 },
+    { type: 'relic', value: 10 },
+    { type: 'relic', value: 12 }
+];
 
 const baseDeck: Card[] = [
     { type: 'points', value: 17 },
     { type: 'points', value: 15 },
+    { type: 'points', value: 14 },
     { type: 'points', value: 13 },
     { type: 'points', value: 11 },
-    { type: 'points', value: 10 },
+    { type: 'points', value: 11 },
     { type: 'points', value: 9 },
-    { type: 'points', value: 9 },
-    { type: 'points', value: 8 },
     { type: 'points', value: 7 },
-    { type: 'points', value: 6 },
+    { type: 'points', value: 7 },
+    { type: 'points', value: 5 },
     { type: 'points', value: 5 },
     { type: 'points', value: 4 },
     { type: 'points', value: 3 },
@@ -45,114 +53,80 @@ const createDeck = (room: Room): Card[] => {
         result.splice(index, 1);
     }
 
-    if (USE_RELICS) result.push({ type: 'relic', value: 5 + (room.data.roundsDone % 5) * 2 });
+    if (USE_RELICS) result.push(relicCards[room.data.roundsDone % 5]);
 
     return result;
 };
 
-const handleDraw = (room: Room): Room => {
+const handleDraw = (room: Room): void => {
     assert(room.data.roundInProgress);
-    const newDeck = [...room.data.currentRound.deck];
-    const newInPlay = [...room.data.currentRound.inPlay];
-    let newPoints = room.data.currentRound.pointsPerPlayer;
-    let newGroundPoints = room.data.currentRound.pointsOnGround;
+    const round = room.data.currentRound;
 
-    const index = Math.floor(Math.random() * newDeck.length);
-    const card = newDeck.splice(index, 1)[0];
+    const index = Math.floor(Math.random() * round.deck.length);
+    const card = round.deck.splice(index, 1)[0];
 
     if (card.type === 'points') {
         const numPlayers = room.data.currentRound.players.length;
         if (card.value >= numPlayers) {
             const pointsPerPlayer = Math.floor(card.value / numPlayers);
-            newPoints += pointsPerPlayer;
-            newGroundPoints += card.value - numPlayers * pointsPerPlayer;
+            room.data.currentRound.pointsPerPlayer += pointsPerPlayer;
+            room.data.currentRound.pointsOnGround += card.value - numPlayers * pointsPerPlayer;
         }
     } else if (card.type === 'trap') {
-        const found = newInPlay.filter((inPlayCard) => inPlayCard.type === 'trap' && inPlayCard.trap === card.trap);
+        const found = round.inPlay.filter((inPlayCard) => inPlayCard.type === 'trap' && inPlayCard.trap === card.trap);
         if (found.length > 0) {
-            return {
-                ...room,
-                data: {
-                    ...room.data,
-                    roundInProgress: false,
-                    removedCards: room.data.removedCards.concat(card),
-                    roundsDone: room.data.roundsDone + 1,
-                    currentRound: null
-                }
+            room.data = {
+                ...room.data,
+                roundInProgress: false,
+                removedCards: room.data.removedCards.concat(card),
+                roundsDone: room.data.roundsDone + 1,
+                currentRound: null
             };
+            return;
         }
     }
-    newInPlay.push(card);
-
-    return {
-        ...room,
-        data: {
-            ...room.data,
-            currentRound: {
-                ...room.data.currentRound,
-                deck: newDeck,
-                inPlay: newInPlay,
-                pointsPerPlayer: newPoints,
-                pointsOnGround: newGroundPoints
-            }
-        }
-    };
+    round.inPlay.push(card);
 };
 
-export const handleVotes = (room: Room): Room => {
+export const handleVotes = (room: Room): void => {
     assert(room.data.roundInProgress);
 
     const round = room.data.currentRound;
-
     const numLeave = Object.values(round.votes).filter((vote) => vote === 'leave').length;
-    const newPlayers = [];
-    const newPlayerPoints = { ...room.data.players };
-    let newInPlay = [...round.inPlay];
-    const newRemovedCards = [...room.data.removedCards];
 
     for (const [player, vote] of Object.entries(round.votes)) {
         if (vote === 'leave') {
-            newPlayerPoints[player] += round.pointsPerPlayer + Math.floor(round.pointsOnGround / numLeave);
+            // Not actually this type but doesn't break anything
+            round.players = round.players.filter((rplayer) => rplayer !== player) as [string, ...string[]];
+
+            room.data.players[player] += round.pointsPerPlayer + Math.floor(round.pointsOnGround / numLeave);
             if (numLeave === 1) {
                 for (const card of round.inPlay) {
                     if (card.type === 'relic') {
-                        newPlayerPoints[player] += card.value;
-                        newRemovedCards.push(card);
+                        room.data.players[player] += card.value;
+                        room.data.removedCards.push(card);
                     }
                 }
-                newInPlay = round.inPlay.filter((card) => card.type !== 'relic');
-            }
-        } else newPlayers.push(player);
-    }
-
-    if (newPlayers.length === 0) {
-        return {
-            ...room,
-            data: {
-                ...room.data,
-                players: newPlayerPoints,
-                removedCards: newRemovedCards,
-                roundsDone: room.data.roundsDone + 1,
-                roundInProgress: false,
-                currentRound: null
-            }
-        };
-    }
-    return handleDraw({
-        ...room,
-        data: {
-            ...room.data,
-            players: newPlayerPoints,
-            removedCards: newRemovedCards,
-            currentRound: {
-                ...room.data.currentRound,
-                players: newPlayers as [string, ...string[]],
-                votes: {},
-                pointsOnGround: numLeave === 0 ? round.pointsOnGround : round.pointsOnGround % numLeave,
-                inPlay: newInPlay
+                round.inPlay = round.inPlay.filter((card) => card.type !== 'relic');
             }
         }
-    });
+    }
+
+    if (round.players.length === 0) {
+        room.data = {
+            ...room.data,
+            roundsDone: room.data.roundsDone + 1,
+            roundInProgress: false,
+            currentRound: null
+        };
+    } else {
+        room.data.currentRound = {
+            ...round,
+            votes: {},
+            pointsOnGround: numLeave === 0 ? round.pointsOnGround : round.pointsOnGround % numLeave
+        };
+        handleDraw(room);
+    }
 };
 
 export const startGame = (room: Room): Room => {
@@ -169,7 +143,7 @@ export const startRound = (room: Room): Room => {
 
     let newRemovedCards = room.data.removedCards;
     if (room.data.roundsDone % 5 === 0) newRemovedCards = [];
-    return handleDraw({
+    const newRoom: Room = {
         ...room,
         data: {
             ...room.data,
@@ -184,7 +158,9 @@ export const startRound = (room: Room): Room => {
                 pointsOnGround: 0
             }
         }
-    });
+    };
+    handleDraw(newRoom);
+    return newRoom;
 };
 
 // export const handleVote
