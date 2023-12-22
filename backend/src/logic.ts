@@ -129,38 +129,30 @@ export const handleVotes = (room: Room): void => {
     }
 };
 
-export const startGame = (room: Room): Room => {
+export const startGame = (room: Room): void => {
     assert(!room.data.gameInProgress);
-    return { ...room, data: { ...room.data, gameInProgress: true } };
+    room.data = { ...room.data, gameInProgress: true };
 };
 
-export const startRound = (room: Room): Room => {
+export const startRound = (room: Room): void => {
     assert(room.data.gameInProgress && !room.data.roundInProgress);
     assert(Object.keys(room.data.players).length > 0);
 
     const roundPoints: { [key: string]: number } = {};
     for (const player of Object.keys(room.data.players)) roundPoints[player] = 0;
 
-    let newRemovedCards = room.data.removedCards;
-    if (room.data.roundsDone % 5 === 0) newRemovedCards = [];
-    const newRoom: Room = {
-        ...room,
-        data: {
-            ...room.data,
-            roundInProgress: true,
-            removedCards: newRemovedCards,
-            currentRound: {
-                deck: createDeck(room),
-                inPlay: [],
-                votes: {},
-                players: Object.keys(room.data.players) as [string, ...string[]],
-                pointsPerPlayer: 0,
-                pointsOnGround: 0
-            }
+    if (room.data.roundsDone % 5 === 0) room.data.removedCards = [];
+    room.data = {
+        ...room.data,
+        roundInProgress: true,
+        currentRound: {
+            deck: createDeck(room),
+            inPlay: [],
+            votes: {},
+            players: Object.keys(room.data.players) as [string, ...string[]],
+            pointsPerPlayer: 0,
+            pointsOnGround: 0
         }
     };
-    handleDraw(newRoom);
-    return newRoom;
+    handleDraw(room);
 };
-
-// export const handleVote
