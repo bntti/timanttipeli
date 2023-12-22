@@ -48,12 +48,13 @@ const baseDeck: Card[] = [
 const createDeck = (room: Room): Card[] => {
     const result = [...baseDeck];
 
+    if (USE_RELICS) {
+        for (let i = 0; i <= room.data.roundsDone % 5; i++) result.push(relicCards[i]);
+    }
     for (const card of room.data.removedCards) {
         const index = result.indexOf(card);
         result.splice(index, 1);
     }
-
-    if (USE_RELICS) result.push(relicCards[room.data.roundsDone % 5]);
 
     return result;
 };

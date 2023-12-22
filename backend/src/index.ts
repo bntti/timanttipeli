@@ -140,13 +140,13 @@ const runServer = (): void => {
             res.status(400).json({ error: 'Too few players to start' });
             return;
         }
-        rooms[roomId] = startGame(rooms[roomId]);
+        startGame(rooms[roomId]);
         res.json(rooms[roomId]);
     });
 
     app.post('/api/room/:roomId/startRound', roundNotInProgress, (req, res) => {
         const roomId = parseInt(req.params.roomId);
-        rooms[roomId] = startRound(rooms[roomId]);
+        startRound(rooms[roomId]);
         res.json(rooms[roomId]);
     });
 
