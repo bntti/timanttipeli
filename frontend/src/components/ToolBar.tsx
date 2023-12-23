@@ -1,4 +1,12 @@
-import { AddModeratorOutlined, Brightness3, Brightness7, Home, RemoveModeratorOutlined } from '@mui/icons-material';
+import {
+    AddModeratorOutlined,
+    AutoFixNormal,
+    AutoFixOff,
+    Brightness3,
+    Brightness7,
+    Home,
+    RemoveModeratorOutlined,
+} from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { AppBar, IconButton, Toolbar, Typography, useTheme } from '@mui/material';
 import { useContext } from 'react';
@@ -14,7 +22,7 @@ const ToolBar = (): JSX.Element => {
     return (
         <AppBar position="static" sx={{ mb: 2.5 }}>
             <Toolbar>
-                <IconButton color="inherit" component={Link} to="/">
+                <IconButton color="inherit" component={Link} to="/" size="large">
                     <Home />
                 </IconButton>
 
@@ -23,9 +31,22 @@ const ToolBar = (): JSX.Element => {
                 </IconButton>
 
                 {user.username && (
-                    <IconButton onClick={() => setUser({ ...user, admin: !user.admin })} color="inherit" size="large">
-                        {user.admin ? <RemoveModeratorOutlined /> : <AddModeratorOutlined />}
-                    </IconButton>
+                    <>
+                        <IconButton
+                            onClick={() => setUser({ ...user, cheats: !user.cheats })}
+                            color="inherit"
+                            size="large"
+                        >
+                            {user.cheats ? <AutoFixOff /> : <AutoFixNormal />}
+                        </IconButton>
+                        <IconButton
+                            onClick={() => setUser({ ...user, admin: !user.admin })}
+                            color="inherit"
+                            size="large"
+                        >
+                            {user.admin ? <RemoveModeratorOutlined /> : <AddModeratorOutlined />}
+                        </IconButton>
+                    </>
                 )}
                 <Typography color="inherit">
                     <em>{user.username === '' ? 'Not Logged in' : user.username}</em>

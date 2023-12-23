@@ -14,7 +14,7 @@ const Login = (): JSX.Element => {
     const addApiToken = (event: React.SyntheticEvent): void => {
         event.preventDefault();
 
-        const user = { username, admin: false };
+        const user = { username, admin: false, cheats: false };
         setUser(user);
         localStorage.setItem('user', JSON.stringify(user));
 

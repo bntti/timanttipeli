@@ -121,6 +121,8 @@ const RoomRoute = (): JSX.Element => {
                         roundNumber={(room.data.roundsDone % 5) + 1}
                         deckSize={room.data.deckSize}
                         pointsOnGround={room.data.roundInProgress ? room.data.currentRound.pointsOnGround : null}
+                        deck={room.data.roundInProgress && user.cheats ? room.data.currentRound.deck : null}
+                        inPlay={room.data.roundInProgress && user.cheats ? room.data.currentRound.inPlay : null}
                     />
                     {room.data.removedCards.length > 0 && <RemovedCardsMemo removedCards={room.data.removedCards} />}
                 </>
