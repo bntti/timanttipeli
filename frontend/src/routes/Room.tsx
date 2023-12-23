@@ -1,27 +1,14 @@
-import {
-    Alert,
-    Box,
-    Button,
-    Divider,
-    Grid,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    ToggleButton,
-    ToggleButtonGroup,
-    Typography,
-    useTheme,
-} from '@mui/material';
+import { Alert, Button, Divider, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';
-import { Room, RoomSchema, TrapCard } from '../types';
+import PlayerTableMemo from '../components/PlayerTable';
+import RemovedCardsMemo from '../components/RemovedCards';
+import RoomDataMemo from '../components/RoomData';
+import RoundCardsMemo from '../components/RoundCards';
+import { Room, RoomSchema } from '../types';
 
 const RoomRoute = (): JSX.Element => {
     const [room, setRoom] = useState<Room | null>(null);
@@ -29,7 +16,6 @@ const RoomRoute = (): JSX.Element => {
     const [admin, setAdmin] = useState<boolean>(false);
     const { user } = useContext(UserContext);
     const { roomId } = useParams();
-    const theme = useTheme();
 
     useEffect(() => {
         axios
@@ -41,7 +27,6 @@ const RoomRoute = (): JSX.Element => {
     }, [roomId]);
 
     useEffect(() => {
-        // TODO: Fix
         const pollingInterval = setInterval(() => {
             axios
                 .get(`/api/room/${roomId}`)
@@ -117,214 +102,30 @@ const RoomRoute = (): JSX.Element => {
                 </Alert>
             )}
 
-            {/* {JSON.stringify(room)} */}
-            <TableContainer component={Paper} sx={{ mt: 2 }}>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>
-                                <Typography>Player</Typography>
-                            </TableCell>
-                            <TableCell>
-                                <Typography>Points</Typography>
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {Object.entries(room.data.players).map(([player, points]) => (
-                            <TableRow
-                                key={player}
-                                sx={{
-                                    '&:last-child td': {
-                                        borderBottom: 0,
-                                    },
-                                    background:
-                                        room.data.roundInProgress && room.data.currentRound.players.includes(player)
-                                            ? theme.palette.mode === 'light'
-                                                ? '#00f3'
-                                                : '#99f3'
-                                            : '#0000',
-                                }}
-                            >
-                                <TableCell sx={{ width: '60%' }}>
-                                    <Typography>{player}</Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography>{points}</Typography>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <PlayerTableMemo roomPlayers={room.data.players} roundPlayers={room.data.currentRound?.players ?? null} />
             {room.data.gameInProgress && (
                 <>
-                    <TableContainer component={Paper} sx={{ mt: 2 }}>
-                        <Table size="small">
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell sx={{ width: '60%' }}>
-                                        <Typography>Round #</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography>{room.data.roundsDone + 1}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                                {room.data.roundInProgress && (
-                                    <>
-                                        <TableRow>
-                                            <TableCell sx={{ width: '60%' }}>
-                                                <Typography>Deck size</Typography>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Typography>
-                                                    {Object.keys(room.data.currentRound.deck).length +
-                                                        room.data.currentRound.inPlay.length}
-                                                </Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell sx={{ width: '60%' }}>
-                                                <Typography>Number of votes</Typography>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Typography>
-                                                    {Object.keys(room.data.currentRound.votes).length}
-                                                </Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell sx={{ width: '60%' }}>
-                                                <Typography>Points per player</Typography>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Typography>{room.data.currentRound.pointsPerPlayer}</Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow
-                                            sx={{
-                                                '&:last-child td': {
-                                                    borderBottom: 0,
-                                                },
-                                            }}
-                                        >
-                                            <TableCell sx={{ width: '60%' }}>
-                                                <Typography>Points on ground</Typography>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Typography>{room.data.currentRound.pointsOnGround}</Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                    </>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    {room.data.removedCards.length > 0 && (
-                        <Paper sx={{ mt: 2, pl: 1, pr: 1, pt: 1 }}>
-                            <Typography textAlign="center">Removed cards</Typography>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexWrap: 'wrap',
-                                    justifyContent: 'flex-start',
-                                    alignItems: 'flex-start',
-                                }}
-                            >
-                                {room.data.removedCards.map((card, i) => (
-                                    <Box
-                                        key={`${card.type}${i}`}
-                                        sx={{
-                                            m: 1,
-                                            p: 1,
-                                            width: 80,
-                                            background: card.type === 'relic' ? '#ff09' : '#f009',
-                                            border: '1px solid',
-                                            borderRadius: 2,
-                                        }}
-                                    >
-                                        <Typography sx={{ textAlign: 'center' }}>
-                                            {card.type !== 'trap' ? card.value : card.trap}
-                                        </Typography>
-                                    </Box>
-                                ))}
-                            </Box>
-                        </Paper>
+                    {room.data.roundInProgress ? (
+                        <RoomDataMemo
+                            roundNumber={room.data.roundsDone + 1}
+                            deckSize={
+                                Object.keys(room.data.currentRound.deck).length + room.data.currentRound.inPlay.length
+                            }
+                            numVotes={Object.keys(room.data.currentRound.votes).length}
+                            pointsOnGround={room.data.currentRound.pointsOnGround}
+                            pointsPerPlayer={room.data.currentRound?.pointsPerPlayer}
+                        />
+                    ) : (
+                        <RoomDataMemo roundNumber={room.data.roundsDone + 1} />
                     )}
+
+                    {room.data.removedCards.length > 0 && <RemovedCardsMemo removedCards={room.data.removedCards} />}
                 </>
             )}
 
             {room.data.roundInProgress && (
                 <>
-                    <Grid component={Paper} container sx={{ mt: 2 }}>
-                        <Grid item xs={6}>
-                            <Typography sx={{ textAlign: 'center' }}>cards</Typography>
-                        </Grid>
-                        <Divider orientation="vertical" flexItem sx={{ mr: '-1px' }} />
-                        <Grid item xs={6}>
-                            <Typography sx={{ textAlign: 'center' }}>traps</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexWrap: 'wrap',
-                                    justifyContent: 'center',
-                                    alignItems: 'flex-start',
-                                }}
-                            >
-                                {room.data.currentRound.inPlay
-                                    .filter((card) => card.type !== 'trap')
-                                    .map((card, i) => (
-                                        <Box
-                                            key={`${card.type}${i}`}
-                                            sx={{
-                                                m: 1,
-                                                p: 1,
-                                                width: 40,
-                                                background: card.type === 'points' ? '#aaa9' : '#ff09',
-                                                border: '1px solid',
-                                                borderRadius: 2,
-                                            }}
-                                        >
-                                            <Typography sx={{ textAlign: 'center' }}>
-                                                {card.type !== 'trap' ? card.value : card.trap}
-                                            </Typography>
-                                        </Box>
-                                    ))}
-                            </Box>
-                        </Grid>
-                        <Divider orientation="vertical" flexItem sx={{ mr: '-1px' }} />
-                        <Grid item xs={6}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexWrap: 'wrap',
-                                    justifyContent: 'center',
-                                    alignItems: 'flex-start',
-                                }}
-                            >
-                                {room.data.currentRound.inPlay
-                                    .filter((card): card is TrapCard => card.type === 'trap')
-                                    .map((card, i) => (
-                                        <Box
-                                            key={`${card.trap}${i}`}
-                                            sx={{
-                                                m: 1,
-                                                p: 1,
-                                                width: 80,
-                                                background: '#f009',
-                                                border: '1px solid',
-                                                borderRadius: 2,
-                                            }}
-                                        >
-                                            <Typography sx={{ textAlign: 'center' }}>{card.trap}</Typography>
-                                        </Box>
-                                    ))}
-                            </Box>
-                        </Grid>
-                    </Grid>
+                    <RoundCardsMemo inPlay={room.data.currentRound.inPlay} />
                     {room.data.currentRound.players.includes(user) && (
                         <ToggleButtonGroup
                             size="large"
