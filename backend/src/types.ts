@@ -15,11 +15,10 @@ const TrapCardSchema = z.object({
 
 const CardSchema = z.union([PointsCardSchema, RelicCardSchema, TrapCardSchema]);
 
+const RoomBaseSchema = z.object({ id: z.number().int().nonnegative(), hidden: z.boolean(), name: z.string() });
+
 export const RoomSchema = z.union([
-    z.object({
-        id: z.number().int().nonnegative(),
-        hidden: z.boolean(),
-        name: z.string(),
+    RoomBaseSchema.extend({
         data: z.object({
             players: z.record(z.literal(0)),
             gameInProgress: z.literal(false),
@@ -29,10 +28,7 @@ export const RoomSchema = z.union([
             currentRound: z.literal(null)
         })
     }),
-    z.object({
-        id: z.number().int().nonnegative(),
-        hidden: z.boolean(),
-        name: z.string(),
+    RoomBaseSchema.extend({
         data: z.object({
             players: z.record(z.number().int().nonnegative()),
             gameInProgress: z.literal(true),
@@ -43,10 +39,7 @@ export const RoomSchema = z.union([
             currentRound: z.literal(null)
         })
     }),
-    z.object({
-        id: z.number().int().nonnegative(),
-        hidden: z.boolean(),
-        name: z.string(),
+    RoomBaseSchema.extend({
         data: z.object({
             players: z.record(z.number().int().nonnegative()),
             gameInProgress: z.literal(true),
@@ -67,10 +60,11 @@ export const RoomSchema = z.union([
         })
     })
 ]);
-export const RoomsSchema = z.array(RoomSchema);
+
+export const RoomsSchema = z.array(RoomBaseSchema);
+export type Rooms = z.infer<typeof RoomsSchema>;
 
 export type RelicCard = z.infer<typeof RelicCardSchema>;
 export type TrapCard = z.infer<typeof TrapCardSchema>;
 export type Card = z.infer<typeof CardSchema>;
 export type Room = z.infer<typeof RoomSchema>;
-export type Rooms = z.infer<typeof RoomsSchema>;

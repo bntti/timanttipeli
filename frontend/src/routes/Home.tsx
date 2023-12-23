@@ -35,6 +35,20 @@ const Home = (): JSX.Element => {
             .catch(console.error);
     }, []);
 
+    useEffect(() => {
+        const pollingInterval = setInterval(() => {
+            axios
+                .get(`/api/rooms`)
+                .then((response) => {
+                    const newRooms = RoomsSchema.parse(response.data);
+                    if (JSON.stringify(rooms) !== JSON.stringify(newRooms)) setRooms(newRooms);
+                })
+                .catch(console.error);
+        }, 1000);
+
+        return () => clearInterval(pollingInterval);
+    }, [rooms]);
+
     const createRoom = (event: React.SyntheticEvent): void => {
         event.preventDefault();
         if (newRoom.trim() === '') {
