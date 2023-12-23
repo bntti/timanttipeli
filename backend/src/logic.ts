@@ -67,11 +67,13 @@ const handleDraw = (room: Room): void => {
     const card = round.deck.splice(index, 1)[0];
 
     if (card.type === 'points') {
-        const numPlayers = room.data.currentRound.players.length;
+        const numPlayers = round.players.length;
         if (card.value >= numPlayers) {
             const pointsPerPlayer = Math.floor(card.value / numPlayers);
-            room.data.currentRound.pointsPerPlayer += pointsPerPlayer;
-            room.data.currentRound.pointsOnGround += card.value - numPlayers * pointsPerPlayer;
+            round.pointsPerPlayer += pointsPerPlayer;
+            round.pointsOnGround += card.value - numPlayers * pointsPerPlayer;
+        } else {
+            round.pointsOnGround += card.value;
         }
     } else if (card.type === 'trap') {
         const found = round.inPlay.filter((inPlayCard) => inPlayCard.type === 'trap' && inPlayCard.trap === card.trap);
