@@ -1,4 +1,4 @@
-import { Brightness3, Brightness7, Home } from '@mui/icons-material';
+import { AddModeratorOutlined, Brightness3, Brightness7, Home, RemoveModeratorOutlined } from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { AppBar, IconButton, Toolbar, Typography, useTheme } from '@mui/material';
 import { useContext } from 'react';
@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { ThemeContext, UserContext } from '../app/StateProvider';
 
 const ToolBar = (): JSX.Element => {
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
     const { colorMode } = useContext(ThemeContext);
     const theme = useTheme();
 
@@ -18,12 +18,17 @@ const ToolBar = (): JSX.Element => {
                     <Home />
                 </IconButton>
 
-                <IconButton onClick={colorMode.toggleTheme} color="inherit" size="large">
+                <IconButton onClick={colorMode.toggleTheme} color="inherit" size="large" sx={{ marginRight: 'auto' }}>
                     {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness3 />}
                 </IconButton>
 
-                <Typography color="inherit" sx={{ marginLeft: 'auto' }}>
-                    <em>{user === '' ? 'Not Logged in' : user}</em>
+                {user.username && (
+                    <IconButton onClick={() => setUser({ ...user, admin: !user.admin })} color="inherit" size="large">
+                        {user.admin ? <RemoveModeratorOutlined /> : <AddModeratorOutlined />}
+                    </IconButton>
+                )}
+                <Typography color="inherit">
+                    <em>{user.username === '' ? 'Not Logged in' : user.username}</em>
                 </Typography>
 
                 <IconButton color="inherit" component={Link} to="/logout" size="large">

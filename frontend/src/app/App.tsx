@@ -15,13 +15,11 @@ const RequireAuth = ({ children }: { children: JSX.Element }): JSX.Element => {
     const storageUser = localStorage.getItem('user');
 
     useEffect(() => {
-        if (user) return; // Race condition? (shouldn't be a problem)
-        if (storageUser) {
-            setUser(storageUser);
-        }
+        if (user.username !== '') return; // Race condition? (shouldn't be a problem)
+        if (storageUser) setUser(JSON.parse(storageUser));
     }, [user, storageUser, setUser]);
 
-    if (user) return children;
+    if (user.username !== '') return children;
     if (storageUser) return <Typography>Loading</Typography>;
 
     return <Navigate replace to="/login" state={{ from: location.pathname }} />;

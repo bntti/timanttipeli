@@ -115,10 +115,10 @@ const runServer = (): void => {
     app.post(
         '/api/room/:roomId/joinGame',
         gameNotInProgress,
-        processRequestBody(z.object({ userName: z.string() })),
+        processRequestBody(z.object({ username: z.string() })),
         (req, res) => {
             const roomId = parseInt(req.params.roomId);
-            rooms[roomId].data.players[req.body.userName] = 0;
+            rooms[roomId].data.players[req.body.username] = 0;
             res.json(rooms[roomId]);
         }
     );
@@ -126,10 +126,10 @@ const runServer = (): void => {
     app.post(
         '/api/room/:roomId/leaveGame',
         gameNotInProgress,
-        processRequestBody(z.object({ userName: z.string() })),
+        processRequestBody(z.object({ username: z.string() })),
         (req, res) => {
             const roomId = parseInt(req.params.roomId);
-            delete rooms[roomId].data.players[req.body.userName];
+            delete rooms[roomId].data.players[req.body.username];
             res.json(rooms[roomId]);
         }
     );
@@ -155,7 +155,7 @@ const runServer = (): void => {
         RoundInProgress,
         processRequestBody(
             z.object({
-                userName: z.string(),
+                username: z.string(),
                 vote: z.union([z.literal('stay'), z.literal('leave'), z.null()])
             })
         ),
@@ -164,8 +164,8 @@ const runServer = (): void => {
             const room = rooms[roomId];
             assert(room.data.roundInProgress); // Should be unnecessary
 
-            if (req.body.vote === null) delete room.data.currentRound.votes[req.body.userName];
-            else room.data.currentRound.votes[req.body.userName] = req.body.vote;
+            if (req.body.vote === null) delete room.data.currentRound.votes[req.body.username];
+            else room.data.currentRound.votes[req.body.username] = req.body.vote;
             if (Object.keys(room.data.currentRound.votes).length === room.data.currentRound.players.length) {
                 handleVotes(room);
             }

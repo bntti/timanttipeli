@@ -9,12 +9,15 @@ const Login = (): JSX.Element => {
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
 
-    const [newUser, setNewUser] = useState('');
+    const [username, setUsername] = useState('');
 
     const addApiToken = (event: React.SyntheticEvent): void => {
         event.preventDefault();
-        setUser(newUser);
-        localStorage.setItem('user', newUser);
+
+        const user = { username, admin: false };
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+
         if (state && state.from) navigate(state.from);
         else navigate('/');
     };
@@ -28,9 +31,9 @@ const Login = (): JSX.Element => {
                 <TextField
                     fullWidth
                     label="Usename"
-                    value={newUser}
+                    value={username}
                     onChange={(event) => {
-                        setNewUser(event.target.value);
+                        setUsername(event.target.value);
                     }}
                 />
                 <Button variant="contained" type="submit" sx={{ mt: 1 }}>

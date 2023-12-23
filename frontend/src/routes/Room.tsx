@@ -13,7 +13,6 @@ import { Room, RoomSchema } from '../types';
 const RoomRoute = (): JSX.Element => {
     const [room, setRoom] = useState<Room | null>(null);
     const [vote, setVote] = useState<'stay' | 'leave' | null>(null);
-    const [admin, setAdmin] = useState<boolean>(false);
     const { user } = useContext(UserContext);
     const { roomId } = useParams();
 
@@ -41,18 +40,18 @@ const RoomRoute = (): JSX.Element => {
     }, [room, roomId]);
 
     useEffect(() => {
-        if (room && room.data.roundInProgress) setVote(room.data.currentRound.votes[user] ?? null);
+        if (room && room.data.roundInProgress) setVote(room.data.currentRound.votes[user.username] ?? null);
     }, [user, room]);
 
     const joinGame = (): void => {
         axios
-            .post(`/api/room/${roomId}/joinGame`, { userName: user })
+            .post(`/api/room/${roomId}/joinGame`, { username: user.username })
             .then((response) => setRoom(RoomSchema.parse(response.data)))
             .catch(console.error);
     };
     const leaveGame = (): void => {
         axios
-            .post(`/api/room/${roomId}/leaveGame`, { userName: user })
+            .post(`/api/room/${roomId}/leaveGame`, { username: user.username })
             .then((response) => setRoom(RoomSchema.parse(response.data)))
             .catch(console.error);
     };
@@ -87,7 +86,7 @@ const RoomRoute = (): JSX.Element => {
     const apiVote = (value: 'stay' | 'leave' | null): void => {
         setVote(value);
         axios
-            .post(`/api/room/${roomId}/vote`, { userName: user, vote: value })
+            .post(`/api/room/${roomId}/vote`, { username: user.username, vote: value })
             .then((response) => setRoom(RoomSchema.parse(response.data)))
             .catch(console.error);
     };
@@ -96,8 +95,8 @@ const RoomRoute = (): JSX.Element => {
     if (room.hidden) return <Navigate to="/" />;
     return (
         <>
-            {!room.data.gameInProgress && !(user in room.data.players) && (
-                <Alert severity="warning" sx={{ mb: 2 }}>
+            {!room.data.gameInProgress && !(user.username in room.data.players) && (
+                <Alert severity="warning" sx={{ mb: 2 }} variant="outlined">
                     You are not in the game
                 </Alert>
             )}
@@ -126,7 +125,7 @@ const RoomRoute = (): JSX.Element => {
             {room.data.roundInProgress && (
                 <>
                     <RoundCardsMemo inPlay={room.data.currentRound.inPlay} />
-                    {room.data.currentRound.players.includes(user) && (
+                    {room.data.currentRound.players.includes(user.username) && (
                         <ToggleButtonGroup
                             size="large"
                             fullWidth
@@ -143,9 +142,9 @@ const RoomRoute = (): JSX.Element => {
                 </>
             )}
 
-            <Divider sx={{ mt: 5, mb: 1 }} />
+            {(!room.data.gameInProgress || user.admin) && <Divider sx={{ mt: 5, mb: 1 }} />}
             {!room.data.gameInProgress &&
-                (user in room.data.players ? (
+                (user.username in room.data.players ? (
                     <Button fullWidth onClick={leaveGame} variant="outlined">
                         Leave game
                     </Button>
@@ -155,10 +154,7 @@ const RoomRoute = (): JSX.Element => {
                     </Button>
                 ))}
 
-            <Button variant="outlined" fullWidth sx={{ mt: 1 }} onClick={() => setAdmin(!admin)}>
-                {admin ? 'Disable admin' : 'Enable admin'}
-            </Button>
-            {admin && (
+            {user.admin && (
                 <>
                     {room.data.gameInProgress && !room.data.roundInProgress && (
                         <Button variant="outlined" fullWidth sx={{ mt: 1 }} onClick={startRound}>
