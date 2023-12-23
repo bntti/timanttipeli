@@ -142,14 +142,14 @@ const RoomRoute = (): JSX.Element => {
                 </>
             )}
 
-            {(!room.data.gameInProgress || user.admin) && <Divider sx={{ mt: 5, mb: 1 }} />}
+            {(!room.data.gameInProgress || user.admin) && <Divider sx={{ mt: 5, mb: 0.5 }} />}
             {!room.data.gameInProgress &&
                 (user.username in room.data.players ? (
-                    <Button fullWidth onClick={leaveGame} variant="outlined">
+                    <Button fullWidth onClick={leaveGame} variant="outlined" sx={{ mt: 1 }}>
                         Leave game
                     </Button>
                 ) : (
-                    <Button fullWidth onClick={joinGame} variant="outlined">
+                    <Button fullWidth onClick={joinGame} variant="outlined" sx={{ mt: 1 }}>
                         Join game
                     </Button>
                 ))}
@@ -172,7 +172,7 @@ const RoomRoute = (): JSX.Element => {
                             Start Game
                         </Button>
                     )}
-                    <Button variant="outlined" color="error" fullWidth sx={{ mt: 3 }} onClick={resetRoom}>
+                    <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={resetRoom}>
                         Reset room
                     </Button>
                     {!room.data.gameInProgress && (
