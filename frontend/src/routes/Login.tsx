@@ -9,7 +9,7 @@ const Login = (): JSX.Element => {
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
 
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState<string>('');
 
     const addApiToken = (event: React.SyntheticEvent): void => {
         event.preventDefault();

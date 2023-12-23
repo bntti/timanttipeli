@@ -1,6 +1,8 @@
 import {
     Button,
     Divider,
+    FormControl,
+    FormHelperText,
     Paper,
     Table,
     TableBody,
@@ -20,6 +22,8 @@ import { Rooms, RoomsSchema } from '../types';
 const Home = (): JSX.Element => {
     const [rooms, setRooms] = useState<Rooms | null>(null);
     const [newRoom, setNewRoom] = useState<string>('');
+    const [error, setError] = useState<boolean>(false);
+    const [feedback, setFeedback] = useState<string>('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -31,8 +35,15 @@ const Home = (): JSX.Element => {
             .catch(console.error);
     }, []);
 
-    const addApiToken = (event: React.SyntheticEvent): void => {
+    const createRoom = (event: React.SyntheticEvent): void => {
         event.preventDefault();
+        if (newRoom.trim() === '') {
+            setError(true);
+            setFeedback('Room name cannot be empty');
+            return;
+        }
+        setError(false);
+        setFeedback('');
         axios
             .post('/api/createRoom', { name: newRoom })
             .then((response) => {
@@ -85,19 +96,24 @@ const Home = (): JSX.Element => {
             </div>
             <Divider sx={{ mb: 2 }} />
             <div style={{ paddingTop: 2.5 }}>
-                <form onSubmit={addApiToken}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        label="Create new room"
-                        value={newRoom}
-                        onChange={(event) => {
-                            setNewRoom(event.target.value);
-                        }}
-                    />
-                    <Button fullWidth variant="outlined" type="submit" sx={{ mt: 1 }}>
-                        Create room
-                    </Button>
+                <form onSubmit={createRoom}>
+                    <FormControl fullWidth error={error}>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            label="Create new room"
+                            value={newRoom}
+                            error={error}
+                            onChange={(event) => {
+                                setError(false);
+                                setNewRoom(event.target.value);
+                            }}
+                        />
+                        {feedback && <FormHelperText variant="standard">{feedback}</FormHelperText>}
+                        <Button fullWidth variant="outlined" type="submit" sx={{ mt: 1 }}>
+                            Create room
+                        </Button>
+                    </FormControl>
                 </form>
             </div>
         </div>
