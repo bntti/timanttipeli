@@ -1,6 +1,8 @@
 import { createContext, useState } from 'react';
+import { z } from 'zod';
 
-export type User = { username: string; admin: boolean };
+export const UserSchema = z.object({ username: z.string(), admin: z.boolean() });
+export type User = z.infer<typeof UserSchema>;
 type UserContext = {
     user: User;
     setUser: React.Dispatch<React.SetStateAction<User>>;

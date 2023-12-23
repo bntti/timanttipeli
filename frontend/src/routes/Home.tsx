@@ -39,7 +39,7 @@ const Home = (): JSX.Element => {
                 const roomId = z.number().int().parse(response.data);
                 navigate(`/room/${roomId}`);
             })
-            .catch(console.log);
+            .catch(console.error);
     };
 
     if (rooms === null) return <Typography>Loading rooms...</Typography>;
