@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { Card, RelicCard, Room } from './types';
+import { Card, RelicCard, Room, TrapCard } from './types';
 
 const USE_RELICS = true;
 
@@ -59,6 +59,21 @@ const createDeck = (room: Room): Card[] => {
     return result;
 };
 
+const handleRoundEnd = (room: Room, card?: TrapCard): void => {
+    assert(room.data.roundInProgress);
+    for (const [player, points] of Object.entries(room.data.currentRound.pointsGained)) {
+        room.data.players[player] += points;
+    }
+    room.data = {
+        ...room.data,
+        roundInProgress: false,
+        removedCards: card ? room.data.removedCards.concat(card) : room.data.removedCards,
+        roundsDone: room.data.roundsDone + 1,
+        currentRound: null
+    };
+    room.data.deckSize = createDeck(room).length;
+};
+
 const handleDraw = (room: Room): void => {
     assert(room.data.roundInProgress);
     const round = room.data.currentRound;
@@ -78,13 +93,7 @@ const handleDraw = (room: Room): void => {
     } else if (card.type === 'trap') {
         const found = round.inPlay.filter((inPlayCard) => inPlayCard.type === 'trap' && inPlayCard.trap === card.trap);
         if (found.length > 0) {
-            room.data = {
-                ...room.data,
-                roundInProgress: false,
-                removedCards: room.data.removedCards.concat(card),
-                roundsDone: room.data.roundsDone + 1,
-                currentRound: null
-            };
+            handleRoundEnd(room, card);
             return;
         }
     }
@@ -102,11 +111,12 @@ export const handleVotes = (room: Room): void => {
             // Not actually this type but doesn't break anything
             round.players = round.players.filter((rplayer) => rplayer !== player) as [string, ...string[]];
 
-            room.data.players[player] += round.pointsPerPlayer + Math.floor(round.pointsOnGround / numLeave);
+            round.pointsGained[player] = round.pointsPerPlayer + Math.floor(round.pointsOnGround / numLeave);
             if (numLeave === 1) {
                 for (const card of round.inPlay) {
                     if (card.type === 'relic') {
-                        room.data.players[player] += card.value;
+                        round.pointsGained[player] += card.value;
+                        round.hasRelic.push(player);
                         room.data.removedCards.push(card);
                     }
                 }
@@ -116,12 +126,7 @@ export const handleVotes = (room: Room): void => {
     }
 
     if (round.players.length === 0) {
-        room.data = {
-            ...room.data,
-            roundsDone: room.data.roundsDone + 1,
-            roundInProgress: false,
-            currentRound: null
-        };
+        handleRoundEnd(room);
     } else {
         room.data.currentRound = {
             ...round,
@@ -134,7 +139,8 @@ export const handleVotes = (room: Room): void => {
 
 export const startGame = (room: Room): void => {
     assert(!room.data.gameInProgress);
-    room.data = { ...room.data, gameInProgress: true };
+    room.data = { ...room.data, gameInProgress: true, deckSize: 0 };
+    room.data.deckSize = createDeck(room).length;
 };
 
 export const startRound = (room: Room): void => {
@@ -145,14 +151,18 @@ export const startRound = (room: Room): void => {
     for (const player of Object.keys(room.data.players)) roundPoints[player] = 0;
 
     if (room.data.roundsDone % 5 === 0) room.data.removedCards = [];
+    const deck = createDeck(room);
     room.data = {
         ...room.data,
         roundInProgress: true,
+        deckSize: deck.length,
         currentRound: {
-            deck: createDeck(room),
+            deck: deck,
             inPlay: [],
             votes: {},
             players: Object.keys(room.data.players) as [string, ...string[]],
+            pointsGained: {},
+            hasRelic: [],
             pointsPerPlayer: 0,
             pointsOnGround: 0
         }

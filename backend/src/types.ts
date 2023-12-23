@@ -37,6 +37,7 @@ export const RoomSchema = z.union([
             players: z.record(z.number().int().nonnegative()),
             gameInProgress: z.literal(true),
             roundInProgress: z.literal(false),
+            deckSize: z.number().int().nonnegative(),
             removedCards: z.array(CardSchema),
             roundsDone: z.number().int().nonnegative(),
             currentRound: z.literal(null)
@@ -50,6 +51,7 @@ export const RoomSchema = z.union([
             players: z.record(z.number().int().nonnegative()),
             gameInProgress: z.literal(true),
             roundInProgress: z.literal(true),
+            deckSize: z.number().int().nonnegative(),
             removedCards: z.array(CardSchema),
             roundsDone: z.number().int().nonnegative(),
             currentRound: z.object({
@@ -57,6 +59,8 @@ export const RoomSchema = z.union([
                 inPlay: z.array(CardSchema),
                 votes: z.record(z.enum(['stay', 'leave'])),
                 players: z.array(z.string()).nonempty(),
+                pointsGained: z.record(z.number()),
+                hasRelic: z.array(z.string()),
                 pointsPerPlayer: z.number().int(),
                 pointsOnGround: z.number().int()
             })
@@ -66,6 +70,7 @@ export const RoomSchema = z.union([
 export const RoomsSchema = z.array(RoomSchema);
 
 export type RelicCard = z.infer<typeof RelicCardSchema>;
+export type TrapCard = z.infer<typeof TrapCardSchema>;
 export type Card = z.infer<typeof CardSchema>;
 export type Room = z.infer<typeof RoomSchema>;
 export type Rooms = z.infer<typeof RoomsSchema>;

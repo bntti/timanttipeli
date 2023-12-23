@@ -1,98 +1,41 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
+import { Grid, Paper, Typography } from '@mui/material';
 import { memo } from 'react';
 
-type Props =
-    | {
-          roundNumber: number;
-          deckSize: number;
-          numVotes: number;
-          pointsPerPlayer: number;
-          pointsOnGround: number;
-      }
-    | {
-          roundNumber: number;
-          deckSize?: null;
-          numVotes?: null;
-          pointsPerPlayer?: null;
-          pointsOnGround?: null;
-      };
-const propsEqual = (oldProps: Props, newProps: Props): boolean => {
-    if (oldProps.deckSize !== newProps.deckSize) return false;
-    if (newProps.deckSize === null) {
-        return oldProps.roundNumber !== newProps.roundNumber;
-    }
+type Props = {
+    gameNumber: number;
+    roundNumber: number;
+    deckSize: number;
+    pointsOnGround: number | null;
+};
 
+const propsEqual = (oldProps: Props, newProps: Props): boolean => {
     return (
-        oldProps.numVotes === newProps.numVotes &&
-        oldProps.pointsPerPlayer === newProps.pointsPerPlayer &&
+        oldProps.gameNumber === newProps.gameNumber &&
+        oldProps.roundNumber === newProps.roundNumber &&
+        oldProps.deckSize === newProps.deckSize &&
         oldProps.pointsOnGround === newProps.pointsOnGround
     );
 };
 
-const RoomData = ({
-    roundNumber,
-    deckSize = null,
-    numVotes = null,
-    pointsPerPlayer = null,
-    pointsOnGround = null,
-}: Props): JSX.Element => (
-    <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table size="small">
-            <TableBody>
-                <TableRow>
-                    <TableCell sx={{ width: '60%' }}>
-                        <Typography>Round #</Typography>
-                    </TableCell>
-                    <TableCell>
-                        <Typography>{roundNumber}</Typography>
-                    </TableCell>
-                </TableRow>
+const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround }: Props): JSX.Element => (
+    <Grid container spacing={2} sx={{ mt: -1 }}>
+        <Grid item xs={4}>
+            <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
+                round {gameNumber > 1 ? `${gameNumber}-${roundNumber}` : roundNumber}
+            </Typography>
+        </Grid>
+        <Grid item xs={4}>
+            <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
+                deck size {deckSize}
+            </Typography>
+        </Grid>
 
-                {deckSize && (
-                    <>
-                        <TableRow>
-                            <TableCell sx={{ width: '60%' }}>
-                                <Typography>Deck size</Typography>
-                            </TableCell>
-                            <TableCell>
-                                <Typography>{deckSize}</Typography>
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell sx={{ width: '60%' }}>
-                                <Typography>Number of votes</Typography>
-                            </TableCell>
-                            <TableCell>
-                                <Typography>{numVotes}</Typography>
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell sx={{ width: '60%' }}>
-                                <Typography>Points per player</Typography>
-                            </TableCell>
-                            <TableCell>
-                                <Typography>{pointsPerPlayer}</Typography>
-                            </TableCell>
-                        </TableRow>
-                        <TableRow
-                            sx={{
-                                '&:last-child td': {
-                                    borderBottom: 0,
-                                },
-                            }}
-                        >
-                            <TableCell sx={{ width: '60%' }}>
-                                <Typography>Points on ground</Typography>
-                            </TableCell>
-                            <TableCell>
-                                <Typography>{pointsOnGround}</Typography>
-                            </TableCell>
-                        </TableRow>
-                    </>
-                )}
-            </TableBody>
-        </Table>
-    </TableContainer>
+        <Grid item xs={4}>
+            <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
+                on ground {pointsOnGround}
+            </Typography>
+        </Grid>
+    </Grid>
 );
 
 const RoomDataMemo = memo(RoomData, propsEqual);

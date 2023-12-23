@@ -68,7 +68,7 @@ const RoomRoute = (): JSX.Element => {
             .catch(console.error);
     };
     const resetRoom = (): void => {
-        if (confirm('Reset room?')) {
+        if (confirm(room && room.data.gameInProgress && !room.data.roundInProgress ? 'End game?' : 'Reset room?')) {
             axios
                 .post(`/api/room/${roomId}/resetRoom`)
                 .then((response) => setRoom(RoomSchema.parse(response.data)))
@@ -101,23 +101,27 @@ const RoomRoute = (): JSX.Element => {
                 </Alert>
             )}
 
-            <PlayerTableMemo roomPlayers={room.data.players} roundPlayers={room.data.currentRound?.players ?? null} />
+            {room.data.roundInProgress ? (
+                <PlayerTableMemo
+                    roomPlayers={room.data.players}
+                    gameInProgress={room.data.gameInProgress}
+                    roundPlayers={room.data.currentRound.players}
+                    pointsPerPlayer={room.data.currentRound.pointsPerPlayer}
+                    votes={Object.keys(room.data.currentRound.votes)}
+                    pointsGained={room.data.currentRound.pointsGained}
+                    hasRelic={room.data.currentRound.hasRelic}
+                />
+            ) : (
+                <PlayerTableMemo gameInProgress={room.data.gameInProgress} roomPlayers={room.data.players} />
+            )}
             {room.data.gameInProgress && (
                 <>
-                    {room.data.roundInProgress ? (
-                        <RoomDataMemo
-                            roundNumber={room.data.roundsDone + 1}
-                            deckSize={
-                                Object.keys(room.data.currentRound.deck).length + room.data.currentRound.inPlay.length
-                            }
-                            numVotes={Object.keys(room.data.currentRound.votes).length}
-                            pointsOnGround={room.data.currentRound.pointsOnGround}
-                            pointsPerPlayer={room.data.currentRound?.pointsPerPlayer}
-                        />
-                    ) : (
-                        <RoomDataMemo roundNumber={room.data.roundsDone + 1} />
-                    )}
-
+                    <RoomDataMemo
+                        gameNumber={Math.floor(room.data.roundsDone / 5) + 1}
+                        roundNumber={(room.data.roundsDone % 5) + 1}
+                        deckSize={room.data.deckSize}
+                        pointsOnGround={room.data.roundInProgress ? room.data.currentRound.pointsOnGround : null}
+                    />
                     {room.data.removedCards.length > 0 && <RemovedCardsMemo removedCards={room.data.removedCards} />}
                 </>
             )}
@@ -173,7 +177,7 @@ const RoomRoute = (): JSX.Element => {
                         </Button>
                     )}
                     <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={resetRoom}>
-                        Reset room
+                        {room.data.gameInProgress && !room.data.roundInProgress ? 'End game' : 'Reset room'}
                     </Button>
                     {!room.data.gameInProgress && (
                         <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={deleteRoom}>
