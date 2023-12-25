@@ -187,7 +187,7 @@ const runServer = (): void => {
             assert(room.data.roundInProgress); // Should be unnecessary
 
             const round = room.data.currentRound;
-            if (req.body.vote === null && round.voteEnd) delete room.data.currentRound.votes[req.body.username];
+            if (req.body.vote === null && !round.voteEnd) delete room.data.currentRound.votes[req.body.username];
             else if (req.body.vote !== null) room.data.currentRound.votes[req.body.username] = req.body.vote;
 
             if (Object.keys(round.votes).length === round.players.length) {
