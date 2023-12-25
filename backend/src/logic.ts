@@ -64,10 +64,12 @@ const handleRoundEnd = (room: Room, card?: TrapCard): void => {
     for (const [player, points] of Object.entries(room.data.currentRound.pointsGained)) {
         room.data.players[player] += points;
     }
+    if (card) room.data.removedCards.push(card);
+
     room.data = {
         ...room.data,
         roundInProgress: false,
-        removedCards: card ? room.data.removedCards.concat(card) : room.data.removedCards,
+        removedCards: (room.data.roundsDone + 1) % 5 === 0 ? [] : room.data.removedCards,
         roundsDone: room.data.roundsDone + 1,
         lastCard: card ?? null,
         currentRound: null
