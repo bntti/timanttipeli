@@ -10,8 +10,9 @@ import PlayerTableMemo from '../components/PlayerTable';
 import RemovedCardsMemo from '../components/RemovedCards';
 import RoomDataMemo from '../components/RoomData';
 import RoundCardsMemo from '../components/RoundCards';
+import SettingsFormMemo from '../components/SettingsForm';
 import VoteDialogMemo from '../components/VoteDialog';
-import { Card, Room, RoomResponseSchema } from '../types';
+import { Card, Room, RoomResponseSchema, Settings } from '../types';
 
 const RoomRoute = (): JSX.Element => {
     const [room, setRoom] = useState<Room | null>(null);
@@ -40,8 +41,14 @@ const RoomRoute = (): JSX.Element => {
             const numPlayers = room.data.roundInProgress
                 ? room.data.currentRound.players.length
                 : Object.keys(room.data.players).length;
-            const openDuration = numPlayers === 1 && newRoom.data.roundInProgress ? 1 : 2;
+            const openDuration =
+                numPlayers === 1 && newRoom.data.roundInProgress ? room.settings.cardTime1 : room.settings.cardTime;
 
+            if (openDuration === 0) {
+                setDontUpdate(false);
+                setRoom(newRoom);
+                return;
+            }
             setDontUpdate(true);
             setLastCard(newRoom.data.lastCard);
             setGameEnded(!newRoom.data.roundInProgress);
@@ -51,22 +58,27 @@ const RoomRoute = (): JSX.Element => {
                 setCardOpen(false);
                 setDontUpdate(false);
                 setRoom(newRoom);
-            }, openDuration * 1000);
+            }, openDuration);
         },
         [room],
     );
 
     const handleShowVote = useCallback(
         (newRoom: Room): void => {
-            if (!newRoom.data.gameInProgress || !room) {
-                setDontUpdate(false);
-                return;
-            }
+            if (!newRoom.data.gameInProgress || !room) return;
             const numPlayers = room.data.roundInProgress
                 ? room.data.currentRound.players.length
                 : Object.keys(room.data.players).length;
-            const openDuration = numPlayers === 1 ? 1 : 2;
+            const openDuration = numPlayers === 1 ? room.settings.voteShowTime1 : room.settings.voteShowTime;
 
+            if (openDuration === 0) {
+                if (newRoom.data.lastCard === null) {
+                    setRoom(newRoom);
+                    return;
+                }
+                handleShowCard(newRoom);
+                return;
+            }
             setDontUpdate(true);
             setLastVote(newRoom.data.lastVote);
             setVotesOpenDuration(openDuration);
@@ -80,7 +92,7 @@ const RoomRoute = (): JSX.Element => {
                     return;
                 }
                 handleShowCard(newRoom);
-            }, openDuration * 1000);
+            }, openDuration);
         },
         [handleShowCard, room],
     );
@@ -106,7 +118,7 @@ const RoomRoute = (): JSX.Element => {
                         },
                     });
                     const delay = newRoom.data.currentRound.voteEnd - serverTime;
-                    setVoteDelay(delay / 1000);
+                    setVoteDelay(delay);
                     setTimeout(() => {
                         setVoteDelay(null);
                         axios.get(`/api/room/${roomId}`).then((response) => {
@@ -170,6 +182,12 @@ const RoomRoute = (): JSX.Element => {
             .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
             .catch(console.error);
     };
+    const setSettings = (settings: Settings): void => {
+        axios
+            .put(`/api/room/${roomId}/settings`, settings)
+            .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
+            .catch(console.error);
+    };
     const startGame = (): void => {
         axios
             .post(`/api/room/${roomId}/startGame`)
@@ -182,8 +200,16 @@ const RoomRoute = (): JSX.Element => {
             .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
             .catch(console.error);
     };
+    const endGame = (): void => {
+        if (confirm('End game?')) {
+            axios
+                .post(`/api/room/${roomId}/endGame`)
+                .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
+                .catch(console.error);
+        }
+    };
     const resetRoom = (): void => {
-        if (confirm(room && room.data.gameInProgress && !room.data.roundInProgress ? 'End game?' : 'Reset room?')) {
+        if (confirm('Reset room?')) {
             axios
                 .post(`/api/room/${roomId}/resetRoom`)
                 .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
@@ -309,13 +335,25 @@ const RoomRoute = (): JSX.Element => {
                             Start Game
                         </Button>
                     )}
-                    <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={resetRoom}>
-                        {room.data.gameInProgress && !room.data.roundInProgress ? 'End game' : 'Reset room'}
-                    </Button>
-                    {!room.data.gameInProgress && (
-                        <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={deleteRoom}>
-                            Delete Room
+                    {room.data.gameInProgress && !room.data.roundInProgress && (
+                        <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={endGame}>
+                            End game
                         </Button>
+                    )}
+                    {(!room.data.gameInProgress || room.data.roundInProgress) && (
+                        <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={resetRoom}>
+                            Reset room
+                        </Button>
+                    )}
+                    {!room.data.gameInProgress && (
+                        <>
+                            <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={deleteRoom}>
+                                Delete Room
+                            </Button>
+                            <Divider sx={{ mt: 2, mb: 1 }} />
+                            <Typography variant="subtitle1">Settings</Typography>
+                            <SettingsFormMemo settings={room.settings} setSettings={setSettings} />
+                        </>
                     )}
                 </>
             )}

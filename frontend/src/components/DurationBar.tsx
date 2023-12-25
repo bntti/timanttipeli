@@ -13,7 +13,7 @@ const DurationBar = ({ duration }: Props): JSX.Element => {
     const StyledLinearProgress = styled(LinearProgress)({
         '& .MuiLinearProgress-bar1Indeterminate': {
             width: 'auto',
-            animation: `${indeterminate1Keyframes} ${duration}s linear forwards`,
+            animation: `${indeterminate1Keyframes} ${duration}ms linear forwards`,
         },
         '& .MuiLinearProgress-bar2Indeterminate': {
             display: 'none',

@@ -5,7 +5,28 @@ import { z } from 'zod';
 import { processRequestBody } from 'zod-express-middleware';
 
 import { handleVotes, startGame, startRound } from './logic';
-import { Room } from './types';
+import { Room, SettingsSchema } from './types';
+
+const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
+    id,
+    hidden: false,
+    name,
+    settings: {
+        voteShowTime: 2000,
+        voteShowTime1: 1000,
+        cardTime: 2000,
+        cardTime1: 1000,
+        afterVoteTime: 5000
+    },
+    data: {
+        players: {},
+        gameInProgress: false,
+        roundInProgress: false,
+        removedCards: [],
+        roundsDone: 0,
+        currentRound: null
+    }
+});
 
 const rooms: Room[] = [];
 
@@ -86,19 +107,7 @@ const runServer = (): void => {
             .parse(req.body);
 
         const roomId = Object.keys(rooms).length;
-        rooms.push({
-            id: roomId,
-            hidden: false,
-            name: data.name,
-            data: {
-                players: {},
-                gameInProgress: false,
-                roundInProgress: false,
-                removedCards: [],
-                roundsDone: 0,
-                currentRound: null
-            }
-        });
+        rooms.push(generateRoom(roomId, data.name));
         res.json(roomId);
     });
 
@@ -116,6 +125,12 @@ const runServer = (): void => {
             handleVotes(rooms[roomId]);
         }
 
+        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+    });
+
+    app.put(`/api/room/:roomId/settings`, gameNotInProgress, processRequestBody(SettingsSchema), (req, res) => {
+        const roomId = parseInt(req.params.roomId);
+        rooms[roomId].settings = req.body;
         res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
@@ -176,33 +191,33 @@ const runServer = (): void => {
             else if (req.body.vote !== null) room.data.currentRound.votes[req.body.username] = req.body.vote;
 
             if (Object.keys(round.votes).length === round.players.length) {
-                if (round.players.length === 1) {
+                if (round.players.length === 1 || room.settings.afterVoteTime === 0) {
                     handleVotes(rooms[roomId]);
                 } else if (!round.voteEnd) {
-                    round.voteEnd = new Date().getTime() + 5000;
+                    round.voteEnd = new Date().getTime() + room.settings.afterVoteTime;
                 }
             }
             res.json({ room: room, serverTime: new Date().getTime() });
         }
     );
 
-    app.delete('/api/room/:roomId', roomIdValid, (req, res) => {
+    app.post('/api/room/:roomId/endGame', roomIdValid, (req, res) => {
         const roomId = parseInt(req.params.roomId);
-        rooms[roomId].hidden = true;
+
+        rooms[roomId].data = generateRoom().data;
         res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
     app.post('/api/room/:roomId/resetRoom', roomIdValid, (req, res) => {
         const roomId = parseInt(req.params.roomId);
 
-        rooms[roomId].data = {
-            players: {},
-            gameInProgress: false,
-            roundInProgress: false,
-            removedCards: [],
-            roundsDone: 0,
-            currentRound: null
-        };
+        rooms[roomId] = generateRoom(rooms[roomId].id, rooms[roomId].name);
+        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+    });
+
+    app.delete('/api/room/:roomId', roomIdValid, (req, res) => {
+        const roomId = parseInt(req.params.roomId);
+        rooms[roomId].hidden = true;
         res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 

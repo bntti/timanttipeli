@@ -12,10 +12,22 @@ const TrapCardSchema = z.object({
     type: z.literal('trap'),
     trap: z.enum(['snake', 'boulder', 'fire', 'log', 'spider'])
 });
-
 const CardSchema = z.union([PointsCardSchema, RelicCardSchema, TrapCardSchema]);
 
-const RoomBaseSchema = z.object({ id: z.number().int().nonnegative(), hidden: z.boolean(), name: z.string() });
+export const SettingsSchema = z.object({
+    voteShowTime: z.union([z.literal(0), z.number().int().gt(99)]),
+    voteShowTime1: z.union([z.literal(0), z.number().int().gt(99)]),
+    cardTime: z.union([z.literal(0), z.number().int().gt(99)]),
+    cardTime1: z.union([z.literal(0), z.number().int().gt(99)]),
+    afterVoteTime: z.union([z.literal(0), z.number().int().gt(99)])
+});
+
+const RoomBaseSchema = z.object({
+    id: z.number().int().nonnegative(),
+    hidden: z.boolean(),
+    name: z.string(),
+    settings: SettingsSchema
+});
 
 const RoomSchema = z.union([
     RoomBaseSchema.extend({
@@ -73,4 +85,5 @@ export type Rooms = z.infer<typeof RoomsSchema>;
 export type RelicCard = z.infer<typeof RelicCardSchema>;
 export type TrapCard = z.infer<typeof TrapCardSchema>;
 export type Card = z.infer<typeof CardSchema>;
+export type Settings = z.infer<typeof SettingsSchema>;
 export type Room = z.infer<typeof RoomSchema>;
