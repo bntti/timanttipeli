@@ -2,7 +2,7 @@ import { Box, Typography, useTheme } from '@mui/material';
 
 import { Card } from '../types';
 
-const CardSquare = ({ card }: { card: Card }): JSX.Element => {
+const CardSquare = ({ card, size = 'small' }: { card: Card; size?: 'small' | 'large' }): JSX.Element => {
     const theme = useTheme();
     const trapMap = {
         boulder: '🪨',
@@ -38,14 +38,22 @@ const CardSquare = ({ card }: { card: Card }): JSX.Element => {
             sx={{
                 m: 1,
                 p: 1,
-                width: 40,
+                width: size === 'small' ? 40 : 80,
+                height: size === 'small' ? 40 : 80,
                 border: '1px solid',
                 borderRadius: 2,
                 background,
                 borderColor,
             }}
         >
-            <Typography sx={{ textAlign: 'center' }}>{text}</Typography>
+            <Typography
+                sx={{
+                    textAlign: 'center',
+                    fontSize: size === 'small' ? '1rem' : '300%',
+                }}
+            >
+                {text}
+            </Typography>
         </Box>
     );
 };

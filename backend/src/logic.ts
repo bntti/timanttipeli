@@ -69,6 +69,7 @@ const handleRoundEnd = (room: Room, card?: TrapCard): void => {
         roundInProgress: false,
         removedCards: card ? room.data.removedCards.concat(card) : room.data.removedCards,
         roundsDone: room.data.roundsDone + 1,
+        lastCard: card ?? null,
         currentRound: null
     };
     room.data.deckSize = createDeck(room).length;
@@ -80,6 +81,7 @@ const handleDraw = (room: Room): void => {
 
     const index = Math.floor(Math.random() * round.deck.length);
     const card = round.deck.splice(index, 1)[0];
+    room.data.lastCard = card;
 
     if (card.type === 'points') {
         const numPlayers = round.players.length;
@@ -126,12 +128,24 @@ export const handleVotes = (room: Room): void => {
     }
 
     if (round.players.length === 0) {
+        room.data = {
+            ...room.data,
+            lastVote: round.votes,
+            currentRound: {
+                ...round,
+                votes: {}
+            }
+        };
         handleRoundEnd(room);
     } else {
-        room.data.currentRound = {
-            ...round,
-            votes: {},
-            pointsOnGround: numLeave === 0 ? round.pointsOnGround : round.pointsOnGround % numLeave
+        room.data = {
+            ...room.data,
+            lastVote: round.votes,
+            currentRound: {
+                ...round,
+                votes: {},
+                pointsOnGround: numLeave === 0 ? round.pointsOnGround : round.pointsOnGround % numLeave
+            }
         };
         handleDraw(room);
     }
@@ -139,7 +153,7 @@ export const handleVotes = (room: Room): void => {
 
 export const startGame = (room: Room): void => {
     assert(!room.data.gameInProgress);
-    room.data = { ...room.data, gameInProgress: true, deckSize: 0 };
+    room.data = { ...room.data, gameInProgress: true, deckSize: 0, lastVote: {}, lastCard: null };
     room.data.deckSize = createDeck(room).length;
 };
 
@@ -156,10 +170,13 @@ export const startRound = (room: Room): void => {
         ...room.data,
         roundInProgress: true,
         deckSize: deck.length,
+        lastVote: {},
+        lastCard: null,
         currentRound: {
             deck: deck,
             inPlay: [],
             votes: {},
+            voteEnd: null,
             players: Object.keys(room.data.players) as [string, ...string[]],
             pointsGained: {},
             hasRelic: [],

@@ -109,7 +109,14 @@ const runServer = (): void => {
             return;
         }
 
-        res.json(rooms[roomId]);
+        const round = rooms[roomId].data.currentRound;
+        // The +250 makes small time inaccuracies matter less // TODO: change to websockets
+        if (round && round.voteEnd && round.voteEnd <= new Date().getTime() + 250) {
+            round.voteEnd = null;
+            handleVotes(rooms[roomId]);
+        }
+
+        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
     app.post(
@@ -119,7 +126,7 @@ const runServer = (): void => {
         (req, res) => {
             const roomId = parseInt(req.params.roomId);
             rooms[roomId].data.players[req.body.username] = 0;
-            res.json(rooms[roomId]);
+            res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
         }
     );
 
@@ -130,7 +137,7 @@ const runServer = (): void => {
         (req, res) => {
             const roomId = parseInt(req.params.roomId);
             delete rooms[roomId].data.players[req.body.username];
-            res.json(rooms[roomId]);
+            res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
         }
     );
 
@@ -141,13 +148,13 @@ const runServer = (): void => {
             return;
         }
         startGame(rooms[roomId]);
-        res.json(rooms[roomId]);
+        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
     app.post('/api/room/:roomId/startRound', roundNotInProgress, (req, res) => {
         const roomId = parseInt(req.params.roomId);
         startRound(rooms[roomId]);
-        res.json(rooms[roomId]);
+        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
     app.post(
@@ -164,19 +171,25 @@ const runServer = (): void => {
             const room = rooms[roomId];
             assert(room.data.roundInProgress); // Should be unnecessary
 
-            if (req.body.vote === null) delete room.data.currentRound.votes[req.body.username];
-            else room.data.currentRound.votes[req.body.username] = req.body.vote;
-            if (Object.keys(room.data.currentRound.votes).length === room.data.currentRound.players.length) {
-                handleVotes(room);
+            const round = room.data.currentRound;
+            if (req.body.vote === null && round.voteEnd) delete room.data.currentRound.votes[req.body.username];
+            else if (req.body.vote !== null) room.data.currentRound.votes[req.body.username] = req.body.vote;
+
+            if (Object.keys(round.votes).length === round.players.length) {
+                if (round.players.length === 1) {
+                    handleVotes(rooms[roomId]);
+                } else if (!round.voteEnd) {
+                    round.voteEnd = new Date().getTime() + 5000;
+                }
             }
-            res.json(room);
+            res.json({ room: room, serverTime: new Date().getTime() });
         }
     );
 
     app.delete('/api/room/:roomId', roomIdValid, (req, res) => {
         const roomId = parseInt(req.params.roomId);
         rooms[roomId].hidden = true;
-        res.json(rooms[roomId]);
+        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
     app.post('/api/room/:roomId/resetRoom', roomIdValid, (req, res) => {
@@ -190,7 +203,7 @@ const runServer = (): void => {
             roundsDone: 0,
             currentRound: null
         };
-        res.json(rooms[roomId]);
+        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
     app.listen(5000);

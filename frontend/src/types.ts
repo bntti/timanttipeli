@@ -17,7 +17,7 @@ const CardSchema = z.union([PointsCardSchema, RelicCardSchema, TrapCardSchema]);
 
 const RoomBaseSchema = z.object({ id: z.number().int().nonnegative(), hidden: z.boolean(), name: z.string() });
 
-export const RoomSchema = z.union([
+const RoomSchema = z.union([
     RoomBaseSchema.extend({
         data: z.object({
             players: z.record(z.literal(0)),
@@ -36,6 +36,8 @@ export const RoomSchema = z.union([
             deckSize: z.number().int().nonnegative(),
             removedCards: z.array(CardSchema),
             roundsDone: z.number().int().nonnegative(),
+            lastVote: z.record(z.enum(['stay', 'leave'])),
+            lastCard: CardSchema.nullable(),
             currentRound: z.literal(null),
         }),
     }),
@@ -47,10 +49,13 @@ export const RoomSchema = z.union([
             deckSize: z.number().int().nonnegative(),
             removedCards: z.array(CardSchema),
             roundsDone: z.number().int().nonnegative(),
+            lastVote: z.record(z.enum(['stay', 'leave'])),
+            lastCard: CardSchema.nullable(),
             currentRound: z.object({
                 deck: z.array(CardSchema),
                 inPlay: z.array(CardSchema),
                 votes: z.record(z.enum(['stay', 'leave'])),
+                voteEnd: z.number().int().nonnegative().nullable(),
                 players: z.array(z.string()).nonempty(),
                 pointsGained: z.record(z.number()),
                 hasRelic: z.array(z.string()),
@@ -61,6 +66,7 @@ export const RoomSchema = z.union([
     }),
 ]);
 
+export const RoomResponseSchema = z.object({ room: RoomSchema, serverTime: z.number().int().nonnegative() });
 export const RoomsSchema = z.array(RoomBaseSchema);
 export type Rooms = z.infer<typeof RoomsSchema>;
 
