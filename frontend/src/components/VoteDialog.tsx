@@ -54,7 +54,7 @@ const VoteDialog = ({ open, duration, lastVote, handleClose }: Props): JSX.Eleme
                     <Grid item xs={6}>
                         <List sx={{ p: 0 }} subheader="Stay" dense>
                             {stay.map(([username]) => (
-                                <ListItem key={`uservote${username}`}>{username}</ListItem>
+                                <ListItem key={username}>{username}</ListItem>
                             ))}
                         </List>
                     </Grid>
@@ -62,7 +62,7 @@ const VoteDialog = ({ open, duration, lastVote, handleClose }: Props): JSX.Eleme
                     <Grid item xs={6}>
                         <List sx={{ p: 0, pl: 1 }} subheader="Leave" dense>
                             {leave.map(([username]) => (
-                                <ListItem key={`uservote${username}`}>{username}</ListItem>
+                                <ListItem key={username}>{username}</ListItem>
                             ))}
                         </List>
                     </Grid>

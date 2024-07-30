@@ -1,8 +1,8 @@
 import { Box, Paper, Typography } from '@mui/material';
 import { memo } from 'react';
 
-import CardSquare from './CardSquare';
 import { Card } from '../types';
+import CardSquare from './CardSquare';
 
 type Props = { removedCards: Card[] };
 const propsEqual = (oldProps: Props, newProps: Props): boolean => {
@@ -21,7 +21,7 @@ const RemovedCards = ({ removedCards }: Props): JSX.Element => (
             }}
         >
             {removedCards.map((card, i) => (
-                <CardSquare key={`removed-${card.type}-${i}`} card={card} />
+                <CardSquare key={i} card={card} />
             ))}
         </Box>
     </Paper>

@@ -16,7 +16,7 @@ const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
         voteShowTime1: 1000,
         cardTime: 2000,
         cardTime1: 1000,
-        afterVoteTime: 5000
+        afterVoteTime: 5000,
     },
     data: {
         players: {},
@@ -24,8 +24,8 @@ const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
         roundInProgress: false,
         removedCards: [],
         roundsDone: 0,
-        currentRound: null
-    }
+        currentRound: null,
+    },
 });
 
 const rooms: Room[] = [];
@@ -95,14 +95,14 @@ const roundNotInProgress = (req: Request, res: Response, next: NextFunction): vo
 const runServer = (): void => {
     const app = express();
     app.use(express.json());
-    app.get('/api/rooms', (req, res) => {
+    app.get('/rooms', (req, res) => {
         res.json(rooms);
     });
 
-    app.post('/api/createRoom', (req, res) => {
+    app.post('/createRoom', (req, res) => {
         const data = z
             .object({
-                name: z.string()
+                name: z.string(),
             })
             .parse(req.body);
 
@@ -111,7 +111,7 @@ const runServer = (): void => {
         res.json(roomId);
     });
 
-    app.get('/api/room/:roomId', roomIdValid, (req: Request, res) => {
+    app.get('/room/:roomId', roomIdValid, (req: Request, res) => {
         const roomId = parseInt(req.params.roomId);
         if (!(roomId in rooms)) {
             res.status(404).json({ error: 'Room not found' });
@@ -128,35 +128,35 @@ const runServer = (): void => {
         res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
-    app.put(`/api/room/:roomId/settings`, gameNotInProgress, processRequestBody(SettingsSchema), (req, res) => {
+    app.put(`/room/:roomId/settings`, gameNotInProgress, processRequestBody(SettingsSchema), (req, res) => {
         const roomId = parseInt(req.params.roomId);
         rooms[roomId].settings = req.body;
         res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
     app.post(
-        '/api/room/:roomId/joinGame',
+        '/room/:roomId/joinGame',
         gameNotInProgress,
         processRequestBody(z.object({ username: z.string() })),
         (req, res) => {
             const roomId = parseInt(req.params.roomId);
             rooms[roomId].data.players[req.body.username] = 0;
             res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
-        }
+        },
     );
 
     app.post(
-        '/api/room/:roomId/leaveGame',
+        '/room/:roomId/leaveGame',
         gameNotInProgress,
         processRequestBody(z.object({ username: z.string() })),
         (req, res) => {
             const roomId = parseInt(req.params.roomId);
             delete rooms[roomId].data.players[req.body.username];
             res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
-        }
+        },
     );
 
-    app.post('/api/room/:roomId/startGame', gameNotInProgress, (req, res) => {
+    app.post('/room/:roomId/startGame', gameNotInProgress, (req, res) => {
         const roomId = parseInt(req.params.roomId);
         if (Object.keys(rooms[roomId].data.players).length === 0) {
             res.status(400).json({ error: 'Too few players to start' });
@@ -166,20 +166,20 @@ const runServer = (): void => {
         res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
-    app.post('/api/room/:roomId/startRound', roundNotInProgress, (req, res) => {
+    app.post('/room/:roomId/startRound', roundNotInProgress, (req, res) => {
         const roomId = parseInt(req.params.roomId);
         startRound(rooms[roomId]);
         res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
     app.post(
-        '/api/room/:roomId/vote',
+        '/room/:roomId/vote',
         RoundInProgress,
         processRequestBody(
             z.object({
                 username: z.string(),
-                vote: z.union([z.literal('stay'), z.literal('leave'), z.null()])
-            })
+                vote: z.union([z.literal('stay'), z.literal('leave'), z.null()]),
+            }),
         ),
         (req, res) => {
             const roomId = parseInt(req.params.roomId);
@@ -198,24 +198,24 @@ const runServer = (): void => {
                 }
             }
             res.json({ room: room, serverTime: new Date().getTime() });
-        }
+        },
     );
 
-    app.post('/api/room/:roomId/endGame', roomIdValid, (req, res) => {
+    app.post('/room/:roomId/endGame', roomIdValid, (req, res) => {
         const roomId = parseInt(req.params.roomId);
 
         rooms[roomId].data = generateRoom().data;
         res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
-    app.post('/api/room/:roomId/resetRoom', roomIdValid, (req, res) => {
+    app.post('/room/:roomId/resetRoom', roomIdValid, (req, res) => {
         const roomId = parseInt(req.params.roomId);
 
         rooms[roomId] = generateRoom(rooms[roomId].id, rooms[roomId].name);
         res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
     });
 
-    app.delete('/api/room/:roomId', roomIdValid, (req, res) => {
+    app.delete('/room/:roomId', roomIdValid, (req, res) => {
         const roomId = parseInt(req.params.roomId);
         rooms[roomId].hidden = true;
         res.json({ room: rooms[roomId], serverTime: new Date().getTime() });

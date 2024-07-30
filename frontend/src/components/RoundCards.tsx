@@ -1,8 +1,8 @@
 import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 import { memo } from 'react';
 
-import CardSquare from './CardSquare';
 import { Card, TrapCard } from '../types';
+import CardSquare from './CardSquare';
 
 type Props = { inPlay: Card[] };
 const PropsEqual = (oldProps: Props, newProps: Props): boolean => {
@@ -31,7 +31,7 @@ const RoundCards = ({ inPlay }: Props): JSX.Element => (
                 {inPlay
                     .filter((card) => card.type !== 'trap')
                     .map((card, i) => (
-                        <CardSquare key={`inplay-${card.type}-${i}`} card={card} />
+                        <CardSquare key={i} card={card} />
                     ))}
             </Box>
         </Grid>
@@ -48,7 +48,7 @@ const RoundCards = ({ inPlay }: Props): JSX.Element => (
                 {inPlay
                     .filter((card): card is TrapCard => card.type === 'trap')
                     .map((card, i) => (
-                        <CardSquare key={`inplay-${card.type}-${i}`} card={card} />
+                        <CardSquare key={i} card={card} />
                     ))}
             </Box>
         </Grid>

@@ -30,7 +30,7 @@ const Login = (): JSX.Element => {
             <form onSubmit={addApiToken}>
                 <TextField
                     fullWidth
-                    label="Usename"
+                    label="Username"
                     value={username}
                     onChange={(event) => {
                         setUsername(event.target.value);

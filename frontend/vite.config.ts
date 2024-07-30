@@ -1,4 +1,4 @@
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
@@ -8,7 +8,12 @@ export default defineConfig({
         proxy: {
             '/api': {
                 target: 'http://localhost:5000',
+                rewrite: (path) => path.replace(/^\/api/, ''),
             },
+            // '/socket.io': {
+            //     target: 'http://localhost:5000',
+            //     ws: true,
+            // },
         },
     },
 });
