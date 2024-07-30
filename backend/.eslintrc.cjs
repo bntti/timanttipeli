@@ -3,7 +3,7 @@ module.exports = {
     extends: ['plugin:@typescript-eslint/recommended-type-checked', '../.eslintrc.cjs'],
     plugins: ['@typescript-eslint'],
     parser: '@typescript-eslint/parser',
-    ignorePatterns: ['node_modules', 'dist', '.eslintrc.cjs'],
+    ignorePatterns: ['node_modules', 'dist', '.eslintrc.cjs', 'esbuild.mjs'],
     settings: {
         'import/resolver': {
             typescript: { project: `${__dirname}/` }, // this loads <rootdir>/tsconfig.json to eslint

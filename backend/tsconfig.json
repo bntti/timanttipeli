@@ -16,5 +16,5 @@
             "@/*": ["*"] // This effectively makes @ a path alias for project src root.
         }
     },
-    "include": ["**/*.ts", "**/*.js"]
+    "include": ["**/*.ts", "**/*.js", "esbuild.mjs"]
 }

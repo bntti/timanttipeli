@@ -6,8 +6,8 @@
     },
     "scripts": {
         "dev": "tsc && tsx src/index.ts",
-        "start": "node --enable-source-maps dist/index.js",
-        "build": "tsc && node ./esbuild.js"
+        "start": "node --enable-source-maps dist/index.mjs",
+        "build": "tsc && node ./esbuild.mjs"
     },
     "dependencies": {
         "express": "^4.19.2",
