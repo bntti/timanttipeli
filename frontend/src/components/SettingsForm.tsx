@@ -1,5 +1,5 @@
 import { Button, FormControl, FormHelperText, TextField } from '@mui/material';
-import { memo, useEffect, useState } from 'react';
+import { JSX, SyntheticEvent, memo, useEffect, useState } from 'react';
 
 import { Settings, SettingsSchema } from '../types';
 
@@ -25,7 +25,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
         setAfterVoteTime(settings.afterVoteTime.toString());
     }, [settings]);
 
-    const handleSubmit = (event: React.SyntheticEvent): void => {
+    const handleSubmit = (event: SyntheticEvent): void => {
         event.preventDefault();
         try {
             const newSettings = SettingsSchema.parse({

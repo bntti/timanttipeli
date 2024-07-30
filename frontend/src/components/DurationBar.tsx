@@ -1,5 +1,5 @@
 import { LinearProgress, keyframes, styled } from '@mui/material';
-import { memo } from 'react';
+import { JSX, memo } from 'react';
 
 const indeterminate1Keyframes = keyframes({
     '0%': { left: '-35%', right: '100%' },

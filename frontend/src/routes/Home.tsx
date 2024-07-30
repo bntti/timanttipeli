@@ -13,7 +13,7 @@ import {
     Typography,
 } from '@mui/material';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { JSX, SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -49,7 +49,7 @@ const Home = (): JSX.Element => {
         return () => clearInterval(pollingInterval);
     }, [rooms]);
 
-    const createRoom = (event: React.SyntheticEvent): void => {
+    const createRoom = (event: SyntheticEvent): void => {
         event.preventDefault();
         if (newRoom.trim() === '') {
             setError(true);

@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { useContext, useEffect } from 'react';
+import { JSX, PropsWithChildren, ReactNode, useContext, useEffect } from 'react';
 import { Navigate, RouterProvider, createBrowserRouter, useNavigate } from 'react-router-dom';
 
 import { UserContext, UserSchema } from './StateProvider';
@@ -9,7 +9,7 @@ import Login from '../routes/Login';
 import Logout from '../routes/Logout';
 import RoomRoute from '../routes/Room';
 
-const RequireAuth = ({ children }: { children: JSX.Element }): JSX.Element => {
+const RequireAuth = ({ children }: PropsWithChildren): ReactNode => {
     const { user, setUser } = useContext(UserContext);
     const navigate = useNavigate();
 

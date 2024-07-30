@@ -1,4 +1,5 @@
 import { Box, Typography, useTheme } from '@mui/material';
+import { JSX } from 'react';
 
 import { Card } from '../types';
 

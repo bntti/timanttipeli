@@ -1,5 +1,5 @@
 import { Grid, Paper, Typography, useTheme } from '@mui/material';
-import { memo, useContext } from 'react';
+import { JSX, memo, useContext } from 'react';
 
 import { UserContext } from '../app/StateProvider';
 import { Card, TrapCard } from '../types';

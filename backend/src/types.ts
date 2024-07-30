@@ -2,15 +2,15 @@ import { z } from 'zod';
 
 const PointsCardSchema = z.object({
     type: z.literal('points'),
-    value: z.number().int().positive()
+    value: z.number().int().positive(),
 });
 const RelicCardSchema = z.object({
     type: z.literal('relic'),
-    value: z.number().int().positive()
+    value: z.number().int().positive(),
 });
 const TrapCardSchema = z.object({
     type: z.literal('trap'),
-    trap: z.enum(['snake', 'boulder', 'fire', 'log', 'spider'])
+    trap: z.enum(['snake', 'boulder', 'fire', 'log', 'spider']),
 });
 const CardSchema = z.union([PointsCardSchema, RelicCardSchema, TrapCardSchema]);
 
@@ -19,14 +19,14 @@ export const SettingsSchema = z.object({
     voteShowTime1: z.union([z.literal(0), z.number().int().gt(99)]),
     cardTime: z.union([z.literal(0), z.number().int().gt(99)]),
     cardTime1: z.union([z.literal(0), z.number().int().gt(99)]),
-    afterVoteTime: z.union([z.literal(0), z.number().int().gt(99)])
+    afterVoteTime: z.union([z.literal(0), z.number().int().gt(99)]),
 });
 
 const RoomBaseSchema = z.object({
     id: z.number().int().nonnegative(),
     hidden: z.boolean(),
     name: z.string(),
-    settings: SettingsSchema
+    settings: SettingsSchema,
 });
 
 const RoomSchema = z.union([
@@ -37,8 +37,8 @@ const RoomSchema = z.union([
             roundInProgress: z.literal(false),
             removedCards: z.array(CardSchema).length(0),
             roundsDone: z.literal(0),
-            currentRound: z.literal(null)
-        })
+            currentRound: z.literal(null),
+        }),
     }),
     RoomBaseSchema.extend({
         data: z.object({
@@ -50,8 +50,8 @@ const RoomSchema = z.union([
             roundsDone: z.number().int().nonnegative(),
             lastVote: z.record(z.enum(['stay', 'leave'])),
             lastCard: CardSchema.nullable(),
-            currentRound: z.literal(null)
-        })
+            currentRound: z.literal(null),
+        }),
     }),
     RoomBaseSchema.extend({
         data: z.object({
@@ -72,10 +72,10 @@ const RoomSchema = z.union([
                 pointsGained: z.record(z.number()),
                 hasRelic: z.array(z.string()),
                 pointsPerPlayer: z.number().int(),
-                pointsOnGround: z.number().int()
-            })
-        })
-    })
+                pointsOnGround: z.number().int(),
+            }),
+        }),
+    }),
 ]);
 
 export const RoomResponseSchema = z.object({ room: RoomSchema, serverTime: z.number().int().nonnegative() });

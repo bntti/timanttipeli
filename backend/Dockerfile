@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-COPY tsconfig.json ./
+COPY tsconfig.json esbuild.mjs ./
 COPY src ./src
 
 RUN npm run build
@@ -22,4 +22,4 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./
 
 EXPOSE 5000
-ENTRYPOINT ["node", "index.js"]
+ENTRYPOINT ["node", "index.mjs"]

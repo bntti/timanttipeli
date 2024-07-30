@@ -1,18 +1,18 @@
-import { createContext, useState } from 'react';
+import { Dispatch, JSX, ReactNode, SetStateAction, createContext, useState } from 'react';
 import { z } from 'zod';
 
 export const UserSchema = z.object({ username: z.string(), admin: z.boolean(), cheats: z.boolean() });
 export type User = z.infer<typeof UserSchema>;
-type UserContext = {
+type UserContextType = {
     user: User;
-    setUser: React.Dispatch<React.SetStateAction<User>>;
+    setUser: Dispatch<SetStateAction<User>>;
 };
-export const UserContext = createContext<UserContext>({} as UserContext);
+export const UserContext = createContext<UserContextType>({} as UserContextType);
 
-type ThemeContext = { colorMode: { toggleTheme: () => void } };
-export const ThemeContext = createContext<ThemeContext>({} as ThemeContext);
+type ThemeContextType = { colorMode: { toggleTheme: () => void } };
+export const ThemeContext = createContext<ThemeContextType>({} as ThemeContextType);
 
-export const GlobalStateProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
+export const GlobalStateProvider = ({ children }: { children: ReactNode }): JSX.Element => {
     const [user, setUser] = useState<User>({ username: '', admin: false, cheats: false });
     return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 };
