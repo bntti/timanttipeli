@@ -10,4 +10,3 @@ build({
     sourcemap: true,
     packages: 'external',
 }).catch(() => process.exit(1));
-

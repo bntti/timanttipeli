@@ -9,7 +9,7 @@ const relicCards: RelicCard[] = [
     { type: 'relic', value: 7 },
     { type: 'relic', value: 8 },
     { type: 'relic', value: 10 },
-    { type: 'relic', value: 12 }
+    { type: 'relic', value: 12 },
 ];
 
 const baseDeck: Card[] = [
@@ -42,12 +42,13 @@ const baseDeck: Card[] = [
     { type: 'trap', trap: 'snake' },
     { type: 'trap', trap: 'spider' },
     { type: 'trap', trap: 'spider' },
-    { type: 'trap', trap: 'spider' }
+    { type: 'trap', trap: 'spider' },
 ];
 
 const createDeck = (room: Room): Card[] => {
     const result = [...baseDeck];
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (USE_RELICS) {
         for (let i = 0; i <= room.data.roundsDone % 5; i++) result.push(relicCards[i]);
     }
@@ -72,7 +73,7 @@ const handleRoundEnd = (room: Room, card?: TrapCard): void => {
         removedCards: (room.data.roundsDone + 1) % 5 === 0 ? [] : room.data.removedCards,
         roundsDone: room.data.roundsDone + 1,
         lastCard: card ?? null,
-        currentRound: null
+        currentRound: null,
     };
     room.data.deckSize = createDeck(room).length;
 };
@@ -113,7 +114,7 @@ export const handleVotes = (room: Room): void => {
     for (const [player, vote] of Object.entries(round.votes)) {
         if (vote === 'leave') {
             // Not actually this type but doesn't break anything
-            round.players = round.players.filter((rplayer) => rplayer !== player) as [string, ...string[]];
+            round.players = round.players.filter((rPlayer) => rPlayer !== player) as [string, ...string[]];
 
             round.pointsGained[player] = round.pointsPerPlayer + Math.floor(round.pointsOnGround / numLeave);
             if (numLeave === 1) {
@@ -135,8 +136,8 @@ export const handleVotes = (room: Room): void => {
             lastVote: round.votes,
             currentRound: {
                 ...round,
-                votes: {}
-            }
+                votes: {},
+            },
         };
         handleRoundEnd(room);
     } else {
@@ -146,8 +147,8 @@ export const handleVotes = (room: Room): void => {
             currentRound: {
                 ...round,
                 votes: {},
-                pointsOnGround: numLeave === 0 ? round.pointsOnGround : round.pointsOnGround % numLeave
-            }
+                pointsOnGround: numLeave === 0 ? round.pointsOnGround : round.pointsOnGround % numLeave,
+            },
         };
         handleDraw(room);
     }
@@ -155,7 +156,13 @@ export const handleVotes = (room: Room): void => {
 
 export const startGame = (room: Room): void => {
     assert(!room.data.gameInProgress);
-    room.data = { ...room.data, gameInProgress: true, deckSize: 0, lastVote: {}, lastCard: null };
+    room.data = {
+        ...room.data,
+        gameInProgress: true,
+        deckSize: 0,
+        lastVote: {},
+        lastCard: null,
+    };
     room.data.deckSize = createDeck(room).length;
 };
 
@@ -183,8 +190,8 @@ export const startRound = (room: Room): void => {
             pointsGained: {},
             hasRelic: [],
             pointsPerPlayer: 0,
-            pointsOnGround: 0
-        }
+            pointsOnGround: 0,
+        },
     };
     handleDraw(room);
 };

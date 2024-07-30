@@ -19,5 +19,5 @@ npm run dev
 ### Testing in docker
 
 ```
-docer compose up --build
+docker compose up --build
 ```

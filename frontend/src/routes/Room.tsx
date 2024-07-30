@@ -1,6 +1,6 @@
 import { Alert, Button, Divider, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import axios from 'axios';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { JSX, useCallback, useContext, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';
@@ -121,10 +121,13 @@ const RoomRoute = (): JSX.Element => {
                     setVoteDelay(delay);
                     setTimeout(() => {
                         setVoteDelay(null);
-                        axios.get(`/api/room/${roomId}`).then((response) => {
-                            setDontUpdate(false);
-                            handleSetRoom(RoomResponseSchema.parse(response.data));
-                        }).catch;
+                        axios
+                            .get(`/api/room/${roomId}`)
+                            .then((response) => {
+                                setDontUpdate(false);
+                                handleSetRoom(RoomResponseSchema.parse(response.data));
+                            })
+                            .catch(console.error);
                     }, delay);
                 } else if (
                     room &&
@@ -294,7 +297,7 @@ const RoomRoute = (): JSX.Element => {
                             orientation="horizontal"
                             value={vote}
                             exclusive
-                            onChange={(_, value) => apiVote(value)}
+                            onChange={(_, value) => apiVote(value as 'stay' | 'leave' | null)}
                             sx={{ mt: 2 }}
                         >
                             <ToggleButton value="stay">Stay</ToggleButton>

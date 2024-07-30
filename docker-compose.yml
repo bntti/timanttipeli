@@ -1,19 +1,19 @@
 services:
-  frontend:
-    build: ./frontend
-    container_name: timanttipeli-frontend
+    frontend:
+        build: ./frontend
+        container_name: timanttipeli-frontend
 
-  backend:
-    build: ./backend
-    container_name: timanttipeli-backend
+    backend:
+        build: ./backend
+        container_name: timanttipeli-backend
 
-  proxy:
-    image: nginx:alpine
-    container_name: timanttipeli-proxy
-    ports:
-      - 8080:80
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - frontend
-      - backend
+    proxy:
+        image: nginx:alpine
+        container_name: timanttipeli-proxy
+        ports:
+            - 8080:80
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+        depends_on:
+            - frontend
+            - backend

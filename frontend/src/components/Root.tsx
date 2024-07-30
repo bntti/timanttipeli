@@ -1,5 +1,5 @@
 import { Container, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { JSX, useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { ThemeContext } from '../app/StateProvider';

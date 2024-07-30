@@ -1,29 +1,27 @@
-// eslint-disable-next-line no-undef
 module.exports = {
-    root: true,
     env: { browser: true, es2020: true },
     extends: [
-        'eslint:recommended',
-        'plugin:@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/recommended-type-checked',
         'plugin:react-hooks/recommended',
-        'google',
-        'plugin:prettier/recommended',
+        '../.eslintrc.cjs',
     ],
-    ignorePatterns: ['dist'],
+    ignorePatterns: ['node_modules', 'dist', '.eslintrc.cjs', 'vite.config.ts'],
     parser: '@typescript-eslint/parser',
-    plugins: ['react-refresh', 'prettier'],
+    plugins: ['@typescript-eslint', 'react-refresh'],
+    settings: {
+        'import/resolver': {
+            typescript: { project: `${__dirname}/` }, // this loads <rootdir>/tsconfig.json to eslint
+        },
+    },
     rules: {
         'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-        'prettier/prettier': 'error',
-        'require-jsdoc': 'off',
-        'spaced-comment': ['error', 'always', { markers: ['/'] }],
-        '@typescript-eslint/no-non-null-assertion': 'error',
-        '@typescript-eslint/no-shadow': ['error'],
-        '@typescript-eslint/explicit-function-return-type': [
-            'error',
-            {
-                allowExpressions: true,
-            },
+        '@typescript-eslint/no-misused-promises': [
+            'warn',
+            { checksVoidReturn: { attributes: false } }, // To allow async onClick
         ],
+    },
+    parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
     },
 };

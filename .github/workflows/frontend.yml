@@ -1,58 +1,58 @@
 name: Create and publish a Docker image for frontend
 
 on:
-  push:
-    branches: ["main"]
+    push:
+        branches: ['main']
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}-frontend
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}-frontend
 
 jobs:
-  build-and-push-image:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+    build-and-push-image:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 20
 
-      - name: Version Check
-        id: check
-        uses: EndBug/version-check@v2.1.0
-        with:
-          file-name: ./frontend/package.json
+            - name: Version Check
+              id: check
+              uses: EndBug/version-check@v2.1.0
+              with:
+                  file-name: ./frontend/package.json
 
-      - name: Log when unchanged
-        if: steps.check.outputs.changed == 'false'
-        run: 'echo "No changes detected, skipping build and push"'
+            - name: Log when unchanged
+              if: steps.check.outputs.changed == 'false'
+              run: 'echo "No changes detected, skipping build and push"'
 
-      - name: Log in to the Container registry
-        if: steps.check.outputs.changed == 'true'
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Log in to the Container registry
+              if: steps.check.outputs.changed == 'true'
+              uses: docker/login-action@v2
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        if: steps.check.outputs.changed == 'true'
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            - name: Extract metadata (tags, labels) for Docker
+              if: steps.check.outputs.changed == 'true'
+              id: meta
+              uses: docker/metadata-action@v4
+              with:
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push Docker image
-        if: steps.check.outputs.changed == 'true'
-        uses: docker/build-push-action@v3
-        with:
-          context: ./frontend
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest , ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.check.outputs.version }}
-          labels: ${{ steps.meta.outputs.labels }}
+            - name: Build and push Docker image
+              if: steps.check.outputs.changed == 'true'
+              uses: docker/build-push-action@v3
+              with:
+                  context: ./frontend
+                  push: true
+                  tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest , ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.check.outputs.version }}
+                  labels: ${{ steps.meta.outputs.labels }}

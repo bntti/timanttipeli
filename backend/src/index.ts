@@ -1,5 +1,4 @@
 import assert from 'assert';
-
 import express, { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 import { processRequestBody } from 'zod-express-middleware';
@@ -119,7 +118,7 @@ const runServer = (): void => {
         }
 
         const round = rooms[roomId].data.currentRound;
-        // The +250 makes small time inaccuracies matter less // TODO: change to websockets
+        // The +250 makes small time inaccuracies matter less // TODO: change to webSockets
         if (round && round.voteEnd && round.voteEnd <= new Date().getTime() + 250) {
             round.voteEnd = null;
             handleVotes(rooms[roomId]);

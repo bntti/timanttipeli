@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { useContext, useEffect } from 'react';
+import { JSX, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';

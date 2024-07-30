@@ -10,7 +10,7 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { memo } from 'react';
+import { JSX, memo } from 'react';
 
 type Props =
     | {

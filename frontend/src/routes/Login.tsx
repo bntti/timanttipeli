@@ -1,17 +1,17 @@
 import { Button, Container, Paper, TextField, Typography } from '@mui/material';
-import { useContext, useState } from 'react';
+import { JSX, SyntheticEvent, useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';
 
 const Login = (): JSX.Element => {
-    const { state } = useLocation();
+    const { state } = useLocation() as { state?: { from: string } };
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
 
     const [username, setUsername] = useState<string>('');
 
-    const addApiToken = (event: React.SyntheticEvent): void => {
+    const addApiToken = (event: SyntheticEvent): void => {
         event.preventDefault();
 
         const user = { username, admin: false, cheats: false };

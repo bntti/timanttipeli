@@ -1,6 +1,6 @@
 import { Close } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
-import { memo } from 'react';
+import { JSX, memo } from 'react';
 
 import CardSquare from './CardSquare';
 import DurationBarMemo from './DurationBar';
