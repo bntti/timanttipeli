@@ -1,10 +1,10 @@
 import assert from 'assert';
-import express, { NextFunction, Request, Response } from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { processRequestBody } from 'zod-express-middleware';
 
 import { handleVotes, startGame, startRound } from './logic';
-import { Room, SettingsSchema } from './types';
+import { type Room, SettingsSchema } from './types';
 
 const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
     id,
@@ -119,7 +119,7 @@ const runServer = (): void => {
 
         const round = rooms[roomId].data.currentRound;
         // The +250 makes small time inaccuracies matter less // TODO: change to webSockets
-        if (round && round.voteEnd && round.voteEnd <= new Date().getTime() + 250) {
+        if (round?.voteEnd && round.voteEnd <= new Date().getTime() + 250) {
             round.voteEnd = null;
             handleVotes(rooms[roomId]);
         }
@@ -196,7 +196,7 @@ const runServer = (): void => {
                     round.voteEnd = new Date().getTime() + room.settings.afterVoteTime;
                 }
             }
-            res.json({ room: room, serverTime: new Date().getTime() });
+            res.json({ room, serverTime: new Date().getTime() });
         },
     );
 

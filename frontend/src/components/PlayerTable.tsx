@@ -10,7 +10,7 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { JSX, memo } from 'react';
+import { type JSX, memo } from 'react';
 
 type Props =
     | {
@@ -31,17 +31,15 @@ type Props =
           pointsGained: { [key: string]: number };
           hasRelic: string[];
       };
-const propsEqual = (oldProps: Props, newProps: Props): boolean => {
-    return (
-        JSON.stringify(oldProps.roomPlayers) === JSON.stringify(newProps.roomPlayers) &&
-        oldProps.gameInProgress === newProps.gameInProgress &&
-        JSON.stringify(oldProps.roundPlayers) === JSON.stringify(newProps.roundPlayers) &&
-        JSON.stringify(oldProps.votes) === JSON.stringify(newProps.votes) &&
-        oldProps.pointsPerPlayer === newProps.pointsPerPlayer &&
-        JSON.stringify(oldProps.pointsGained) === JSON.stringify(newProps.pointsGained) &&
-        JSON.stringify(oldProps.hasRelic) === JSON.stringify(newProps.hasRelic)
-    );
-};
+const propsEqual = (oldProps: Props, newProps: Props): boolean =>
+    JSON.stringify(oldProps.roomPlayers) === JSON.stringify(newProps.roomPlayers) &&
+    oldProps.gameInProgress === newProps.gameInProgress &&
+    JSON.stringify(oldProps.roundPlayers) === JSON.stringify(newProps.roundPlayers) &&
+    JSON.stringify(oldProps.votes) === JSON.stringify(newProps.votes) &&
+    oldProps.pointsPerPlayer === newProps.pointsPerPlayer &&
+    JSON.stringify(oldProps.pointsGained) === JSON.stringify(newProps.pointsGained) &&
+    JSON.stringify(oldProps.hasRelic) === JSON.stringify(newProps.hasRelic);
+
 const PlayerTable = ({
     roomPlayers,
     gameInProgress,

@@ -1,5 +1,5 @@
 import { Button, Container, Paper, TextField, Typography } from '@mui/material';
-import { JSX, SyntheticEvent, useContext, useState } from 'react';
+import { type JSX, type SyntheticEvent, useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';
@@ -18,7 +18,7 @@ const Login = (): JSX.Element => {
         setUser(user);
         localStorage.setItem('user', JSON.stringify(user));
 
-        if (state && state.from) navigate(state.from);
+        if (state?.from) navigate(state.from);
         else navigate('/');
     };
 

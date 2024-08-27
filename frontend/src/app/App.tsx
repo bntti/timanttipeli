@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { JSX, PropsWithChildren, ReactNode, useContext, useEffect } from 'react';
+import { type JSX, type PropsWithChildren, type ReactNode, useContext, useEffect } from 'react';
 import { Navigate, RouterProvider, createBrowserRouter, useNavigate } from 'react-router-dom';
 
 import { UserContext, UserSchema } from './StateProvider';

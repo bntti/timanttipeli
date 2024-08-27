@@ -1,4 +1,4 @@
-import { Dispatch, JSX, ReactNode, SetStateAction, createContext, useState } from 'react';
+import { type Dispatch, type JSX, type ReactNode, type SetStateAction, createContext, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 export const UserSchema = z.object({ username: z.string(), admin: z.boolean(), cheats: z.boolean() });
@@ -14,5 +14,6 @@ export const ThemeContext = createContext<ThemeContextType>({} as ThemeContextTy
 
 export const GlobalStateProvider = ({ children }: { children: ReactNode }): JSX.Element => {
     const [user, setUser] = useState<User>({ username: '', admin: false, cheats: false });
-    return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+    const providerState = useMemo(() => ({ user, setUser }), [user]);
+    return <UserContext.Provider value={providerState}>{children}</UserContext.Provider>;
 };

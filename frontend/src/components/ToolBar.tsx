@@ -9,7 +9,7 @@ import {
 } from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { AppBar, IconButton, Toolbar, Typography, useTheme } from '@mui/material';
-import { JSX, useContext } from 'react';
+import { type JSX, useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ThemeContext, UserContext } from '../app/StateProvider';

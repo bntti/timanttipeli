@@ -1,13 +1,12 @@
 import { Box, Paper, Typography } from '@mui/material';
-import { JSX, memo } from 'react';
+import { type JSX, memo } from 'react';
 
 import CardSquare from './CardSquare';
-import { Card } from '../types';
+import type { Card } from '../types';
 
 type Props = { removedCards: Card[] };
-const propsEqual = (oldProps: Props, newProps: Props): boolean => {
-    return JSON.stringify(oldProps.removedCards) === JSON.stringify(newProps.removedCards);
-};
+const propsEqual = (oldProps: Props, newProps: Props): boolean =>
+    JSON.stringify(oldProps.removedCards) === JSON.stringify(newProps.removedCards);
 
 const RemovedCards = ({ removedCards }: Props): JSX.Element => (
     <Paper sx={{ mt: 2, pl: 1, pr: 1, pt: 1 }}>

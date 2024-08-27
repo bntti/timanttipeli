@@ -1,5 +1,5 @@
 import { Container, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import { JSX, useMemo, useState } from 'react';
+import { type JSX, useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { ThemeContext } from '../app/StateProvider';
@@ -11,11 +11,13 @@ const Root = (): JSX.Element => {
 
     const colorMode = useMemo(
         () => ({
-            toggleTheme: () => {
-                setMode((prevMode) => {
-                    window.localStorage.setItem('theme', prevMode === 'light' ? 'dark' : 'light');
-                    return prevMode === 'light' ? 'dark' : 'light';
-                });
+            colorMode: {
+                toggleTheme: () => {
+                    setMode((prevMode) => {
+                        window.localStorage.setItem('theme', prevMode === 'light' ? 'dark' : 'light');
+                        return prevMode === 'light' ? 'dark' : 'light';
+                    });
+                },
             },
         }),
         [],
@@ -32,7 +34,7 @@ const Root = (): JSX.Element => {
     );
 
     return (
-        <ThemeContext.Provider value={{ colorMode }}>
+        <ThemeContext.Provider value={colorMode}>
             <ThemeProvider theme={theme}>
                 <CssBaseline enableColorScheme />
                 <ToolBar />

@@ -1,20 +1,17 @@
 import { Close } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
-import { JSX, memo } from 'react';
+import { type JSX, memo } from 'react';
 
 import CardSquare from './CardSquare';
 import DurationBarMemo from './DurationBar';
-import { Card } from '../types';
+import type { Card } from '../types';
 
 type Props = { open: boolean; duration: number; card: Card | null; gameEnded: boolean; handleClose: () => void };
-const propsEqual = (oldProps: Props, newProps: Props): boolean => {
-    return (
-        oldProps.open === newProps.open &&
-        oldProps.duration === newProps.duration &&
-        JSON.stringify(oldProps.card) === JSON.stringify(newProps.card) &&
-        oldProps.gameEnded === newProps.gameEnded
-    );
-};
+const propsEqual = (oldProps: Props, newProps: Props): boolean =>
+    oldProps.open === newProps.open &&
+    oldProps.duration === newProps.duration &&
+    JSON.stringify(oldProps.card) === JSON.stringify(newProps.card) &&
+    oldProps.gameEnded === newProps.gameEnded;
 
 const CardDialog = ({ open, duration, card, gameEnded, handleClose }: Props): JSX.Element => {
     if (open && card === null) throw new Error('Tried to show null card in CardDialog');

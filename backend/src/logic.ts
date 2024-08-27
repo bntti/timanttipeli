@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { Card, RelicCard, Room, TrapCard } from './types';
+import type { Card, RelicCard, Room, TrapCard } from './types';
 
 const USE_RELICS = true;
 
@@ -182,7 +182,7 @@ export const startRound = (room: Room): void => {
         lastVote: {},
         lastCard: null,
         currentRound: {
-            deck: deck,
+            deck,
             inPlay: [],
             votes: {},
             voteEnd: null,

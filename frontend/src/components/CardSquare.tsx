@@ -1,7 +1,7 @@
 import { Box, Typography, useTheme } from '@mui/material';
-import { JSX } from 'react';
+import type { JSX } from 'react';
 
-import { Card } from '../types';
+import type { Card } from '../types';
 
 const CardSquare = ({ card, size = 'small' }: { card: Card; size?: 'small' | 'large' }): JSX.Element => {
     const theme = useTheme();

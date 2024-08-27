@@ -23,8 +23,9 @@ export default tseslint.config(
             // https://github.com/import-js/eslint-plugin-import/issues/2948
             import: fixupPluginRules(importPlugin),
             react: reactPlugin,
+            // https://github.com/facebook/react/issues/28313
+            'react-hooks': fixupPluginRules(reactHooksPlugin),
             'react-refresh': reactRefresh,
-            'react-hooks': reactHooksPlugin,
         },
     },
 
@@ -49,57 +50,60 @@ export default tseslint.config(
             },
         },
         linterOptions: { reportUnusedDisableDirectives: 'error' },
-
         rules: {
             ...importPlugin.configs.recommended.rules,
             ...importPlugin.configs.typescript.rules,
 
-            'dot-notation': 'warn',
-            'no-constant-condition': ['error', { checkLoops: false }],
-            'no-unused-vars': 'off', // Replaced by @typescript-eslint rule
-            'require-jsdoc': 'off',
-            'spaced-comment': ['warn', 'always', { markers: ['/'] }],
-            'valid-jsdoc': 'off',
             camelcase: 'warn',
             eqeqeq: 'error',
+            'no-constant-condition': ['error', { checkLoops: false }],
+            'no-unused-vars': 'off', // Replaced by @typescript-eslint rule
+            'require-unicode-regexp': 'error',
             'sort-imports': ['warn', { ignoreDeclarationSort: true }],
+            'spaced-comment': ['warn', 'always', { markers: ['/'] }],
 
+            '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],
+            '@typescript-eslint/dot-notation': 'warn',
             '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
             '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
+            '@typescript-eslint/no-import-type-side-effects': 'error',
             '@typescript-eslint/no-shadow': 'error',
             '@typescript-eslint/no-unnecessary-condition': 'error',
-            '@typescript-eslint/no-unused-vars': 'warn',
-            '@typescript-eslint/no-use-before-define': 'error',
             '@typescript-eslint/no-unnecessary-template-expression': 'warn',
+            '@typescript-eslint/no-unnecessary-type-arguments': 'error',
+            '@typescript-eslint/no-unused-vars': 'warn', // Convert to warn
+            '@typescript-eslint/no-use-before-define': 'error',
+            '@typescript-eslint/prefer-find': 'error',
+            '@typescript-eslint/prefer-optional-chain': 'warn',
+            '@typescript-eslint/promise-function-async': 'error',
+            '@typescript-eslint/return-await': 'error',
             '@typescript-eslint/switch-exhaustiveness-check': 'error',
 
             'import/default': 'off', // Broken by new eslint
             'import/extensions': 'off', // Broken by new eslint
             'import/namespace': 'off',
-            'import/no-named-as-default-member': 'off',
             'import/no-named-as-default': 'off', // Broken by new eslint
+            'import/no-named-as-default-member': 'off',
             'import/no-unresolved': 'off', // Broken by new eslint
             'import/order': [
                 'warn',
                 {
                     // ignoreDeclarationSort: true,
+                    alphabetize: { order: 'asc' },
+                    distinctGroup: false,
                     groups: [
                         ['builtin', 'external'],
                         ['internal', 'parent', 'sibling', 'index'],
                     ],
                     'newlines-between': 'always',
-                    alphabetize: {
-                        order: 'asc',
-                    },
                     // https://github.com/import-js/eslint-plugin-import/issues/2008#issuecomment-801263294
                     pathGroups: [
                         {
-                            pattern: '@/**',
                             group: 'internal',
+                            pattern: '@/**',
                             position: 'before',
                         },
                     ],
-                    distinctGroup: false,
                     pathGroupsExcludedImportTypes: ['builtin', 'object'],
                 },
             ],
@@ -109,8 +113,11 @@ export default tseslint.config(
 
     // Eslint
     {
-        languageOptions: { globals: { ...globals.node } },
         files: ['eslint.config.mjs'],
+        languageOptions: { globals: { ...globals.node } },
+        rules: {
+            'sort-keys': ['warn', 'asc', { allowLineSeparatedGroups: true }],
+        },
     },
 
     // Backend
@@ -127,27 +134,38 @@ export default tseslint.config(
     // Frontend
     {
         files: ['frontend/src/**/*.{ts,tsx}'],
-        languageOptions: {
-            globals: { ...globals.browser },
-        },
+        languageOptions: { globals: { ...globals.browser } },
         rules: {
-            // TODO: rules
             ...reactPlugin.configs.recommended.rules,
             ...reactPlugin.configs['jsx-runtime'].rules,
             ...reactHooksPlugin.configs.recommended.rules,
-            ...reactPlugin.configs.recommended.rules,
-            ...reactPlugin.configs['jsx-runtime'].rules,
 
-            'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+            '@typescript-eslint/no-floating-promises': 'off',
             '@typescript-eslint/no-misused-promises': [
                 'warn',
                 { checksVoidReturn: { attributes: false } }, // To allow async onClick
             ],
+
+            'react/button-has-type': 'warn',
+            'react/destructuring-assignment': 'warn',
+            'react/function-component-definition': [
+                'warn',
+                { namedComponents: 'arrow-function', unnamedComponents: 'arrow-function' },
+            ],
+            'react/hook-use-state': 'warn',
+            'react/jsx-boolean-value': 'warn',
+            'react/jsx-curly-brace-presence': 'warn',
+            'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }],
+            'react/jsx-no-constructed-context-values': 'warn',
+            'react/jsx-no-useless-fragment': 'warn',
+            'react/no-danger': 'error',
+            'react/prop-types': 'off', // Buggy
+            'react/self-closing-comp': 'warn',
+
+            'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
         },
         settings: {
-            react: {
-                version: 'detect',
-            },
+            react: { version: 'detect' },
         },
     },
 );

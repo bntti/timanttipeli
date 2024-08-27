@@ -1,8 +1,8 @@
-import { Grid, Paper, Typography, useTheme } from '@mui/material';
-import { JSX, memo, useContext } from 'react';
+import { Grid2 as Grid, Paper, Typography, useTheme } from '@mui/material';
+import { type JSX, memo, useContext } from 'react';
 
 import { UserContext } from '../app/StateProvider';
-import { Card, TrapCard } from '../types';
+import type { Card, TrapCard } from '../types';
 
 type Props = {
     gameNumber: number;
@@ -13,16 +13,13 @@ type Props = {
     inPlay: Card[] | null;
 };
 
-const propsEqual = (oldProps: Props, newProps: Props): boolean => {
-    return (
-        oldProps.gameNumber === newProps.gameNumber &&
-        oldProps.roundNumber === newProps.roundNumber &&
-        oldProps.deckSize === newProps.deckSize &&
-        oldProps.pointsOnGround === newProps.pointsOnGround &&
-        JSON.stringify(oldProps.deck) === JSON.stringify(newProps.deck) &&
-        JSON.stringify(oldProps.inPlay) === JSON.stringify(newProps.inPlay)
-    );
-};
+const propsEqual = (oldProps: Props, newProps: Props): boolean =>
+    oldProps.gameNumber === newProps.gameNumber &&
+    oldProps.roundNumber === newProps.roundNumber &&
+    oldProps.deckSize === newProps.deckSize &&
+    oldProps.pointsOnGround === newProps.pointsOnGround &&
+    JSON.stringify(oldProps.deck) === JSON.stringify(newProps.deck) &&
+    JSON.stringify(oldProps.inPlay) === JSON.stringify(newProps.inPlay);
 
 const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, deck, inPlay }: Props): JSX.Element => {
     const { user } = useContext(UserContext);
@@ -58,26 +55,26 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, deck, inP
     }
 
     return (
-        <Grid container columnSpacing={2} rowSpacing={1} sx={{ mt: 0 }}>
-            <Grid item xs={4}>
+        <Grid container columnSpacing={2} rowSpacing={1} sx={{ mt: 2 }}>
+            <Grid size={4}>
                 <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
                     round {gameNumber > 1 ? `${gameNumber}-${roundNumber}` : roundNumber}
                 </Typography>
             </Grid>
-            <Grid item xs={4}>
+            <Grid size={4}>
                 <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
                     deck size {deckSize}
                 </Typography>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid size={4}>
                 <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
                     on ground {pointsOnGround}
                 </Typography>
             </Grid>
             {user.cheats && (
                 <>
-                    <Grid item xs={4}>
+                    <Grid size={4}>
                         <Typography
                             component={Paper}
                             textAlign="center"
@@ -91,7 +88,7 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, deck, inP
                             {pointsCard.ev === null ? '---' : `${pointsCard.ev} | ${pointsCard.prob}%`}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid size={4}>
                         <Typography
                             component={Paper}
                             textAlign="center"
@@ -105,7 +102,7 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, deck, inP
                             {relicCard.ev === null ? '---' : `${relicCard.ev} | ${relicCard.prob}%`}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid size={4}>
                         <Typography
                             component={Paper}
                             textAlign="center"

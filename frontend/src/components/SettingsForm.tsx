@@ -1,16 +1,15 @@
 import { Button, FormControl, FormHelperText, TextField } from '@mui/material';
-import { JSX, SyntheticEvent, memo, useEffect, useState } from 'react';
+import { type JSX, type SyntheticEvent, memo, useEffect, useState } from 'react';
 
-import { Settings, SettingsSchema } from '../types';
+import { type Settings, SettingsSchema } from '../types';
 
 type Props = { settings: Settings; setSettings: (settings: Settings) => void };
-const propsEqual = (oldProps: Props, newProps: Props): boolean => {
-    return JSON.stringify(oldProps.settings) === JSON.stringify(newProps.settings);
-};
+const propsEqual = (oldProps: Props, newProps: Props): boolean =>
+    JSON.stringify(oldProps.settings) === JSON.stringify(newProps.settings);
 
 const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
     const [error, setError] = useState<boolean>(false);
-    const [unSaved, setUnsaved] = useState<boolean>(false);
+    const [unsaved, setUnsaved] = useState<boolean>(false);
     const [voteShowTime, setVoteShowTime] = useState<string>(settings.voteShowTime.toString());
     const [voteShowTime1, setVoteShowTime1] = useState<string>(settings.voteShowTime1.toString());
     const [cardTime, setCardTime] = useState<string>(settings.cardTime.toString());
@@ -71,7 +70,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
                         }}
                     />
                 ))}
-                {unSaved && <FormHelperText variant="standard">Unsaved changes</FormHelperText>}
+                {unsaved && <FormHelperText variant="standard">Unsaved changes</FormHelperText>}
                 <Button fullWidth variant="outlined" type="submit" sx={{ mt: 1 }}>
                     Save settings
                 </Button>

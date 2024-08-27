@@ -13,11 +13,11 @@ import {
     Typography,
 } from '@mui/material';
 import axios from 'axios';
-import { JSX, SyntheticEvent, useEffect, useState } from 'react';
+import { type JSX, type SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { Rooms, RoomsSchema } from '../types';
+import { type Rooms, RoomsSchema } from '../types';
 
 const Home = (): JSX.Element => {
     const [rooms, setRooms] = useState<Rooms | null>(null);

@@ -4,14 +4,14 @@ import {
     DialogContent,
     DialogTitle,
     Divider,
-    Grid,
+    Grid2 as Grid,
     IconButton,
     List,
     ListItem,
     Paper,
     Typography,
 } from '@mui/material';
-import { JSX, memo } from 'react';
+import { type JSX, memo } from 'react';
 
 import DurationBarMemo from './DurationBar';
 
@@ -21,13 +21,10 @@ type Props = {
     lastVote: { [key: string]: 'stay' | 'leave' };
     handleClose: () => void;
 };
-const propsEqual = (oldProps: Props, newProps: Props): boolean => {
-    return (
-        oldProps.open === newProps.open &&
-        oldProps.duration === newProps.duration &&
-        JSON.stringify(oldProps.lastVote) === JSON.stringify(newProps.lastVote)
-    );
-};
+const propsEqual = (oldProps: Props, newProps: Props): boolean =>
+    oldProps.open === newProps.open &&
+    oldProps.duration === newProps.duration &&
+    JSON.stringify(oldProps.lastVote) === JSON.stringify(newProps.lastVote);
 
 const VoteDialog = ({ open, duration, lastVote, handleClose }: Props): JSX.Element => {
     const stay = Object.entries(lastVote).filter(([_, vote]) => vote === 'stay'); //eslint-disable-line
@@ -51,7 +48,7 @@ const VoteDialog = ({ open, duration, lastVote, handleClose }: Props): JSX.Eleme
             </IconButton>
             <DialogContent sx={{ p: 1 }}>
                 <Grid component={Paper} container sx={{ p: 1 }}>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                         <List sx={{ p: 0 }} subheader="Stay" dense>
                             {stay.map(([username]) => (
                                 <ListItem key={username}>{username}</ListItem>
@@ -59,7 +56,7 @@ const VoteDialog = ({ open, duration, lastVote, handleClose }: Props): JSX.Eleme
                         </List>
                     </Grid>
                     <Divider orientation="vertical" flexItem sx={{ mr: '-1px' }} />
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                         <List sx={{ p: 0, pl: 1 }} subheader="Leave" dense>
                             {leave.map(([username]) => (
                                 <ListItem key={username}>{username}</ListItem>

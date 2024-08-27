@@ -1,6 +1,6 @@
 import { Alert, Button, Divider, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import axios from 'axios';
-import { JSX, useCallback, useContext, useEffect, useState } from 'react';
+import { type JSX, useCallback, useContext, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';
@@ -12,7 +12,7 @@ import RoomDataMemo from '../components/RoomData';
 import RoundCardsMemo from '../components/RoundCards';
 import SettingsFormMemo from '../components/SettingsForm';
 import VoteDialogMemo from '../components/VoteDialog';
-import { Card, Room, RoomResponseSchema, Settings } from '../types';
+import { type Card, type Room, RoomResponseSchema, type Settings } from '../types';
 
 const RoomRoute = (): JSX.Element => {
     const [room, setRoom] = useState<Room | null>(null);
@@ -170,7 +170,7 @@ const RoomRoute = (): JSX.Element => {
     }, [room, roomId, handleSetRoom]);
 
     useEffect(() => {
-        if (room && room.data.roundInProgress) setVote(room.data.currentRound.votes[user.username] ?? null);
+        if (room?.data.roundInProgress) setVote(room.data.currentRound.votes[user.username] ?? null);
     }, [user, room]);
 
     const joinGame = (): void => {

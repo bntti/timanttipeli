@@ -1,25 +1,24 @@
-import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
-import { JSX, memo } from 'react';
+import { Box, Divider, Grid2 as Grid, Paper, Typography } from '@mui/material';
+import { type JSX, memo } from 'react';
 
 import CardSquare from './CardSquare';
-import { Card, TrapCard } from '../types';
+import type { Card, TrapCard } from '../types';
 
 type Props = { inPlay: Card[] };
-const PropsEqual = (oldProps: Props, newProps: Props): boolean => {
-    return JSON.stringify(oldProps.inPlay) === JSON.stringify(newProps.inPlay);
-};
+const PropsEqual = (oldProps: Props, newProps: Props): boolean =>
+    JSON.stringify(oldProps.inPlay) === JSON.stringify(newProps.inPlay);
 
 const RoundCards = ({ inPlay }: Props): JSX.Element => (
     <Grid component={Paper} container sx={{ mt: 2 }}>
-        <Grid item xs={6}>
+        <Grid size={6}>
             <Typography sx={{ textAlign: 'center' }}>cards</Typography>
         </Grid>
         <Divider orientation="vertical" flexItem sx={{ mr: '-1px' }} />
-        <Grid item xs={6}>
+        <Grid size={6}>
             <Typography sx={{ textAlign: 'center' }}>traps</Typography>
         </Grid>
 
-        <Grid item xs={6}>
+        <Grid size={6}>
             <Box
                 sx={{
                     display: 'flex',
@@ -36,7 +35,7 @@ const RoundCards = ({ inPlay }: Props): JSX.Element => (
             </Box>
         </Grid>
         <Divider orientation="vertical" flexItem sx={{ mr: '-1px' }} />
-        <Grid item xs={6}>
+        <Grid size={6}>
             <Box
                 sx={{
                     display: 'flex',
