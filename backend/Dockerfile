@@ -1,25 +1,30 @@
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /app
+RUN mkdir backend
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY tsconfig.base.json ./
 
-COPY tsconfig.json esbuild.mjs ./
-COPY src ./src
+# Prepare backend folder
+WORKDIR /app/backend
+COPY backend/package.json backend/yarn.lock ./
+RUN yarn install
 
-RUN npm run build
+COPY backend/tsconfig.json backend/esbuild.mjs ./
+COPY backend/src ./src
+
+RUN yarn build
 
 
-FROM node:20-alpine AS app
+FROM node:22-alpine AS app
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+COPY backend/package.json backend/yarn.lock ./
+RUN yarn install && yarn cache clean
 
-COPY --from=build /app/dist ./
+COPY --from=build /app/backend/dist ./
 
 EXPOSE 5000
 ENTRYPOINT ["node", "index.mjs"]

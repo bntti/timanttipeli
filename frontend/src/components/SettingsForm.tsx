@@ -37,7 +37,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
             });
             setSettings(newSettings);
             setUnsaved(false);
-        } catch (e) {
+        } catch {
             setError(true);
         }
     };

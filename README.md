@@ -6,14 +6,14 @@ An online game made using React and NodeJS.
 
 ```
 cd frontend
-npm run dev
+yarn dev
 ```
 
 In another terminal
 
 ```
 cd backend
-npm run dev
+yarn dev
 ```
 
 ### Testing in docker

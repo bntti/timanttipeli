@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
     plugins: ['prettier-plugin-jsdoc'],
     trailingComma: 'all',
     tabWidth: 4,
@@ -7,3 +7,5 @@ module.exports = {
     singleQuote: true,
     printWidth: 120,
 };
+
+export default config;
