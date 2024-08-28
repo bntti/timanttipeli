@@ -1,5 +1,5 @@
-import assert from 'assert';
 import express, { type NextFunction, type Request, type Response } from 'express';
+import assert from 'node:assert';
 import { z } from 'zod';
 import { processRequestBody } from 'zod-express-middleware';
 
@@ -119,18 +119,18 @@ const runServer = (): void => {
 
         const round = rooms[roomId].data.currentRound;
         // The +250 makes small time inaccuracies matter less // TODO: change to webSockets
-        if (round?.voteEnd && round.voteEnd <= new Date().getTime() + 250) {
+        if (round?.voteEnd && round.voteEnd <= Date.now() + 250) {
             round.voteEnd = null;
             handleVotes(rooms[roomId]);
         }
 
-        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+        res.json({ room: rooms[roomId], serverTime: Date.now() });
     });
 
     app.put(`/room/:roomId/settings`, gameNotInProgress, processRequestBody(SettingsSchema), (req, res) => {
         const roomId = parseInt(req.params.roomId);
         rooms[roomId].settings = req.body;
-        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+        res.json({ room: rooms[roomId], serverTime: Date.now() });
     });
 
     app.post(
@@ -140,7 +140,7 @@ const runServer = (): void => {
         (req, res) => {
             const roomId = parseInt(req.params.roomId);
             rooms[roomId].data.players[req.body.username] = 0;
-            res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+            res.json({ room: rooms[roomId], serverTime: Date.now() });
         },
     );
 
@@ -151,7 +151,7 @@ const runServer = (): void => {
         (req, res) => {
             const roomId = parseInt(req.params.roomId);
             delete rooms[roomId].data.players[req.body.username];
-            res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+            res.json({ room: rooms[roomId], serverTime: Date.now() });
         },
     );
 
@@ -162,13 +162,13 @@ const runServer = (): void => {
             return;
         }
         startGame(rooms[roomId]);
-        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+        res.json({ room: rooms[roomId], serverTime: Date.now() });
     });
 
     app.post('/room/:roomId/startRound', roundNotInProgress, (req, res) => {
         const roomId = parseInt(req.params.roomId);
         startRound(rooms[roomId]);
-        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+        res.json({ room: rooms[roomId], serverTime: Date.now() });
     });
 
     app.post(
@@ -193,10 +193,10 @@ const runServer = (): void => {
                 if (round.players.length === 1 || room.settings.afterVoteTime === 0) {
                     handleVotes(rooms[roomId]);
                 } else if (!round.voteEnd) {
-                    round.voteEnd = new Date().getTime() + room.settings.afterVoteTime;
+                    round.voteEnd = Date.now() + room.settings.afterVoteTime;
                 }
             }
-            res.json({ room, serverTime: new Date().getTime() });
+            res.json({ room, serverTime: Date.now() });
         },
     );
 
@@ -204,20 +204,20 @@ const runServer = (): void => {
         const roomId = parseInt(req.params.roomId);
 
         rooms[roomId].data = generateRoom().data;
-        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+        res.json({ room: rooms[roomId], serverTime: Date.now() });
     });
 
     app.post('/room/:roomId/resetRoom', roomIdValid, (req, res) => {
         const roomId = parseInt(req.params.roomId);
 
         rooms[roomId] = generateRoom(rooms[roomId].id, rooms[roomId].name);
-        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+        res.json({ room: rooms[roomId], serverTime: Date.now() });
     });
 
     app.delete('/room/:roomId', roomIdValid, (req, res) => {
         const roomId = parseInt(req.params.roomId);
         rooms[roomId].hidden = true;
-        res.json({ room: rooms[roomId], serverTime: new Date().getTime() });
+        res.json({ room: rooms[roomId], serverTime: Date.now() });
     });
 
     app.listen(5000);

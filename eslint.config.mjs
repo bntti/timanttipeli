@@ -7,6 +7,7 @@ import importPlugin from 'eslint-plugin-import';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import unicornPlugin from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import url from 'node:url';
 import tseslint from 'typescript-eslint';
@@ -26,6 +27,7 @@ export default tseslint.config(
             // https://github.com/facebook/react/issues/28313
             'react-hooks': fixupPluginRules(reactHooksPlugin),
             'react-refresh': reactRefresh,
+            unicorn: unicornPlugin,
         },
     },
 
@@ -53,6 +55,7 @@ export default tseslint.config(
         rules: {
             ...importPlugin.configs.recommended.rules,
             ...importPlugin.configs.typescript.rules,
+            ...unicornPlugin.configs.recommended.rules,
 
             camelcase: 'warn',
             eqeqeq: 'error',
@@ -71,13 +74,27 @@ export default tseslint.config(
             '@typescript-eslint/no-unnecessary-condition': 'error',
             '@typescript-eslint/no-unnecessary-template-expression': 'warn',
             '@typescript-eslint/no-unnecessary-type-arguments': 'error',
-            '@typescript-eslint/no-unused-vars': 'warn', // Convert to warn
+            '@typescript-eslint/no-unused-vars': [
+                'warn',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                },
+            ],
             '@typescript-eslint/no-use-before-define': 'error',
             '@typescript-eslint/prefer-find': 'error',
             '@typescript-eslint/prefer-optional-chain': 'warn',
             '@typescript-eslint/promise-function-async': 'error',
             '@typescript-eslint/return-await': 'error',
             '@typescript-eslint/switch-exhaustiveness-check': 'error',
+
+            'unicorn/filename-case': 'off',
+            'unicorn/no-array-reduce': 'off',
+            'unicorn/no-nested-ternary': 'off',
+            'unicorn/no-null': 'off',
+            'unicorn/prefer-number-properties': 'off',
+            'unicorn/prevent-abbreviations': 'off',
+            'unicorn/switch-case-braces': 'off',
 
             'import/default': 'off', // Broken by new eslint
             'import/extensions': 'off', // Broken by new eslint
@@ -142,27 +159,23 @@ export default tseslint.config(
 
             '@typescript-eslint/no-floating-promises': 'off',
             '@typescript-eslint/no-misused-promises': [
-                'warn',
+                'error',
                 { checksVoidReturn: { attributes: false } }, // To allow async onClick
             ],
 
-            'react/button-has-type': 'warn',
+            'react/button-has-type': 'error',
             'react/destructuring-assignment': 'warn',
-            'react/function-component-definition': [
-                'warn',
-                { namedComponents: 'arrow-function', unnamedComponents: 'arrow-function' },
-            ],
-            'react/hook-use-state': 'warn',
+            'react/hook-use-state': 'error',
             'react/jsx-boolean-value': 'warn',
             'react/jsx-curly-brace-presence': 'warn',
-            'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }],
-            'react/jsx-no-constructed-context-values': 'warn',
+            // 'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }],
+            'react/jsx-no-constructed-context-values': 'error',
             'react/jsx-no-useless-fragment': 'warn',
             'react/no-danger': 'error',
             'react/prop-types': 'off', // Buggy
             'react/self-closing-comp': 'warn',
 
-            'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+            'react-refresh/only-export-components': ['error', { allowConstantExport: true }],
         },
         settings: {
             react: { version: 'detect' },

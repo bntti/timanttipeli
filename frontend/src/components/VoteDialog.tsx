@@ -27,8 +27,8 @@ const propsEqual = (oldProps: Props, newProps: Props): boolean =>
     JSON.stringify(oldProps.lastVote) === JSON.stringify(newProps.lastVote);
 
 const VoteDialog = ({ open, duration, lastVote, handleClose }: Props): JSX.Element => {
-    const stay = Object.entries(lastVote).filter(([_, vote]) => vote === 'stay'); //eslint-disable-line
-    const leave = Object.entries(lastVote).filter(([_, vote]) => vote === 'leave'); //eslint-disable-line
+    const stay = Object.entries(lastVote).filter(([_, vote]) => vote === 'stay');
+    const leave = Object.entries(lastVote).filter(([_, vote]) => vote === 'leave');
 
     return (
         <Dialog open={open}>

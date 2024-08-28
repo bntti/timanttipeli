@@ -49,8 +49,8 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, deck, inP
         }
         relicCard.prob = Math.round((numRelicCards / deck.length) * 100);
 
-        const traps = inPlay.filter((card): card is TrapCard => card.type === 'trap').map((card) => card.trap);
-        const numKills = deck.filter((card) => card.type === 'trap' && traps.includes(card.trap)).length;
+        const traps = new Set(inPlay.filter((card): card is TrapCard => card.type === 'trap').map((card) => card.trap));
+        const numKills = deck.filter((card) => card.type === 'trap' && traps.has(card.trap)).length;
         deathProb = Math.round((numKills / deck.length) * 100);
     }
 
