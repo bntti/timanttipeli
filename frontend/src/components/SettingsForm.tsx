@@ -1,7 +1,7 @@
 import { Button, FormControl, FormHelperText, TextField } from '@mui/material';
 import { type JSX, type SyntheticEvent, memo, useEffect, useState } from 'react';
 
-import { type Settings, SettingsSchema } from '../types';
+import { type Settings, SettingsSchema } from '@/common/types';
 
 type Props = { settings: Settings; setSettings: (settings: Settings) => void };
 const propsEqual = (oldProps: Props, newProps: Props): boolean =>

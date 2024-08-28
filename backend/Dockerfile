@@ -1,15 +1,24 @@
 FROM node:22-alpine AS build
 
 WORKDIR /app
-RUN mkdir backend
+RUN mkdir backend common
 
-COPY tsconfig.base.json ./
+# Install packages
+WORKDIR /app/common
+COPY common/package.json common/yarn.lock ./
+RUN yarn install
 
-# Prepare backend folder
 WORKDIR /app/backend
 COPY backend/package.json backend/yarn.lock ./
 RUN yarn install
 
+# Copy code
+COPY tsconfig.base.json ../
+
+WORKDIR /app/common
+COPY common/types types
+
+WORKDIR /app/backend
 COPY backend/tsconfig.json backend/esbuild.mjs ./
 COPY backend/src ./src
 

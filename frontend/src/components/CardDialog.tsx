@@ -2,9 +2,9 @@ import { Close } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
 import { type JSX, memo } from 'react';
 
+import type { Card } from '@/common/types';
 import CardSquare from './CardSquare';
 import DurationBarMemo from './DurationBar';
-import type { Card } from '../types';
 
 type Props = { open: boolean; duration: number; card: Card | null; gameEnded: boolean; handleClose: () => void };
 const propsEqual = (oldProps: Props, newProps: Props): boolean =>

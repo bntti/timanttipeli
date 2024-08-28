@@ -8,11 +8,8 @@
 
         "baseUrl": "src",
         "noEmit": true,
-        "outDir": "dist"
-        // "paths": {
-        //     // Using @/asdf instead of @asdf as the latter conflicts with npm scoped packages.
-        //     "@/*": ["*"] // This effectively makes @ a path alias for project src root.
-        // }
+        "outDir": "dist",
+        "paths": { "@/common/*": ["../../common/*"] }
     },
-    "include": ["**/*.ts", "esbuild.mjs"]
+    "include": ["src", "esbuild.mjs"]
 }

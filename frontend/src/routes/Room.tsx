@@ -3,6 +3,7 @@ import axios from 'axios';
 import { type JSX, useCallback, useContext, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
+import { type Card, type Room, RoomResponseSchema, type Settings } from '@/common/types';
 import { UserContext } from '../app/StateProvider';
 import CardDialogMemo from '../components/CardDialog';
 import DurationBarMemo from '../components/DurationBar';
@@ -12,7 +13,6 @@ import RoomDataMemo from '../components/RoomData';
 import RoundCardsMemo from '../components/RoundCards';
 import SettingsFormMemo from '../components/SettingsForm';
 import VoteDialogMemo from '../components/VoteDialog';
-import { type Card, type Room, RoomResponseSchema, type Settings } from '../types';
 
 const RoomRoute = (): JSX.Element => {
     const [room, setRoom] = useState<Room | null>(null);

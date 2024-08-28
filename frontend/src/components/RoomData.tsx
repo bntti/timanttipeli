@@ -1,8 +1,8 @@
 import { Grid2 as Grid, Paper, Typography, useTheme } from '@mui/material';
 import { type JSX, memo, useContext } from 'react';
 
+import type { Card, TrapCard } from '@/common/types';
 import { UserContext } from '../app/StateProvider';
-import type { Card, TrapCard } from '../types';
 
 type Props = {
     gameNumber: number;

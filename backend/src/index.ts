@@ -3,8 +3,8 @@ import assert from 'node:assert';
 import { z } from 'zod';
 import { processRequestBody } from 'zod-express-middleware';
 
+import { type Room, SettingsSchema } from '@/common/types';
 import { handleVotes, startGame, startRound } from './logic';
-import { type Room, SettingsSchema } from './types';
 
 const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
     id,

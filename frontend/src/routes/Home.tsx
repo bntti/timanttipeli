@@ -17,7 +17,7 @@ import { type JSX, type SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { type Rooms, RoomsSchema } from '../types';
+import { type Rooms, RoomsSchema } from '@/common/types';
 
 const Home = (): JSX.Element => {
     const [rooms, setRooms] = useState<Rooms | null>(null);

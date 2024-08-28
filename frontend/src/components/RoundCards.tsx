@@ -1,8 +1,8 @@
 import { Box, Divider, Grid2 as Grid, Paper, Typography } from '@mui/material';
 import { type JSX, memo } from 'react';
 
+import type { Card, TrapCard } from '@/common/types';
 import CardSquare from './CardSquare';
-import type { Card, TrapCard } from '../types';
 
 type Props = { inPlay: Card[] };
 const PropsEqual = (oldProps: Props, newProps: Props): boolean =>

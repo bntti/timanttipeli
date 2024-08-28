@@ -1,18 +1,6 @@
 import { z } from 'zod';
 
-const PointsCardSchema = z.object({
-    type: z.literal('points'),
-    value: z.number().int().positive(),
-});
-const RelicCardSchema = z.object({
-    type: z.literal('relic'),
-    value: z.number().int().positive(),
-});
-const TrapCardSchema = z.object({
-    type: z.literal('trap'),
-    trap: z.enum(['snake', 'boulder', 'fire', 'log', 'spider']),
-});
-const CardSchema = z.union([PointsCardSchema, RelicCardSchema, TrapCardSchema]);
+import { CardSchema } from './card';
 
 export const SettingsSchema = z.object({
     voteShowTime: z.union([z.literal(0), z.number().int().gt(99)]),
@@ -80,10 +68,7 @@ const RoomSchema = z.union([
 
 export const RoomResponseSchema = z.object({ room: RoomSchema, serverTime: z.number().int().nonnegative() });
 export const RoomsSchema = z.array(RoomBaseSchema);
-export type Rooms = z.infer<typeof RoomsSchema>;
 
-export type RelicCard = z.infer<typeof RelicCardSchema>;
-export type TrapCard = z.infer<typeof TrapCardSchema>;
-export type Card = z.infer<typeof CardSchema>;
 export type Settings = z.infer<typeof SettingsSchema>;
 export type Room = z.infer<typeof RoomSchema>;
+export type Rooms = z.infer<typeof RoomsSchema>;

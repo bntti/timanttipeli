@@ -3,13 +3,22 @@ FROM node:22-alpine AS build
 WORKDIR /app
 RUN mkdir frontend
 
-COPY tsconfig.base.json ./
+# Install packages
+WORKDIR /app/common
+COPY common/package.json common/yarn.lock ./
+RUN yarn install
 
-# Prepare frontend folder
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/yarn.lock ./
 RUN yarn install --production
 
+# Copy code
+COPY tsconfig.base.json ../
+
+WORKDIR /app/common
+COPY common/types types
+
+WORKDIR /app/frontend
 COPY frontend/tsconfig.json frontend/tsconfig.app.json frontend/tsconfig.node.json ./
 COPY frontend/index.html frontend/vite.config.mts ./
 COPY frontend/src ./src

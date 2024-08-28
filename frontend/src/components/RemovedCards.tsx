@@ -1,8 +1,8 @@
 import { Box, Paper, Typography } from '@mui/material';
 import { type JSX, memo } from 'react';
 
+import type { Card } from '@/common/types';
 import CardSquare from './CardSquare';
-import type { Card } from '../types';
 
 type Props = { removedCards: Card[] };
 const propsEqual = (oldProps: Props, newProps: Props): boolean =>
