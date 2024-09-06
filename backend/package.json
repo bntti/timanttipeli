@@ -1,13 +1,10 @@
 {
     "name": "timanttipeli-backend",
     "version": "1.6.0",
-    "engines": {
-        "node": "^22"
-    },
     "scripts": {
+        "build": "tsc && node ./esbuild.mjs",
         "dev": "tsc && tsx src/index.ts",
-        "start": "node --enable-source-maps dist/index.mjs",
-        "build": "tsc && node ./esbuild.mjs"
+        "start": "node --enable-source-maps dist/index.mjs"
     },
     "dependencies": {
         "express": "^4.19.2",
@@ -19,5 +16,8 @@
         "esbuild": "^0.23.0",
         "tsx": "^4.16.2",
         "typescript": "^5.5.3"
+    },
+    "engines": {
+        "node": "^22"
     }
 }
