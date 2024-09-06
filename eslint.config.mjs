@@ -33,7 +33,7 @@ export default tseslint.config(
 
     // Ignores
     {
-        ignores: ['**/node_modules/**', '**/dist/**', 'backend/esbuild.mjs', '.prettierrc.js'],
+        ignores: ['**/node_modules/**', '**/dist/**', 'backend/esbuild.mjs'],
     },
 
     // Extends ...
@@ -90,15 +90,19 @@ export default tseslint.config(
 
             'unicorn/filename-case': 'off',
             'unicorn/no-array-reduce': 'off',
+            'unicorn/no-await-expression-member': 'off',
             'unicorn/no-nested-ternary': 'off',
             'unicorn/no-null': 'off',
+            'unicorn/no-process-exit': 'error', // Turn off if CLI app
             'unicorn/prefer-number-properties': 'off',
+            'unicorn/prefer-top-level-await': 'off', // Not supported by cjs :(
             'unicorn/prevent-abbreviations': 'off',
             'unicorn/switch-case-braces': 'off',
 
             'import/default': 'off', // Broken by new eslint
             'import/extensions': 'off', // Broken by new eslint
             'import/namespace': 'off',
+            'import/newline-after-import': 'warn',
             'import/no-named-as-default': 'off', // Broken by new eslint
             'import/no-named-as-default-member': 'off',
             'import/no-unresolved': 'off', // Broken by new eslint
