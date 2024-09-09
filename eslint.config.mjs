@@ -1,5 +1,3 @@
-// @ts-check
-
 import { fixupPluginRules } from '@eslint/compat';
 import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
@@ -33,7 +31,7 @@ export default tseslint.config(
 
     // Ignores
     {
-        ignores: ['**/node_modules/**', '**/dist/**', 'backend/esbuild.mjs'],
+        ignores: ['**/node_modules/**', '**/dist/**'],
     },
 
     // Extends ...
@@ -46,7 +44,10 @@ export default tseslint.config(
         languageOptions: {
             globals: { ...globals.es2022 },
             parserOptions: {
-                projectService: true,
+                projectService: {
+                    allowDefaultProject: ['*.mjs', 'backend/esbuild.mjs'],
+                    defaultProject: 'backend/tsconfig.json',
+                },
                 tsconfigRootDir: __dirname,
                 warnOnUnsupportedTypeScriptVersion: false,
             },
@@ -91,6 +92,7 @@ export default tseslint.config(
             'unicorn/filename-case': 'off',
             'unicorn/no-array-reduce': 'off',
             'unicorn/no-await-expression-member': 'off',
+            'unicorn/no-negated-condition': 'off',
             'unicorn/no-nested-ternary': 'off',
             'unicorn/no-null': 'off',
             'unicorn/no-process-exit': 'error', // Turn off if CLI app
@@ -132,18 +134,23 @@ export default tseslint.config(
         },
     },
 
-    // Eslint
+    // Config files
     {
-        files: ['eslint.config.mjs'],
+        files: ['**/*.mjs'],
         languageOptions: { globals: { ...globals.node } },
         rules: {
             'sort-keys': ['warn', 'asc', { allowLineSeparatedGroups: true }],
+            'unicorn/no-process-exit': 'off',
+
+            // Turn off type checks
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-member-access': 'off',
         },
     },
 
     // Backend
     {
-        files: ['server/src/**/*.{ts,tsx}'],
+        files: ['server/src/**/*.{ts}'],
         languageOptions: {
             globals: { ...globals.node },
         },
@@ -154,7 +161,7 @@ export default tseslint.config(
 
     // Frontend
     {
-        files: ['frontend/src/**/*.{ts,tsx}'],
+        files: ['frontend/src/**/*.{ts,mts,tsx}'],
         languageOptions: { globals: { ...globals.browser } },
         rules: {
             ...reactPlugin.configs.recommended.rules,

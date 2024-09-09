@@ -1,6 +1,6 @@
 {
-    "extends": "../tsconfig.base.json",
     "compilerOptions": {
+        // Lowest settings from frontend / backend
         "lib": ["es2023"],
         "module": "ESNext",
         "moduleResolution": "Bundler",
@@ -9,7 +9,17 @@
         "baseUrl": "src",
         "noEmit": true,
         "outDir": "dist",
-        "paths": { "@/common/*": ["../../common/*"] }
+        "paths": { "@/common/*": ["../../common/*"] },
+
+        "allowArbitraryExtensions": false,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "pretty": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "strict": true
     },
-    "include": ["src", "esbuild.mjs"]
+    "include": ["src"]
 }

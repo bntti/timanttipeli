@@ -1,13 +1,13 @@
 import { build } from 'esbuild';
 
 build({
-    entryPoints: ['./src/index.ts'],
-    outdir: './dist',
-    minify: true,
     bundle: true,
-    platform: 'node',
+    entryPoints: ['./src/index.ts'],
     format: 'esm',
-    sourcemap: true,
-    packages: 'external',
+    minify: true,
     outExtension: { '.js': '.mjs' },
+    outdir: './dist',
+    packages: 'external',
+    platform: 'node',
+    sourcemap: true,
 }).catch(() => process.exit(1));

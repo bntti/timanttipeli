@@ -1,11 +1,11 @@
 const config = {
     plugins: ['prettier-plugin-jsdoc'],
-    trailingComma: 'all',
-    tabWidth: 4,
-    useTabs: false,
+    printWidth: 120,
     semi: true,
     singleQuote: true,
-    printWidth: 120,
+    tabWidth: 4,
+    trailingComma: 'all',
+    useTabs: false,
 };
 
 export default config;

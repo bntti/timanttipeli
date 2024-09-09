@@ -13,8 +13,6 @@ COPY backend/package.json backend/yarn.lock ./
 RUN yarn install
 
 # Copy code
-COPY tsconfig.base.json ../
-
 WORKDIR /app/common
 COPY common/types types
 
