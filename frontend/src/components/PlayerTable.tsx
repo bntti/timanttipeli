@@ -82,10 +82,10 @@ const PlayerTable = ({
     };
     return (
         <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table size="small">
+            <Table size="small" sx={{ tableLayout: 'fixed' }}>
                 <TableHead>
                     <TableRow>
-                        <TableCell>
+                        <TableCell sx={{ width: gameInProgress ? '50%' : '75%' }}>
                             <Typography>Player</Typography>
                         </TableCell>
                         {gameInProgress && (
@@ -93,7 +93,7 @@ const PlayerTable = ({
                                 <Typography color={roundInProgress ? '' : 'gray'}>Voted</Typography>
                             </TableCell>
                         )}
-                        <TableCell>
+                        <TableCell sx={{ width: '30%' }}>
                             <Typography>Points</Typography>
                         </TableCell>
                     </TableRow>
@@ -115,7 +115,7 @@ const PlayerTable = ({
                             }}
                         >
                             <TableCell>
-                                <Typography>{player}</Typography>
+                                <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{player}</Typography>
                             </TableCell>
                             {gameInProgress && (
                                 <TableCell>

@@ -16,7 +16,7 @@ const RequireAuth = ({ children }: PropsWithChildren): ReactNode => {
     const storageUser = localStorage.getItem('user');
 
     useEffect(() => {
-        if (user.username !== '') return; // Race condition? (shouldn't be a problem)
+        if (user !== null) return;
         if (storageUser) {
             try {
                 const newUser = UserSchema.parse(JSON.parse(storageUser));
@@ -28,7 +28,7 @@ const RequireAuth = ({ children }: PropsWithChildren): ReactNode => {
         }
     }, [user, storageUser, setUser, navigate]);
 
-    if (user.username !== '') return children;
+    if (user !== null) return children;
     if (storageUser) return <Typography>Loading</Typography>;
 
     return <Navigate replace to="/login" state={{ from: location.pathname }} />;

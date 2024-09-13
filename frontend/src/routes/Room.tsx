@@ -4,7 +4,7 @@ import { type JSX, useCallback, useContext, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
 import { type Card, type Room, RoomResponseSchema, type Settings } from '@/common/types';
-import { UserContext } from '../app/StateProvider';
+import { type User, UserContext } from '../app/StateProvider';
 import CardDialogMemo from '../components/CardDialog';
 import DurationBarMemo from '../components/DurationBar';
 import PlayerTableMemo from '../components/PlayerTable';
@@ -15,6 +15,9 @@ import SettingsFormMemo from '../components/SettingsForm';
 import VoteDialogMemo from '../components/VoteDialog';
 
 const RoomRoute = (): JSX.Element => {
+    const { user } = useContext(UserContext) as { user: User };
+    const { roomId } = useParams();
+
     const [room, setRoom] = useState<Room | null>(null);
     const [vote, setVote] = useState<'stay' | 'leave' | null>(null);
     const [dontUpdate, setDontUpdate] = useState<boolean>(false);
@@ -28,9 +31,6 @@ const RoomRoute = (): JSX.Element => {
     const [gameEnded, setGameEnded] = useState<boolean>(false);
     const [cardOpen, setCardOpen] = useState<boolean>(false);
     const [cardOpenDuration, setCardOpenDuration] = useState<number>(2);
-
-    const { user } = useContext(UserContext);
-    const { roomId } = useParams();
 
     const handleShowCard = useCallback(
         (newRoom: Room): void => {
@@ -246,19 +246,8 @@ const RoomRoute = (): JSX.Element => {
                 </Alert>
             )}
 
-            <VoteDialogMemo
-                open={votesOpen}
-                duration={votesOpenDuration}
-                lastVote={lastVote}
-                handleClose={() => setVotesOpen(false)}
-            />
-            <CardDialogMemo
-                open={cardOpen}
-                duration={cardOpenDuration}
-                card={lastCard}
-                gameEnded={gameEnded}
-                handleClose={() => setCardOpen(false)}
-            />
+            <VoteDialogMemo open={votesOpen} duration={votesOpenDuration} lastVote={lastVote} />
+            <CardDialogMemo open={cardOpen} duration={cardOpenDuration} card={lastCard} gameEnded={gameEnded} />
 
             {room.data.roundInProgress ? (
                 <PlayerTableMemo

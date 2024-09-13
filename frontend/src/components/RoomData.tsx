@@ -2,7 +2,7 @@ import { Grid2 as Grid, Paper, Typography, useTheme } from '@mui/material';
 import { type JSX, memo, useContext } from 'react';
 
 import type { Card, TrapCard } from '@/common/types';
-import { UserContext } from '../app/StateProvider';
+import { type User, UserContext } from '../app/StateProvider';
 
 type Props = {
     gameNumber: number;
@@ -22,8 +22,8 @@ const propsEqual = (oldProps: Props, newProps: Props): boolean =>
     JSON.stringify(oldProps.inPlay) === JSON.stringify(newProps.inPlay);
 
 const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, deck, inPlay }: Props): JSX.Element => {
-    const { user } = useContext(UserContext);
     const theme = useTheme();
+    const { user } = useContext(UserContext) as { user: User };
 
     const pointsCard: { ev: number | null; prob: number | null } = { ev: null, prob: null };
     const relicCard: { ev: number | null; prob: number | null } = { ev: null, prob: null };

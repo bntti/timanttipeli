@@ -9,7 +9,7 @@ const Logout = (): JSX.Element => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setUser({ username: '', admin: false, cheats: false });
+        setUser(null);
         localStorage.removeItem('user');
         navigate('/login');
     }, [navigate, setUser]);
