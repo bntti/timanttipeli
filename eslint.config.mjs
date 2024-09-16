@@ -96,6 +96,7 @@ export default tseslint.config(
             'unicorn/no-nested-ternary': 'off',
             'unicorn/no-null': 'off',
             'unicorn/no-process-exit': 'error', // Turn off if CLI app
+            'unicorn/prefer-module': 'off',
             'unicorn/prefer-number-properties': 'off',
             'unicorn/prefer-top-level-await': 'off', // Not supported by cjs :(
             'unicorn/prevent-abbreviations': 'off',
@@ -143,6 +144,7 @@ export default tseslint.config(
             'unicorn/no-process-exit': 'off',
 
             // Turn off type checks
+            '@typescript-eslint/no-unsafe-argument': 'off',
             '@typescript-eslint/no-unsafe-assignment': 'off',
             '@typescript-eslint/no-unsafe-member-access': 'off',
         },
@@ -156,6 +158,7 @@ export default tseslint.config(
         },
         rules: {
             '@typescript-eslint/no-non-null-assertion': 'error',
+            'unicorn/filename-case': ['warn', { case: 'kebabCase' }],
         },
     },
 
@@ -172,6 +175,17 @@ export default tseslint.config(
             '@typescript-eslint/no-misused-promises': [
                 'error',
                 { checksVoidReturn: { attributes: false } }, // To allow async onClick
+            ],
+
+            'unicorn/filename-case': [
+                'warn',
+                {
+                    cases: {
+                        camelCase: true,
+                        pascalCase: true,
+                    },
+                    ignore: ['vite-env.d.ts'],
+                },
             ],
 
             'react/button-has-type': 'error',
