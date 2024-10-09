@@ -55,7 +55,7 @@ const RoomSchema = z.union([
                 deck: z.array(CardSchema),
                 inPlay: z.array(CardSchema),
                 votes: z.record(z.enum(['stay', 'leave'])),
-                voteEnd: z.number().int().nonnegative().nullable(),
+                voteEndTime: z.number().int().nonnegative().nullable(),
                 players: z.array(z.string()).nonempty(),
                 pointsGained: z.record(z.number()),
                 hasRelic: z.array(z.string()),
@@ -71,4 +71,3 @@ export const RoomsSchema = z.array(RoomBaseSchema);
 
 export type Settings = z.infer<typeof SettingsSchema>;
 export type Room = z.infer<typeof RoomSchema>;
-export type Rooms = z.infer<typeof RoomsSchema>;

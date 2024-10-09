@@ -25,16 +25,14 @@ const Login = (): JSX.Element => {
     return (
         <Container component={Paper} sx={{ pt: 2.5, pb: 3 }}>
             <Typography variant="h5" sx={{ mb: 2 }}>
-                Login
+                Select username
             </Typography>
             <form onSubmit={addApiToken}>
                 <TextField
                     fullWidth
                     label="Username"
                     value={username}
-                    onChange={(event) => {
-                        setUsername(event.target.value);
-                    }}
+                    onChange={(event) => setUsername(event.target.value)}
                 />
                 <Button variant="contained" type="submit" sx={{ mt: 1 }}>
                     Log in

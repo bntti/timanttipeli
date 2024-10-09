@@ -150,9 +150,9 @@ export default tseslint.config(
         },
     },
 
-    // Backend
+    // Backend & common
     {
-        files: ['server/src/**/*.{ts}'],
+        files: ['server/src/**/*.{ts}', 'common/src/**/*.{ts}'],
         languageOptions: {
             globals: { ...globals.node },
         },

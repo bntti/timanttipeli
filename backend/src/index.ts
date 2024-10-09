@@ -1,9 +1,9 @@
-import express, { type NextFunction, type Request, type Response } from 'express';
+import express from 'express';
 import assert from 'node:assert';
-import { z } from 'zod';
-import { processRequestBody } from 'zod-express-middleware';
+import http from 'node:http';
+import { Server } from 'socket.io';
 
-import { type Room, SettingsSchema } from '@/common/types';
+import type { ClientToServerEvents, Room, ServerToClientEvents } from '@/common/types';
 import { handleVotes, startGame, startRound } from './logic';
 
 const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
@@ -29,198 +29,173 @@ const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
 
 const rooms: Room[] = [];
 
-const roomIdValid = (req: Request, res: Response, next: NextFunction): void => {
-    const roomId = parseInt(req.params.roomId);
-    if (!(roomId in rooms)) {
-        res.status(404).json({ error: 'Room not found' });
-        return;
-    }
+const getRoomIdError = (roomId: number, socketRooms: Set<string> | null = null, joining: boolean = false): string => {
+    if (socketRooms !== null) {
+        if (!joining && socketRooms.size === 1) return 'Client not in any room';
+        if (!joining && !socketRooms.has(roomId.toString())) return 'Client not in roomId';
+        if (socketRooms.size > 2) {
+            const badRooms = [];
+            for (const room of socketRooms) {
+                if (/^\d+$/u.test(room) && parseInt(room) !== roomId) badRooms.push(room);
+            }
+            for (const badRoom of badRooms) socketRooms.delete(badRoom);
+        }
 
-    // req.roomId = roomId; // Attach roomId to request for later use
-    next();
+        const targetRoomCount = joining ? 1 : 2;
+        if (socketRooms.size !== targetRoomCount) {
+            return `ERROR: User has weird number of rooms (${socketRooms.size} !== ${targetRoomCount})`;
+        }
+    }
+    if (!(roomId in rooms)) return 'roomId not in rooms';
+    return '';
 };
 
-const gameNotInProgress = (req: Request, res: Response, next: NextFunction): void => {
-    const roomId = parseInt(req.params.roomId);
-    if (!(roomId in rooms)) {
-        res.status(404).json({ error: 'Room not found' });
-        return;
-    }
-
-    const room = rooms[roomId];
-    if (room.data.gameInProgress) {
-        res.status(400).json({ error: 'Game in progress' });
-        return;
-    }
-
-    // req.roomId = roomId; // Attach roomId to request for later use
-    next();
-};
-
-const RoundInProgress = (req: Request, res: Response, next: NextFunction): void => {
-    const roomId = parseInt(req.params.roomId);
-    if (!(roomId in rooms)) {
-        res.status(404).json({ error: 'Room not found' });
-        return;
-    }
-
-    const room = rooms[roomId];
-    if (!room.data.gameInProgress) {
-        res.status(400).json({ error: 'Round not in progress' });
-        return;
-    }
-
-    // req.roomId = roomId; // Attach roomId to request for later use
-    next();
-};
-
-const roundNotInProgress = (req: Request, res: Response, next: NextFunction): void => {
-    const roomId = parseInt(req.params.roomId);
-    if (!(roomId in rooms)) {
-        res.status(404).json({ error: 'Room not found' });
-        return;
-    }
-
-    const room = rooms[roomId];
-    if (room.data.roundInProgress) {
-        res.status(400).json({ error: 'Round in progress' });
-        return;
-    }
-
-    // req.roomId = roomId; // Attach roomId to request for later use
-    next();
+const validateRoomId = (roomId: number, socketRooms: Set<string> | null = null, joining: boolean = false): boolean => {
+    const error = getRoomIdError(roomId, socketRooms, joining);
+    if (error !== '') console.warn(error);
+    return error === '';
 };
 
 const runServer = (): void => {
     const app = express();
-    app.use(express.json());
-    app.get('/rooms', (req, res) => {
-        res.json(rooms);
-    });
+    const server = http.createServer(app);
+    const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, { connectionStateRecovery: {} });
+    server.listen(5000);
 
-    app.post('/createRoom', (req, res) => {
-        const data = z
-            .object({
-                name: z.string(),
-            })
-            .parse(req.body);
+    io.on('connection', (socket) => {
+        socket.emit('rooms', rooms);
 
-        const roomId = Object.keys(rooms).length;
-        rooms.push(generateRoom(roomId, data.name));
-        res.json(roomId);
-    });
+        socket.on('createRoom', (name, callback) => {
+            const roomId = rooms.length;
+            rooms.push(generateRoom(roomId, name));
+            io.emit('rooms', rooms);
 
-    app.get('/room/:roomId', roomIdValid, (req: Request, res) => {
-        const roomId = parseInt(req.params.roomId);
-        if (!(roomId in rooms)) {
-            res.status(404).json({ error: 'Room not found' });
-            return;
-        }
+            callback(roomId);
+        });
 
-        const round = rooms[roomId].data.currentRound;
-        // The +250 makes small time inaccuracies matter less // TODO: change to webSockets
-        if (round?.voteEnd && round.voteEnd <= Date.now() + 250) {
-            round.voteEnd = null;
-            handleVotes(rooms[roomId]);
-        }
+        socket.on('editRoomSettings', (roomId, settings) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
 
-        res.json({ room: rooms[roomId], serverTime: Date.now() });
-    });
+            rooms[roomId].settings = settings;
+            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
 
-    app.put(`/room/:roomId/settings`, gameNotInProgress, processRequestBody(SettingsSchema), (req, res) => {
-        const roomId = parseInt(req.params.roomId);
-        rooms[roomId].settings = req.body;
-        res.json({ room: rooms[roomId], serverTime: Date.now() });
-    });
+        socket.on('joinRoom', async (roomId) => {
+            console.log('Socket tried to join room');
+            if (!validateRoomId(roomId, socket.rooms, true)) return;
+            console.log('Socket joined room');
 
-    app.post(
-        '/room/:roomId/joinGame',
-        gameNotInProgress,
-        processRequestBody(z.object({ username: z.string() })),
-        (req, res) => {
-            const roomId = parseInt(req.params.roomId);
-            rooms[roomId].data.players[req.body.username] = 0;
-            res.json({ room: rooms[roomId], serverTime: Date.now() });
-        },
-    );
+            await socket.join(roomId.toString());
+            socket.emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
 
-    app.post(
-        '/room/:roomId/leaveGame',
-        gameNotInProgress,
-        processRequestBody(z.object({ username: z.string() })),
-        (req, res) => {
-            const roomId = parseInt(req.params.roomId);
-            delete rooms[roomId].data.players[req.body.username];
-            res.json({ room: rooms[roomId], serverTime: Date.now() });
-        },
-    );
+        socket.on('leaveRoom', async (roomId) => {
+            console.log('Socket tried to left room');
+            if (!validateRoomId(roomId, socket.rooms)) return;
+            console.log('Socket left room');
 
-    app.post('/room/:roomId/startGame', gameNotInProgress, (req, res) => {
-        const roomId = parseInt(req.params.roomId);
-        if (Object.keys(rooms[roomId].data.players).length === 0) {
-            res.status(400).json({ error: 'Too few players to start' });
-            return;
-        }
-        startGame(rooms[roomId]);
-        res.json({ room: rooms[roomId], serverTime: Date.now() });
-    });
+            await socket.leave(roomId.toString());
+        });
 
-    app.post('/room/:roomId/startRound', roundNotInProgress, (req, res) => {
-        const roomId = parseInt(req.params.roomId);
-        startRound(rooms[roomId]);
-        res.json({ room: rooms[roomId], serverTime: Date.now() });
-    });
+        socket.on('joinGame', (roomId, username) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
+            if (rooms[roomId].data.roundInProgress) return;
 
-    app.post(
-        '/room/:roomId/vote',
-        RoundInProgress,
-        processRequestBody(
-            z.object({
-                username: z.string(),
-                vote: z.union([z.literal('stay'), z.literal('leave'), z.null()]),
-            }),
-        ),
-        (req, res) => {
-            const roomId = parseInt(req.params.roomId);
+            rooms[roomId].data.players[username] = 0;
+
+            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
+
+        socket.on('leaveGame', (roomId, username) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
+
+            delete rooms[roomId].data.players[username];
+
+            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
+
+        socket.on('startGame', (roomId) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
+            if (rooms[roomId].data.gameInProgress) return;
+
+            if (Object.keys(rooms[roomId].data.players).length === 0) {
+                // error: 'Too few players to start' // TODO: Error handling
+                return;
+            }
+            startGame(rooms[roomId]);
+            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
+
+        socket.on('startRound', (roomId) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
+            if (!rooms[roomId].data.gameInProgress || rooms[roomId].data.roundInProgress) return;
+            if (Object.keys(rooms[roomId].data.players).length === 0) return;
+
+            startRound(rooms[roomId]);
+            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
+
+        socket.on('vote', (roomId, username, vote) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
+
             const room = rooms[roomId];
-            assert(room.data.roundInProgress); // Should be unnecessary
+            if (!room.data.roundInProgress) return;
+            if (!(username in room.data.players)) return;
 
             const round = room.data.currentRound;
-            if (req.body.vote === null && !round.voteEnd) delete room.data.currentRound.votes[req.body.username];
-            else if (req.body.vote !== null) room.data.currentRound.votes[req.body.username] = req.body.vote;
+            if (vote === null && !round.voteEndTime) delete room.data.currentRound.votes[username];
+            else if (vote !== null) room.data.currentRound.votes[username] = vote;
 
+            // All votes
             if (Object.keys(round.votes).length === round.players.length) {
                 if (round.players.length === 1 || room.settings.afterVoteTime === 0) {
                     handleVotes(rooms[roomId]);
-                } else if (!round.voteEnd) {
-                    round.voteEnd = Date.now() + room.settings.afterVoteTime;
+                } else if (!round.voteEndTime) {
+                    round.voteEndTime = Date.now() + room.settings.afterVoteTime;
+                    io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+
+                    // Wait delay
+                    setTimeout(() => {
+                        console.log('Vote ended!');
+                        const updatedRound = rooms[roomId].data.currentRound;
+                        assert(updatedRound !== null);
+
+                        updatedRound.voteEndTime = null;
+                        handleVotes(rooms[roomId]);
+
+                        io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+                    }, room.settings.afterVoteTime);
                 }
             }
-            res.json({ room, serverTime: Date.now() });
-        },
-    );
 
-    app.post('/room/:roomId/endGame', roomIdValid, (req, res) => {
-        const roomId = parseInt(req.params.roomId);
+            // Don't emit during vote timer
+            if (!round.voteEndTime)
+                io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
 
-        rooms[roomId].data = generateRoom().data;
-        res.json({ room: rooms[roomId], serverTime: Date.now() });
+        socket.on('endGame', (roomId) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
+            if (!rooms[roomId].data.gameInProgress) return;
+
+            rooms[roomId].data = generateRoom().data;
+            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
+
+        socket.on('resetRoom', (roomId) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
+
+            rooms[roomId] = generateRoom(rooms[roomId].id, rooms[roomId].name);
+            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
+
+        socket.on('deleteRoom', (roomId) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
+
+            rooms[roomId].hidden = true;
+            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.emit('rooms', rooms);
+        });
     });
-
-    app.post('/room/:roomId/resetRoom', roomIdValid, (req, res) => {
-        const roomId = parseInt(req.params.roomId);
-
-        rooms[roomId] = generateRoom(rooms[roomId].id, rooms[roomId].name);
-        res.json({ room: rooms[roomId], serverTime: Date.now() });
-    });
-
-    app.delete('/room/:roomId', roomIdValid, (req, res) => {
-        const roomId = parseInt(req.params.roomId);
-        rooms[roomId].hidden = true;
-        res.json({ room: rooms[roomId], serverTime: Date.now() });
-    });
-
-    app.listen(5000);
 };
 
 runServer();

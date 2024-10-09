@@ -1,6 +1,6 @@
 {
     "name": "timanttipeli-backend",
-    "version": "1.6.2",
+    "version": "2.0.0",
     "scripts": {
         "build": "tsc && node ./esbuild.mjs",
         "dev": "tsc && tsx src/index.ts",
@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "express": "^4.19.2",
+        "socket.io": "^4.8.0",
         "zod": "^3.23.8",
         "zod-express-middleware": "^1.4.0"
     },

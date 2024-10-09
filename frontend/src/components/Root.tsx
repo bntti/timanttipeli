@@ -6,7 +6,7 @@ import { ThemeContext } from '../app/StateProvider';
 import ToolBar from '../components/ToolBar';
 
 const Root = (): JSX.Element => {
-    const defaultTheme = window.localStorage.getItem('theme') as 'dark' | 'light' | null;
+    const defaultTheme = globalThis.localStorage.getItem('theme') as 'dark' | 'light' | null;
     const [mode, setMode] = useState<'light' | 'dark'>(defaultTheme ?? 'light');
 
     const colorMode = useMemo(
@@ -14,7 +14,7 @@ const Root = (): JSX.Element => {
             colorMode: {
                 toggleTheme: () => {
                     setMode((prevMode) => {
-                        window.localStorage.setItem('theme', prevMode === 'light' ? 'dark' : 'light');
+                        globalThis.localStorage.setItem('theme', prevMode === 'light' ? 'dark' : 'light');
                         return prevMode === 'light' ? 'dark' : 'light';
                     });
                 },

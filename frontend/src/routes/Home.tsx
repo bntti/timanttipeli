@@ -12,42 +12,19 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import axios from 'axios';
-import { type JSX, type SyntheticEvent, useEffect, useState } from 'react';
+import { type JSX, type SyntheticEvent, useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
-import { type Rooms, RoomsSchema } from '@/common/types';
+import { SocketEventContext } from '../app/StateProvider';
+import { socket } from '../socket';
 
 const Home = (): JSX.Element => {
-    const [rooms, setRooms] = useState<Rooms | null>(null);
+    const { rooms } = useContext(SocketEventContext);
+
     const [newRoom, setNewRoom] = useState<string>('');
     const [error, setError] = useState<boolean>(false);
     const [feedback, setFeedback] = useState<string>('');
     const navigate = useNavigate();
-
-    useEffect(() => {
-        axios
-            .get(`/api/rooms`)
-            .then((response) => {
-                setRooms(RoomsSchema.parse(response.data));
-            })
-            .catch(console.error);
-    }, []);
-
-    useEffect(() => {
-        const pollingInterval = setInterval(() => {
-            axios
-                .get(`/api/rooms`)
-                .then((response) => {
-                    const newRooms = RoomsSchema.parse(response.data);
-                    if (JSON.stringify(rooms) !== JSON.stringify(newRooms)) setRooms(newRooms);
-                })
-                .catch(console.error);
-        }, 1000);
-
-        return () => clearInterval(pollingInterval);
-    }, [rooms]);
 
     const createRoom = (event: SyntheticEvent): void => {
         event.preventDefault();
@@ -58,13 +35,7 @@ const Home = (): JSX.Element => {
         }
         setError(false);
         setFeedback('');
-        axios
-            .post('/api/createRoom', { name: newRoom })
-            .then((response) => {
-                const roomId = z.number().int().parse(response.data);
-                navigate(`/room/${roomId}`);
-            })
-            .catch(console.error);
+        socket.emit('createRoom', newRoom, (roomId) => navigate(`/room/${roomId}`));
     };
 
     if (rooms === null) return <Typography>Loading rooms...</Typography>;

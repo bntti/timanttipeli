@@ -185,7 +185,7 @@ export const startRound = (room: Room): void => {
             deck,
             inPlay: [],
             votes: {},
-            voteEnd: null,
+            voteEndTime: null,
             players: Object.keys(room.data.players) as [string, ...string[]],
             pointsGained: {},
             hasRelic: [],

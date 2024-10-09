@@ -1,10 +1,9 @@
 import { Alert, Button, Divider, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-import axios from 'axios';
 import { type JSX, useCallback, useContext, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
-import { type Card, type Room, RoomResponseSchema, type Settings } from '@/common/types';
-import { type User, UserContext } from '../app/StateProvider';
+import type { Card, Room, Settings } from '@/common/types';
+import { SocketEventContext, type User, UserContext } from '../app/StateProvider';
 import CardDialogMemo from '../components/CardDialog';
 import DurationBarMemo from '../components/DurationBar';
 import PlayerTableMemo from '../components/PlayerTable';
@@ -13,31 +12,42 @@ import RoomDataMemo from '../components/RoomData';
 import RoundCardsMemo from '../components/RoundCards';
 import SettingsFormMemo from '../components/SettingsForm';
 import VoteDialogMemo from '../components/VoteDialog';
+import { socket } from '../socket';
 
 const RoomRoute = (): JSX.Element => {
     const { user } = useContext(UserContext) as { user: User };
-    const { roomId } = useParams();
+    const { room: newRoomData, serverTime } = useContext(SocketEventContext) as {
+        room: Room | null;
+        serverTime: number;
+    };
+    const { roomId: roomIdParam } = useParams() as { roomId: string };
+    const roomId = parseInt(roomIdParam);
 
     const [room, setRoom] = useState<Room | null>(null);
     const [vote, setVote] = useState<'stay' | 'leave' | null>(null);
-    const [dontUpdate, setDontUpdate] = useState<boolean>(false);
     const [voteDelay, setVoteDelay] = useState<number | null>(null);
 
     const [lastVote, setLastVote] = useState<{ [key: string]: 'stay' | 'leave' }>({});
     const [votesOpen, setVotesOpen] = useState<boolean>(false);
     const [votesOpenDuration, setVotesOpenDuration] = useState<number>(2);
 
-    const [lastCard, setLastCard] = useState<Card | null>(null);
+    const [currentCard, setCurrentCard] = useState<Card | null>(null);
     const [gameEnded, setGameEnded] = useState<boolean>(false);
     const [cardOpen, setCardOpen] = useState<boolean>(false);
     const [cardOpenDuration, setCardOpenDuration] = useState<number>(2);
 
-    const handleShowCard = useCallback(
+    // Join and leave room
+    useEffect(() => {
+        socket.emit('joinRoom', roomId);
+        return () => {
+            socket.emit('leaveRoom', roomId);
+        };
+    }, [roomId]);
+
+    const showCard = useCallback(
         (newRoom: Room): void => {
-            if (!newRoom.data.gameInProgress || !room) {
-                setDontUpdate(false);
-                return;
-            }
+            if (!newRoom.data.gameInProgress || !room) throw new Error('assert');
+
             const numPlayers = room.data.roundInProgress
                 ? room.data.currentRound.players.length
                 : Object.keys(room.data.players).length;
@@ -45,209 +55,171 @@ const RoomRoute = (): JSX.Element => {
                 numPlayers === 1 && newRoom.data.roundInProgress ? room.settings.cardTime1 : room.settings.cardTime;
 
             if (openDuration === 0) {
-                setDontUpdate(false);
                 setRoom(newRoom);
                 return;
             }
-            setDontUpdate(true);
-            setLastCard(newRoom.data.lastCard);
+
+            setCurrentCard(newRoom.data.lastCard);
             setGameEnded(!newRoom.data.roundInProgress);
             setCardOpenDuration(openDuration);
             setCardOpen(true);
             setTimeout(() => {
                 setCardOpen(false);
-                setDontUpdate(false);
                 setRoom(newRoom);
             }, openDuration);
         },
         [room],
     );
 
-    const handleShowVote = useCallback(
+    const showVoteAndCard = useCallback(
         (newRoom: Room): void => {
-            if (!newRoom.data.gameInProgress || !room) return;
+            if (!newRoom.data.gameInProgress || !room) throw new Error('assert');
+
             const numPlayers = room.data.roundInProgress
                 ? room.data.currentRound.players.length
                 : Object.keys(room.data.players).length;
             const openDuration = numPlayers === 1 ? room.settings.voteShowTime1 : room.settings.voteShowTime;
 
             if (openDuration === 0) {
-                if (newRoom.data.lastCard === null) {
-                    setRoom(newRoom);
-                    return;
-                }
-                handleShowCard(newRoom);
+                // All players left
+                if (newRoom.data.lastCard === null) setRoom(newRoom);
+                else showCard(newRoom);
                 return;
             }
-            setDontUpdate(true);
+
             setLastVote(newRoom.data.lastVote);
             setVotesOpenDuration(openDuration);
             setVotesOpen(true);
             setTimeout(() => {
-                setVotesOpen(false);
                 if (!newRoom.data.gameInProgress) throw new Error('assert');
+                setVotesOpen(false);
+
+                // All players left
                 if (newRoom.data.lastCard === null) {
-                    setDontUpdate(false);
                     setRoom(newRoom);
-                    return;
+                } else {
+                    showCard(newRoom);
                 }
-                handleShowCard(newRoom);
             }, openDuration);
         },
-        [handleShowCard, room],
+        [showCard, room],
     );
 
     const handleSetRoom = useCallback(
-        ({ room: newRoom, serverTime }: { room: Room; serverTime: number }): void => {
-            if (JSON.stringify(room) !== JSON.stringify(newRoom)) {
-                if (dontUpdate) return;
+        (newRoom: Room): void => {
+            if (JSON.stringify(room) === JSON.stringify(newRoom)) return;
 
-                if (
-                    room &&
-                    room.data.roundInProgress &&
-                    room.data.currentRound.players.length > 1 &&
-                    newRoom.data.roundInProgress &&
-                    newRoom.data.currentRound.voteEnd
-                ) {
-                    setDontUpdate(true);
-                    setRoom({
-                        ...room,
-                        data: {
-                            ...room.data,
-                            currentRound: { ...room.data.currentRound, votes: newRoom.data.currentRound.votes },
-                        },
-                    });
-                    const delay = newRoom.data.currentRound.voteEnd - serverTime;
-                    setVoteDelay(delay);
-                    setTimeout(() => {
-                        setVoteDelay(null);
-                        axios
-                            .get(`/api/room/${roomId}`)
-                            .then((response) => {
-                                setDontUpdate(false);
-                                handleSetRoom(RoomResponseSchema.parse(response.data));
-                            })
-                            .catch(console.error);
-                    }, delay);
-                } else if (
-                    room &&
-                    room.data.roundInProgress &&
-                    newRoom.data.gameInProgress &&
-                    (!newRoom.data.roundInProgress ||
-                        newRoom.data.currentRound.deck.length !== room.data.currentRound.deck.length)
-                ) {
-                    handleShowVote(newRoom);
-                } else if (room && !room.data.roundInProgress && newRoom.data.roundInProgress) {
-                    handleShowCard(newRoom);
-                } else {
-                    setRoom(newRoom);
-                }
+            if (room === null) {
+                setRoom(newRoom);
+                return;
             }
+
+            // Vote timer
+            if (
+                room.data.roundInProgress &&
+                !room.data.currentRound.voteEndTime &&
+                newRoom.data.roundInProgress &&
+                newRoom.data.currentRound.voteEndTime
+            ) {
+                setRoom({
+                    ...room,
+                    data: {
+                        ...room.data,
+                        currentRound: {
+                            ...room.data.currentRound,
+                            votes: newRoom.data.currentRound.votes,
+                            voteEndTime: newRoom.data.currentRound.voteEndTime,
+                        },
+                    },
+                });
+                const delay = newRoom.data.currentRound.voteEndTime - serverTime;
+                setVoteDelay(delay);
+                setTimeout(() => {
+                    setVoteDelay(null);
+                }, delay);
+                return;
+            }
+
+            // Vote ended, show vote
+            if (
+                room.data.roundInProgress &&
+                newRoom.data.gameInProgress &&
+                (!newRoom.data.roundInProgress ||
+                    room.data.currentRound.deck.length !== newRoom.data.currentRound.deck.length)
+            ) {
+                showVoteAndCard(newRoom);
+                return;
+            }
+
+            // Round started, Show first card
+            if (!room.data.roundInProgress && newRoom.data.roundInProgress) {
+                showCard(newRoom);
+                return;
+            }
+
+            setRoom(newRoom);
         },
-        [room, dontUpdate, roomId, handleShowVote, handleShowCard],
+        [room, serverTime, showVoteAndCard, showCard],
     );
 
     useEffect(() => {
-        axios
-            .get(`/api/room/${roomId}`)
-            .then((response) => {
-                handleSetRoom(RoomResponseSchema.parse(response.data));
-            })
-            .catch(console.error);
-    }, [roomId, handleSetRoom]);
-
-    useEffect(() => {
-        const pollingInterval = setInterval(() => {
-            axios
-                .get(`/api/room/${roomId}`)
-                .then((response) => {
-                    handleSetRoom(RoomResponseSchema.parse(response.data));
-                })
-                .catch(console.error);
-        }, 1000);
-
-        return () => clearInterval(pollingInterval);
-    }, [room, roomId, handleSetRoom]);
+        if (newRoomData !== null) handleSetRoom(newRoomData);
+    }, [handleSetRoom, newRoomData]);
 
     useEffect(() => {
         if (room?.data.roundInProgress) setVote(room.data.currentRound.votes[user.username] ?? null);
     }, [user, room]);
 
     const joinGame = (): void => {
-        axios
-            .post(`/api/room/${roomId}/joinGame`, { username: user.username })
-            .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
-            .catch(console.error);
+        socket.emit('joinGame', roomId, user.username);
     };
     const leaveGame = (): void => {
-        axios
-            .post(`/api/room/${roomId}/leaveGame`, { username: user.username })
-            .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
-            .catch(console.error);
+        socket.emit('leaveGame', roomId, user.username);
     };
     const setSettings = (settings: Settings): void => {
-        axios
-            .put(`/api/room/${roomId}/settings`, settings)
-            .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
-            .catch(console.error);
+        socket.emit('editRoomSettings', roomId, settings);
     };
     const startGame = (): void => {
-        axios
-            .post(`/api/room/${roomId}/startGame`)
-            .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
-            .catch(console.error);
+        socket.emit('startGame', roomId);
     };
     const startRound = (): void => {
-        axios
-            .post(`/api/room/${roomId}/startRound`)
-            .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
-            .catch(console.error);
+        socket.emit('startRound', roomId);
     };
     const endGame = (): void => {
         if (confirm('End game?')) {
-            axios
-                .post(`/api/room/${roomId}/endGame`)
-                .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
-                .catch(console.error);
+            socket.emit('endGame', roomId);
         }
     };
     const resetRoom = (): void => {
         if (confirm('Reset room?')) {
-            axios
-                .post(`/api/room/${roomId}/resetRoom`)
-                .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
-                .catch(console.error);
+            socket.emit('resetRoom', roomId);
         }
     };
     const deleteRoom = (): void => {
         if (confirm('Delete room?')) {
-            axios
-                .delete(`/api/room/${roomId}`)
-                .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
-                .catch(console.error);
+            socket.emit('deleteRoom', roomId);
         }
     };
     const apiVote = (value: 'stay' | 'leave' | null): void => {
-        if (!value && voteDelay) return;
+        // Don't allow removing vote when vote in progress
+        if (voteDelay && value === null) return;
+
         setVote(value);
-        axios
-            .post(`/api/room/${roomId}/vote`, { username: user.username, vote: value })
-            .then((response) => handleSetRoom(RoomResponseSchema.parse(response.data)))
-            .catch(console.error);
+        socket.emit('vote', roomId, user.username, value);
     };
 
     if (room === null) return <Typography>Loading room...</Typography>;
     if (room.hidden) return <Navigate to="/" />;
     return (
         <>
+            <VoteDialogMemo open={votesOpen} duration={votesOpenDuration} lastVote={lastVote} />
+            <CardDialogMemo open={cardOpen} duration={cardOpenDuration} card={currentCard} gameEnded={gameEnded} />
+
             {!room.data.gameInProgress && !(user.username in room.data.players) && (
                 <Alert severity="warning" sx={{ mb: 2 }} variant="outlined">
                     You are not in the game
                 </Alert>
             )}
-
-            <VoteDialogMemo open={votesOpen} duration={votesOpenDuration} lastVote={lastVote} />
-            <CardDialogMemo open={cardOpen} duration={cardOpenDuration} card={lastCard} gameEnded={gameEnded} />
 
             {room.data.roundInProgress ? (
                 <PlayerTableMemo
