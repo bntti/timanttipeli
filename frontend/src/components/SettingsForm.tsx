@@ -1,7 +1,7 @@
-import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
+import { Box, Button, FormControl, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
 import { type JSX, type SyntheticEvent, memo, useEffect, useState } from 'react';
 
-import { type Settings, SettingsSchema } from '@/common/types';
+import { type Settings, settingsSchema } from '@/common/types';
 
 type Props = { settings: Settings; setSettings: (settings: Settings) => void };
 const propsEqual = (oldProps: Props, newProps: Props): boolean =>
@@ -10,6 +10,7 @@ const propsEqual = (oldProps: Props, newProps: Props): boolean =>
 const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
     const [error, setError] = useState<boolean>(false);
 
+    const [allowCheats, setAllowCheats] = useState<boolean>(settings.allowCheats);
     const [voteShowTime, setVoteShowTime] = useState<string>(settings.voteShowTime.toString());
     const [voteShowTime1, setVoteShowTime1] = useState<string>(settings.voteShowTime1.toString());
     const [cardTime, setCardTime] = useState<string>(settings.cardTime.toString());
@@ -17,6 +18,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
     const [afterVoteTime, setAfterVoteTime] = useState<string>(settings.afterVoteTime.toString());
 
     const unsaved =
+        allowCheats !== settings.allowCheats ||
         voteShowTime !== (settings.voteShowTime / 1000).toString() ||
         voteShowTime1 !== (settings.voteShowTime1 / 1000).toString() ||
         cardTime !== (settings.cardTime / 1000).toString() ||
@@ -34,7 +36,8 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
     const handleSubmit = (event: SyntheticEvent): void => {
         event.preventDefault();
         try {
-            const newSettings = SettingsSchema.parse({
+            const newSettings = settingsSchema.parse({
+                allowCheats,
                 voteShowTime: parseFloat(voteShowTime) * 1000,
                 voteShowTime1: parseFloat(voteShowTime1) * 1000,
                 cardTime: parseFloat(cardTime) * 1000,
@@ -68,6 +71,10 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
 
             <form onSubmit={handleSubmit}>
                 <FormControl fullWidth error={error}>
+                    <FormControlLabel
+                        control={<Switch checked={allowCheats} onChange={() => setAllowCheats(!allowCheats)} />}
+                        label="Allow cheats"
+                    />
                     {fields.map((field) => (
                         <TextField
                             key={field.label}

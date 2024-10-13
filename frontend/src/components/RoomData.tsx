@@ -1,14 +1,14 @@
 import { Grid2 as Grid, Paper, Typography, useTheme } from '@mui/material';
-import { type JSX, memo, useContext } from 'react';
+import { type JSX, memo } from 'react';
 
 import type { Card, TrapCard } from '@/common/types';
-import { type User, UserContext } from '../app/StateProvider';
 
 type Props = {
     gameNumber: number;
     roundNumber: number;
     deckSize: number;
     pointsOnGround: number | null;
+    cheats: boolean;
     deck: Card[] | null;
     inPlay: Card[] | null;
 };
@@ -18,18 +18,18 @@ const propsEqual = (oldProps: Props, newProps: Props): boolean =>
     oldProps.roundNumber === newProps.roundNumber &&
     oldProps.deckSize === newProps.deckSize &&
     oldProps.pointsOnGround === newProps.pointsOnGround &&
+    oldProps.cheats === newProps.cheats &&
     JSON.stringify(oldProps.deck) === JSON.stringify(newProps.deck) &&
     JSON.stringify(oldProps.inPlay) === JSON.stringify(newProps.inPlay);
 
-const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, deck, inPlay }: Props): JSX.Element => {
+const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, cheats, deck, inPlay }: Props): JSX.Element => {
     const theme = useTheme();
-    const { user } = useContext(UserContext) as { user: User };
 
     const pointsCard: { ev: number | null; prob: number | null } = { ev: null, prob: null };
     const relicCard: { ev: number | null; prob: number | null } = { ev: null, prob: null };
     let deathProb = null;
 
-    if (user.cheats && deck && inPlay) {
+    if (cheats && deck && inPlay) {
         const numPointsCards = deck.filter((card) => card.type === 'points').length;
         if (numPointsCards === 0) pointsCard.ev = 0;
         else {
@@ -72,7 +72,7 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, deck, inP
                     on ground {pointsOnGround}
                 </Typography>
             </Grid>
-            {user.cheats && (
+            {cheats && (
                 <>
                     <Grid size={4}>
                         <Typography

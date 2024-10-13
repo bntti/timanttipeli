@@ -7,8 +7,8 @@ import {
     type ClientToServerEvents,
     type Room,
     type ServerToClientEvents,
-    SettingsSchema,
     roomIdSchema,
+    settingsSchema,
     usernameSchema,
     voteSchema,
 } from '@/common/types';
@@ -66,7 +66,7 @@ const runServer = (): void => {
 
         socket.on('editRoomSettings', (roomId, settings) => {
             if (!validateRoomId(roomId, socket.rooms)) return;
-            if (!SettingsSchema.safeParse(settings).success) return;
+            if (!settingsSchema.safeParse(settings).success) return;
 
             rooms[roomId].settings = settings;
             io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });

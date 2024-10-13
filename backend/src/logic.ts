@@ -50,6 +50,7 @@ export const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
     hidden: false,
     name,
     settings: {
+        allowCheats: true,
         voteShowTime: 2000,
         voteShowTime1: 1000,
         cardTime: 2000,

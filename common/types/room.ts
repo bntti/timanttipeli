@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 import { CardSchema } from './card';
 
-export const SettingsSchema = z.object({
+export const settingsSchema = z.object({
+    allowCheats: z.boolean(),
     voteShowTime: z.union([z.literal(0), z.number().int().gt(99)]),
     voteShowTime1: z.union([z.literal(0), z.number().int().gt(99)]),
     cardTime: z.union([z.literal(0), z.number().int().gt(99)]),
@@ -10,15 +11,15 @@ export const SettingsSchema = z.object({
     afterVoteTime: z.union([z.literal(0), z.number().int().gt(99)]),
 });
 
-const RoomBaseSchema = z.object({
+const roomBaseSchema = z.object({
     id: z.number().int().nonnegative(),
     hidden: z.boolean(),
     name: z.string(),
-    settings: SettingsSchema,
+    settings: settingsSchema,
 });
 
-const RoomSchema = z.union([
-    RoomBaseSchema.extend({
+const roomSchema = z.union([
+    roomBaseSchema.extend({
         data: z.object({
             players: z.record(z.literal(0)),
             gameInProgress: z.literal(false),
@@ -28,7 +29,7 @@ const RoomSchema = z.union([
             currentRound: z.literal(null),
         }),
     }),
-    RoomBaseSchema.extend({
+    roomBaseSchema.extend({
         data: z.object({
             players: z.record(z.number().int().nonnegative()),
             gameInProgress: z.literal(true),
@@ -41,7 +42,7 @@ const RoomSchema = z.union([
             currentRound: z.literal(null),
         }),
     }),
-    RoomBaseSchema.extend({
+    roomBaseSchema.extend({
         data: z.object({
             players: z.record(z.number().int().nonnegative()),
             gameInProgress: z.literal(true),
@@ -66,8 +67,8 @@ const RoomSchema = z.union([
     }),
 ]);
 
-export const RoomResponseSchema = z.object({ room: RoomSchema, serverTime: z.number().int().nonnegative() });
-export const RoomsSchema = z.array(RoomBaseSchema);
+export const roomResponseSchema = z.object({ room: roomSchema, serverTime: z.number().int().nonnegative() });
+export const roomsSchema = z.array(roomBaseSchema);
 
-export type Settings = z.infer<typeof SettingsSchema>;
-export type Room = z.infer<typeof RoomSchema>;
+export type Settings = z.infer<typeof settingsSchema>;
+export type Room = z.infer<typeof roomSchema>;
