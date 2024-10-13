@@ -315,7 +315,6 @@ const RoomRoute = (): JSX.Element => {
                                 Delete Room
                             </Button>
                             <Divider sx={{ mt: 2, mb: 1 }} />
-                            <Typography variant="subtitle1">Settings</Typography>
                             <SettingsFormMemo settings={room.settings} setSettings={setSettings} />
                         </>
                     )}
