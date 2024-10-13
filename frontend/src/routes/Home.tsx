@@ -1,14 +1,14 @@
 import {
+    Box,
     Button,
     Divider,
     FormControl,
     FormHelperText,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemText,
     Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableRow,
     TextField,
     Typography,
 } from '@mui/material';
@@ -40,47 +40,36 @@ const Home = (): JSX.Element => {
 
     if (rooms === null) return <Typography>Loading rooms...</Typography>;
     return (
-        <div
-            style={{
+        <Box
+            sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 minHeight: 'calc(100vh - 76px - 30px)',
             }}
         >
-            <div style={{ flex: 1 }}>
+            <Box sx={{ flex: 1 }}>
                 <Typography variant="h5">Rooms</Typography>
                 {rooms.length === 0 ? (
                     <Typography>No rooms</Typography>
                 ) : (
-                    <TableContainer component={Paper} sx={{ mt: 2 }}>
-                        <Table component="div">
-                            <TableBody component="div">
-                                {rooms
-                                    .filter((room) => !room.hidden)
-                                    .map((room) => (
-                                        <TableRow
-                                            key={room.name}
-                                            component={Link}
-                                            to={`/room/${room.id}`}
-                                            sx={{
-                                                textDecoration: 'none',
-                                                '&:last-child td': {
-                                                    borderBottom: 0,
-                                                },
-                                            }}
-                                        >
-                                            <TableCell component="div">
-                                                <Typography>{room.name}</Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                    <List component={Paper} sx={{ mt: 2 }} disablePadding>
+                        {rooms
+                            .filter((room) => !room.hidden)
+                            .map((room, i, filteredRooms) => (
+                                <>
+                                    <ListItem key={room.name} disablePadding>
+                                        <ListItemButton component={Link} to={`/room/${room.id}`}>
+                                            <ListItemText>{room.name}</ListItemText>
+                                        </ListItemButton>
+                                    </ListItem>
+                                    {i !== filteredRooms.length - 1 && <Divider component="li" />}
+                                </>
+                            ))}
+                    </List>
                 )}
-            </div>
+            </Box>
             <Divider sx={{ mb: 2 }} />
-            <div style={{ paddingTop: 2.5 }}>
+            <Box sx={{ paddingTop: 2.5 }}>
                 <form onSubmit={createRoom}>
                     <FormControl fullWidth error={error}>
                         <TextField
@@ -100,8 +89,8 @@ const Home = (): JSX.Element => {
                         </Button>
                     </FormControl>
                 </form>
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 };
 
