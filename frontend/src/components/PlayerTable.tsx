@@ -1,5 +1,6 @@
 import { Block, Check, Close, HourglassBottom } from '@mui/icons-material';
 import {
+    Button,
     Paper,
     Table,
     TableBody,
@@ -16,6 +17,8 @@ type Props =
     | {
           roomPlayers: { [key: string]: number };
           gameInProgress: boolean;
+          removePlayers: boolean;
+          kickPlayer: (username: string) => void;
           roundPlayers?: null;
           votes?: null;
           pointsPerPlayer?: null;
@@ -25,6 +28,8 @@ type Props =
     | {
           roomPlayers: { [key: string]: number };
           gameInProgress: boolean;
+          removePlayers: boolean;
+          kickPlayer: (username: string) => void;
           roundPlayers: [string, ...string[]];
           votes: string[];
           pointsPerPlayer: number;
@@ -34,6 +39,7 @@ type Props =
 const propsEqual = (oldProps: Props, newProps: Props): boolean =>
     JSON.stringify(oldProps.roomPlayers) === JSON.stringify(newProps.roomPlayers) &&
     oldProps.gameInProgress === newProps.gameInProgress &&
+    oldProps.removePlayers === newProps.removePlayers &&
     JSON.stringify(oldProps.roundPlayers) === JSON.stringify(newProps.roundPlayers) &&
     JSON.stringify(oldProps.votes) === JSON.stringify(newProps.votes) &&
     oldProps.pointsPerPlayer === newProps.pointsPerPlayer &&
@@ -43,6 +49,8 @@ const propsEqual = (oldProps: Props, newProps: Props): boolean =>
 const PlayerTable = ({
     roomPlayers,
     gameInProgress,
+    removePlayers,
+    kickPlayer,
     roundPlayers = null,
     votes = null,
     pointsPerPlayer = null,
@@ -85,17 +93,24 @@ const PlayerTable = ({
             <Table size="small" sx={{ tableLayout: 'fixed' }}>
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{ width: gameInProgress ? '50%' : '75%' }}>
+                        <TableCell sx={{ width: !removePlayers && gameInProgress ? '50%' : '70%' }}>
                             <Typography>Player</Typography>
                         </TableCell>
-                        {gameInProgress && (
+                        {removePlayers && (
+                            <TableCell>
+                                <Typography>Manage</Typography>
+                            </TableCell>
+                        )}
+                        {!removePlayers && gameInProgress && (
                             <TableCell>
                                 <Typography color={roundInProgress ? '' : 'gray'}>Voted</Typography>
                             </TableCell>
                         )}
-                        <TableCell sx={{ width: '30%' }}>
-                            <Typography>Points</Typography>
-                        </TableCell>
+                        {!removePlayers && (
+                            <TableCell sx={{ width: '30%' }}>
+                                <Typography>Points</Typography>
+                            </TableCell>
+                        )}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -115,9 +130,23 @@ const PlayerTable = ({
                             }}
                         >
                             <TableCell>
-                                <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{player}</Typography>
+                                <Typography sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {player}
+                                </Typography>
                             </TableCell>
-                            {gameInProgress && (
+                            {removePlayers && (
+                                <TableCell>
+                                    <Button
+                                        sx={{ ml: 1 }}
+                                        size="small"
+                                        variant="outlined"
+                                        onClick={() => kickPlayer(player)}
+                                    >
+                                        Kick
+                                    </Button>
+                                </TableCell>
+                            )}
+                            {!removePlayers && gameInProgress && (
                                 <TableCell>
                                     {roundInProgress && roundPlayers.includes(player) && (
                                         <>
@@ -133,7 +162,7 @@ const PlayerTable = ({
                                     {roundInProgress && !roundPlayers.includes(player) && <Block color="disabled" />}
                                 </TableCell>
                             )}
-                            <TableCell>{getPointsText(player)}</TableCell>
+                            {!removePlayers && <TableCell>{getPointsText(player)}</TableCell>}
                         </TableRow>
                     ))}
                 </TableBody>

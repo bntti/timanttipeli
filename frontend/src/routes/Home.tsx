@@ -56,14 +56,14 @@ const Home = (): JSX.Element => {
                         {rooms
                             .filter((room) => !room.hidden)
                             .map((room, i, filteredRooms) => (
-                                <>
-                                    <ListItem key={room.name} disablePadding>
+                                <div key={room.name}>
+                                    <ListItem disablePadding>
                                         <ListItemButton component={Link} to={`/room/${room.id}`}>
                                             <ListItemText>{room.name}</ListItemText>
                                         </ListItemButton>
                                     </ListItem>
                                     {i !== filteredRooms.length - 1 && <Divider component="li" />}
-                                </>
+                                </div>
                             ))}
                     </List>
                 )}

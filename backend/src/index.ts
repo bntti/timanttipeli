@@ -12,28 +12,7 @@ import {
     usernameSchema,
     voteSchema,
 } from '@/common/types';
-import { handleVotes, startGame, startRound } from './logic';
-
-const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
-    id,
-    hidden: false,
-    name,
-    settings: {
-        voteShowTime: 2000,
-        voteShowTime1: 1000,
-        cardTime: 2000,
-        cardTime1: 1000,
-        afterVoteTime: 5000,
-    },
-    data: {
-        players: {},
-        gameInProgress: false,
-        roundInProgress: false,
-        removedCards: [],
-        roundsDone: 0,
-        currentRound: null,
-    },
-});
+import { generateRoom, handleLeave, handleVotes, startGame, startRound } from './logic';
 
 const rooms: Room[] = [];
 
@@ -120,7 +99,16 @@ const runServer = (): void => {
             if (!validateRoomId(roomId, socket.rooms)) return;
             if (!usernameSchema.safeParse(username).success) return;
 
-            delete rooms[roomId].data.players[username];
+            handleLeave(rooms[roomId], username);
+
+            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
+
+        socket.on('kickPlayer', (roomId, username) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
+            if (!usernameSchema.safeParse(username).success) return;
+
+            handleLeave(rooms[roomId], username);
 
             io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
         });
@@ -185,11 +173,24 @@ const runServer = (): void => {
                 io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
         });
 
+        socket.on('endRound', (roomId) => {
+            if (!validateRoomId(roomId, socket.rooms)) return;
+            if (!rooms[roomId].data.roundInProgress) return;
+            if (rooms[roomId].data.currentRound.voteEndTime !== null) return;
+
+            handleVotes(rooms[roomId], true);
+
+            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+        });
+
         socket.on('endGame', (roomId) => {
             if (!validateRoomId(roomId, socket.rooms)) return;
             if (!rooms[roomId].data.gameInProgress) return;
 
+            const players = Object.keys(rooms[roomId].data.players);
             rooms[roomId].data = generateRoom().data;
+            rooms[roomId].data.players = Object.fromEntries(players.map((player) => [player, 0]));
+
             io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
         });
 

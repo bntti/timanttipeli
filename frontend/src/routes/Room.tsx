@@ -24,6 +24,8 @@ const RoomRoute = (): JSX.Element => {
     const roomId = parseInt(roomIdParam);
 
     const [room, setRoom] = useState<Room | null>(null);
+    const [removePlayers, setRemovePlayers] = useState<boolean>(false);
+
     const [vote, setVote] = useState<'stay' | 'leave' | null>(null);
     const [voteDelay, setVoteDelay] = useState<number | null>(null);
 
@@ -114,6 +116,9 @@ const RoomRoute = (): JSX.Element => {
                 return;
             }
 
+            // Reset removePlayers when round starts
+            if (!room.data.roundInProgress && newRoom.data.roundInProgress) setRemovePlayers(false);
+
             // Vote timer
             if (
                 room.data.roundInProgress &&
@@ -174,7 +179,12 @@ const RoomRoute = (): JSX.Element => {
         socket.emit('joinGame', roomId, user.username);
     };
     const leaveGame = (): void => {
-        socket.emit('leaveGame', roomId, user.username);
+        if (!room?.data.gameInProgress || confirm('Leave game?')) {
+            socket.emit('leaveGame', roomId, user.username);
+        }
+    };
+    const kickPlayer = (username: string): void => {
+        socket.emit('kickPlayer', roomId, username);
     };
     const setSettings = (settings: Settings): void => {
         socket.emit('editRoomSettings', roomId, settings);
@@ -188,6 +198,11 @@ const RoomRoute = (): JSX.Element => {
     const endGame = (): void => {
         if (confirm('End game?')) {
             socket.emit('endGame', roomId);
+        }
+    };
+    const endRound = (): void => {
+        if (confirm('End round?')) {
+            socket.emit('endRound', roomId);
         }
     };
     const resetRoom = (): void => {
@@ -225,6 +240,8 @@ const RoomRoute = (): JSX.Element => {
                 <PlayerTableMemo
                     roomPlayers={room.data.players}
                     gameInProgress={room.data.gameInProgress}
+                    removePlayers={removePlayers && !room.data.roundInProgress}
+                    kickPlayer={kickPlayer}
                     roundPlayers={room.data.currentRound.players}
                     pointsPerPlayer={room.data.currentRound.pointsPerPlayer}
                     votes={Object.keys(room.data.currentRound.votes)}
@@ -232,7 +249,12 @@ const RoomRoute = (): JSX.Element => {
                     hasRelic={room.data.currentRound.hasRelic}
                 />
             ) : (
-                <PlayerTableMemo gameInProgress={room.data.gameInProgress} roomPlayers={room.data.players} />
+                <PlayerTableMemo
+                    gameInProgress={room.data.gameInProgress}
+                    removePlayers={removePlayers && !room.data.roundInProgress}
+                    roomPlayers={room.data.players}
+                    kickPlayer={kickPlayer}
+                />
             )}
             {room.data.gameInProgress && (
                 <>
@@ -269,8 +291,9 @@ const RoomRoute = (): JSX.Element => {
                 </>
             )}
 
-            {(!room.data.gameInProgress || user.admin) && <Divider sx={{ mt: 5, mb: 0.5 }} />}
-            {!room.data.gameInProgress &&
+            {(!room.data.roundInProgress || user.admin) && <Divider sx={{ mt: 5, mb: 0.5 }} />}
+
+            {!room.data.roundInProgress &&
                 (user.username in room.data.players ? (
                     <Button fullWidth onClick={leaveGame} variant="outlined" sx={{ mt: 1 }}>
                         Leave game
@@ -299,9 +322,23 @@ const RoomRoute = (): JSX.Element => {
                             Start Game
                         </Button>
                     )}
+                    <Button
+                        variant="outlined"
+                        fullWidth
+                        sx={{ mt: 1 }}
+                        disabled={Object.keys(room.data.players).length === 0 || room.data.roundInProgress}
+                        onClick={() => setRemovePlayers(!removePlayers)}
+                    >
+                        Manage players
+                    </Button>
                     {room.data.gameInProgress && !room.data.roundInProgress && (
                         <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={endGame}>
                             End game
+                        </Button>
+                    )}
+                    {room.data.gameInProgress && room.data.roundInProgress && (
+                        <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={endRound}>
+                            End round
                         </Button>
                     )}
                     {(!room.data.gameInProgress || room.data.roundInProgress) && (

@@ -12,10 +12,12 @@ export type ClientToServerEvents = {
     leaveRoom: (roomId: number) => void;
     joinGame: (roomId: number, username: string) => void;
     leaveGame: (roomId: number, username: string) => void;
+    kickPlayer: (roomId: number, username: string) => void;
     startGame: (roomId: number) => void;
     startRound: (roomId: number) => void;
     vote: (roomId: number, username: string, vote: 'stay' | 'leave' | null) => void;
     endGame: (roomId: number) => void;
+    endRound: (roomId: number) => void;
     resetRoom: (roomId: number) => void;
     deleteRoom: (roomId: number) => void;
 };

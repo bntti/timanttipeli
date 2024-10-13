@@ -45,6 +45,27 @@ const baseDeck: Card[] = [
     { type: 'trap', trap: 'spider' },
 ];
 
+export const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
+    id,
+    hidden: false,
+    name,
+    settings: {
+        voteShowTime: 2000,
+        voteShowTime1: 1000,
+        cardTime: 2000,
+        cardTime1: 1000,
+        afterVoteTime: 5000,
+    },
+    data: {
+        players: {},
+        gameInProgress: false,
+        roundInProgress: false,
+        removedCards: [],
+        roundsDone: 0,
+        currentRound: null,
+    },
+});
+
 const createDeck = (room: Room): Card[] => {
     const result = [...baseDeck];
 
@@ -105,10 +126,17 @@ const handleDraw = (room: Room): void => {
     round.inPlay.push(card);
 };
 
-export const handleVotes = (room: Room): void => {
+export const handleVotes = (room: Room, endRound: boolean = false): void => {
     assert(room.data.roundInProgress);
-
     const round = room.data.currentRound;
+
+    // Force everyone to leave if round was forcibly ended
+    if (endRound) {
+        for (const player of round.players) {
+            round.votes[player] = 'leave';
+        }
+    }
+
     const numLeave = Object.values(round.votes).filter((vote) => vote === 'leave').length;
 
     for (const [player, vote] of Object.entries(round.votes)) {
@@ -194,4 +222,14 @@ export const startRound = (room: Room): void => {
         },
     };
     handleDraw(room);
+};
+
+export const handleLeave = (room: Room, player: string): void => {
+    assert(!room.data.roundInProgress);
+    assert(player in room.data.players);
+
+    delete room.data.players[player];
+    if (room.data.gameInProgress && Object.keys(room.data.players).length === 0) {
+        room.data = generateRoom().data;
+    }
 };
