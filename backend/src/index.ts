@@ -3,7 +3,15 @@ import assert from 'node:assert';
 import http from 'node:http';
 import { Server } from 'socket.io';
 
-import type { ClientToServerEvents, Room, ServerToClientEvents } from '@/common/types';
+import {
+    type ClientToServerEvents,
+    type Room,
+    type ServerToClientEvents,
+    SettingsSchema,
+    roomIdSchema,
+    usernameSchema,
+    voteSchema,
+} from '@/common/types';
 import { handleVotes, startGame, startRound } from './logic';
 
 const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
@@ -30,6 +38,8 @@ const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
 const rooms: Room[] = [];
 
 const getRoomIdError = (roomId: number, socketRooms: Set<string> | null = null, joining: boolean = false): string => {
+    if (!roomIdSchema.safeParse(roomId).success) return `Invalid room id ${roomId}`;
+
     if (socketRooms !== null) {
         if (!joining && socketRooms.size === 1) return 'Client not in any room';
         if (!joining && !socketRooms.has(roomId.toString())) return 'Client not in roomId';
@@ -66,6 +76,8 @@ const runServer = (): void => {
         socket.emit('rooms', rooms);
 
         socket.on('createRoom', (name, callback) => {
+            if (!(typeof callback === 'function')) return;
+
             const roomId = rooms.length;
             rooms.push(generateRoom(roomId, name));
             io.emit('rooms', rooms);
@@ -75,24 +87,21 @@ const runServer = (): void => {
 
         socket.on('editRoomSettings', (roomId, settings) => {
             if (!validateRoomId(roomId, socket.rooms)) return;
+            if (!SettingsSchema.safeParse(settings).success) return;
 
             rooms[roomId].settings = settings;
             io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
         });
 
         socket.on('joinRoom', async (roomId) => {
-            console.log('Socket tried to join room');
             if (!validateRoomId(roomId, socket.rooms, true)) return;
-            console.log('Socket joined room');
 
             await socket.join(roomId.toString());
             socket.emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
         });
 
         socket.on('leaveRoom', async (roomId) => {
-            console.log('Socket tried to left room');
             if (!validateRoomId(roomId, socket.rooms)) return;
-            console.log('Socket left room');
 
             await socket.leave(roomId.toString());
         });
@@ -100,6 +109,7 @@ const runServer = (): void => {
         socket.on('joinGame', (roomId, username) => {
             if (!validateRoomId(roomId, socket.rooms)) return;
             if (rooms[roomId].data.roundInProgress) return;
+            if (!(typeof username === 'string')) return;
 
             rooms[roomId].data.players[username] = 0;
 
@@ -108,6 +118,7 @@ const runServer = (): void => {
 
         socket.on('leaveGame', (roomId, username) => {
             if (!validateRoomId(roomId, socket.rooms)) return;
+            if (!usernameSchema.safeParse(username).success) return;
 
             delete rooms[roomId].data.players[username];
 
@@ -137,6 +148,8 @@ const runServer = (): void => {
 
         socket.on('vote', (roomId, username, vote) => {
             if (!validateRoomId(roomId, socket.rooms)) return;
+            if (!usernameSchema.safeParse(username).success) return;
+            if (!voteSchema.safeParse(vote).success) return;
 
             const room = rooms[roomId];
             if (!room.data.roundInProgress) return;
@@ -156,7 +169,6 @@ const runServer = (): void => {
 
                     // Wait delay
                     setTimeout(() => {
-                        console.log('Vote ended!');
                         const updatedRound = rooms[roomId].data.currentRound;
                         assert(updatedRound !== null);
 
