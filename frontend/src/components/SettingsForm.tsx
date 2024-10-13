@@ -50,7 +50,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
     const fields = [
         { label: 'Votes show duration (s)', value: voteShowTime, setValue: setVoteShowTime },
         { label: 'Votes show duration 1 player (s)', value: voteShowTime1, setValue: setVoteShowTime1 },
-        { label: 'new card show duration (s)', value: cardTime, setValue: setCardTime },
+        { label: 'New card show duration (s)', value: cardTime, setValue: setCardTime },
         { label: 'New card show duration 1 player (s)', value: cardTime1, setValue: setCardTime1 },
         { label: 'After vote delay (s)', value: afterVoteTime, setValue: setAfterVoteTime },
     ];
