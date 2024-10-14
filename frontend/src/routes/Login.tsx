@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';
 
-const Login = (): JSX.Element => {
+const LoginRoute = (): JSX.Element => {
     const { state } = useLocation() as { state?: { from: string } };
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
@@ -42,4 +42,4 @@ const Login = (): JSX.Element => {
     );
 };
 
-export default Login;
+export default LoginRoute;

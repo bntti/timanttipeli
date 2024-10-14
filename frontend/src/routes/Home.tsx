@@ -18,7 +18,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { SocketEventContext } from '../app/StateProvider';
 import { socket } from '../socket';
 
-const Home = (): JSX.Element => {
+const HomeRoute = (): JSX.Element => {
     const { rooms } = useContext(SocketEventContext);
 
     const [newRoom, setNewRoom] = useState<string>('');
@@ -94,4 +94,4 @@ const Home = (): JSX.Element => {
     );
 };
 
-export default Home;
+export default HomeRoute;

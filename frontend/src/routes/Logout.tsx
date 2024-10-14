@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';
 
-const Logout = (): JSX.Element => {
+const LogoutRoute = (): JSX.Element => {
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
 
@@ -17,4 +17,4 @@ const Logout = (): JSX.Element => {
     return <Typography>Logging out...</Typography>;
 };
 
-export default Logout;
+export default LogoutRoute;

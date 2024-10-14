@@ -58,7 +58,7 @@ const UserButton = (): JSX.Element => {
                     <ListItemIcon>
                         <Logout />
                     </ListItemIcon>
-                    <ListItemText>Logout</ListItemText>{' '}
+                    <ListItemText>Logout</ListItemText>
                 </MenuItem>
             </Menu>
         </>

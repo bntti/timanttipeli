@@ -4,10 +4,11 @@ import { Navigate, RouterProvider, createBrowserRouter, useNavigate } from 'reac
 
 import { UserContext, UserSchema } from './StateProvider';
 import Root from '../components/Root';
-import Home from '../routes/Home';
-import Login from '../routes/Login';
-import Logout from '../routes/Logout';
+import HomeRoute from '../routes/Home';
+import LoginRoute from '../routes/Login';
+import LogoutRoute from '../routes/Logout';
 import RoomRoute from '../routes/Room';
+import RulesRoute from '../routes/Rules';
 
 const RequireAuth = ({ children }: PropsWithChildren): ReactNode => {
     const { user, setUser } = useContext(UserContext);
@@ -43,12 +44,20 @@ const router = createBrowserRouter([
                 path: '/',
                 element: (
                     <RequireAuth>
-                        <Home />
+                        <HomeRoute />
                     </RequireAuth>
                 ),
             },
-            { path: 'login', element: <Login /> },
-            { path: 'logout', element: <Logout /> },
+            { path: 'login', element: <LoginRoute /> },
+            { path: 'logout', element: <LogoutRoute /> },
+            {
+                path: 'rules',
+                element: (
+                    <RequireAuth>
+                        <RulesRoute />
+                    </RequireAuth>
+                ),
+            },
             {
                 path: 'room/:roomId',
                 element: (

@@ -1,4 +1,11 @@
-import { AddModeratorOutlined, AutoFixNormal, AutoFixOff, Home, RemoveModeratorOutlined } from '@mui/icons-material';
+import {
+    AddModeratorOutlined,
+    AutoFixNormal,
+    AutoFixOff,
+    Home,
+    MenuBook,
+    RemoveModeratorOutlined,
+} from '@mui/icons-material';
 import { AppBar, IconButton, Toolbar } from '@mui/material';
 import { type JSX, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -16,6 +23,12 @@ const ToolBar = (): JSX.Element => {
                 <IconButton color="inherit" component={Link} to="/" size="large">
                     <Home />
                 </IconButton>
+                {!location.pathname.startsWith('/room/') && (
+                    <IconButton color="inherit" component={Link} to="/rules" size="large">
+                        <MenuBook />
+                    </IconButton>
+                )}
+
                 <span style={{ flexGrow: 1 }} />
 
                 {user !== null && location.pathname.startsWith('/room/') && (
