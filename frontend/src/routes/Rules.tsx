@@ -14,6 +14,10 @@ const RulesRoute = (): JSX.Element => (
         <Typography>The game has a deck of cards which contains treasure cards, trap cards and relic cards.</Typography>
 
         <Typography variant="h5">Round overview</Typography>
+        <Typography>
+            At the beginning of a round, a new relic card is inserted into the deck before shuffling. The added relic
+            card values are <b>5, 7, 8, 10, 12,</b> in that order.
+        </Typography>
 
         <Typography variant="h6">1. Card reveal</Typography>
         <Typography>The top card is revealed.</Typography>
@@ -92,7 +96,7 @@ const RulesRoute = (): JSX.Element => (
                 </Typography>
             </li>
             <li>
-                <Typography>The deck is shuffled for the next round</Typography>
+                <Typography>A relic is added and the deck is shuffled for the next round</Typography>
             </li>
         </ul>
 
