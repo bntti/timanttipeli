@@ -9,10 +9,6 @@ export default defineConfig({
     plugins: [react(), tsconfigPaths()],
     server: {
         proxy: {
-            '/api': {
-                target: 'http://localhost:5000',
-                rewrite: (path) => path.replace(/^\/api/u, ''),
-            },
             '/socket.io': {
                 target: 'http://localhost:5000',
                 ws: true,

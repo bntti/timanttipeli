@@ -11,7 +11,7 @@ const LoginRoute = (): JSX.Element => {
 
     const [username, setUsername] = useState<string>('');
 
-    const addApiToken = (event: SyntheticEvent): void => {
+    const handleSetUsername = (event: SyntheticEvent): void => {
         event.preventDefault();
 
         const user = { username, admin: false, cheats: false };
@@ -27,7 +27,7 @@ const LoginRoute = (): JSX.Element => {
             <Typography variant="h5" sx={{ mb: 2 }}>
                 Select username
             </Typography>
-            <form onSubmit={addApiToken}>
+            <form onSubmit={handleSetUsername}>
                 <TextField
                     fullWidth
                     label="Username"

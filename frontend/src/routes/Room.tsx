@@ -215,7 +215,7 @@ const RoomRoute = (): JSX.Element => {
             socket.emit('deleteRoom', roomId);
         }
     };
-    const apiVote = (value: 'stay' | 'leave' | null): void => {
+    const handleVote = (value: 'stay' | 'leave' | null): void => {
         // Don't allow removing vote when vote in progress
         if (voteDelay && value === null) return;
 
@@ -281,7 +281,7 @@ const RoomRoute = (): JSX.Element => {
                             orientation="horizontal"
                             value={vote}
                             exclusive
-                            onChange={(_, value) => apiVote(value as 'stay' | 'leave' | null)}
+                            onChange={(_, value) => handleVote(value as 'stay' | 'leave' | null)}
                             sx={{ mt: 2 }}
                         >
                             <ToggleButton value="stay">Stay</ToggleButton>
