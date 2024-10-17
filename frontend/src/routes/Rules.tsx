@@ -9,7 +9,7 @@ const RulesRoute = (): JSX.Element => (
         <Typography variant="h5">Gameplay</Typography>
         <Typography>
             The game plays over 5 rounds corresponding to 5 caves. Inside a cave each round consists of each player
-            deciding to either advance further into the cave or return to camp.
+            deciding to either leave the cave or advance further into it.
         </Typography>
         <Typography>The game has a deck of cards which contains treasure cards, trap cards and relic cards.</Typography>
 
@@ -24,29 +24,31 @@ const RulesRoute = (): JSX.Element => (
         <ul>
             <li>
                 <Typography>
-                    <b>Treasure card</b>: The card corresponds to some number of points. Share them equally with all
-                    players still in the cave. The remaining points are left on the ground. Points you gather during the
-                    expedition can be lost. The points are added to your point total when you return to camp.
+                    <b>Treasure card</b>: The card corresponds to some number of points. They are shared equally among
+                    all players still in the cave. The remaining points that cannot be shared equally are left on the
+                    ground. When you leave the cave, the points you have gathered during the expedition are added to
+                    your point total.
                 </Typography>
             </li>
             <li>
                 <Typography>
                     <b>Trap card</b>: If a trap appears for the first time since you entered the cave, nothing happens
-                    and the expedition continues. However, if the same trap is revealed a second time, all players in
-                    the cave immediately return to camp empty handed. The expedition ends immediately.
+                    and the expedition continues. However, if the same trap is revealed a second time, the cave
+                    collapses and all players still in the cave immediately leave empty handed. The expedition ends
+                    immediately.
                 </Typography>
             </li>
             <li>
                 <Typography>
-                    <b>Relic card</b>: The relic card stays in the cave and nothing happens. The card isn’t worth any
-                    points until a player leaves the cave alone.
+                    <b>Relic card</b>: The relic card stays in the cave and nothing happens. The card isn&apos;t worth
+                    any points until a player leaves the cave alone.
                 </Typography>
             </li>
         </ul>
 
         <Typography variant="h6">2. Voting</Typography>
         <Typography>
-            Each player still in the cave must decide to continue into the cave, or return to camp to actually get the
+            Each player still in the cave must decide to either continue into the cave, or leave it to actually get the
             points from the expedition. Players vote by pressing either the <b>Stay</b> button or the <b>Leave</b>{' '}
             button. When everyone is ready, the votes are revealed.
         </Typography>
@@ -58,7 +60,7 @@ const RulesRoute = (): JSX.Element => (
             </li>
             <li>
                 <Typography>
-                    <b>Leave</b>: Return to camp:
+                    <b>Leave</b>: Leave the cave:
                 </Typography>
                 <ul>
                     <li>
@@ -81,7 +83,7 @@ const RulesRoute = (): JSX.Element => (
                 </ul>
             </li>
         </ul>
-        <Typography>If some players are still in the cave, a new card is revealed.</Typography>
+        <Typography>Steps 1 and 2 are repeated until either everyone leaves the cave or the cave collapses.</Typography>
 
         <Typography variant="h6">3. End of a round</Typography>
         <Typography>
@@ -91,12 +93,13 @@ const RulesRoute = (): JSX.Element => (
         <ul>
             <li>
                 <Typography>
-                    The second identical trap card from the game is removed from the game if the expedition triggered
-                    that trap.
+                    If the cave collapsed due to a trap card, that trap card is removed from the game.
                 </Typography>
             </li>
             <li>
-                <Typography>A relic is added and the deck is shuffled for the next round</Typography>
+                <Typography>
+                    A new relic card is added to the deck and the deck is shuffled for the next round
+                </Typography>
             </li>
         </ul>
 
