@@ -4,7 +4,8 @@
     "scripts": {
         "build": "tsc -b && vite build",
         "dev": "vite",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "trans": "npx i18next 'src/**/*.{ts,tsx}' -c i18next-parser.config.ts -o 'src/locales/$LOCALE/$NAMESPACE.json'"
     },
     "dependencies": {
         "@emotion/react": "^11.11.1",
@@ -14,8 +15,12 @@
         "@types/react": "^18.2.43",
         "@types/react-dom": "^18.2.17",
         "@vitejs/plugin-react-swc": "^3.6.0",
+        "i18next": "^23.16.4",
+        "i18next-browser-languagedetector": "^8.0.0",
+        "i18next-parser": "^9.0.2",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
+        "react-i18next": "^15.1.0",
         "react-router-dom": "^6.21.0",
         "socket.io-client": "^4.8.0",
         "typescript": "^5.2.2",

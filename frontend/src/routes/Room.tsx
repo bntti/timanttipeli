@@ -1,5 +1,6 @@
 import { Alert, Button, Divider, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { type JSX, useCallback, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Navigate, useParams } from 'react-router-dom';
 
 import type { Card, Room, Settings } from '@/common/types';
@@ -15,6 +16,7 @@ import VoteDialogMemo from '../components/VoteDialog';
 import { socket } from '../socket';
 
 const RoomRoute = (): JSX.Element => {
+    const { t } = useTranslation();
     const { user } = useContext(UserContext) as { user: User };
     const { room: newRoomData, serverTime } = useContext(SocketEventContext) as {
         room: Room | null;
@@ -179,7 +181,7 @@ const RoomRoute = (): JSX.Element => {
         socket.emit('joinGame', roomId, user.username);
     };
     const leaveGame = (): void => {
-        if (!room?.data.gameInProgress || confirm('Leave game?')) {
+        if (!room?.data.gameInProgress || confirm(t('leave-game-q'))) {
             socket.emit('leaveGame', roomId, user.username);
         }
     };
@@ -196,22 +198,22 @@ const RoomRoute = (): JSX.Element => {
         socket.emit('startRound', roomId);
     };
     const endGame = (): void => {
-        if (confirm('End game?')) {
+        if (confirm(t('end-game-q'))) {
             socket.emit('endGame', roomId);
         }
     };
     const endRound = (): void => {
-        if (confirm('End round?')) {
+        if (confirm(t('end-round-q'))) {
             socket.emit('endRound', roomId);
         }
     };
     const resetRoom = (): void => {
-        if (confirm('Reset room?')) {
+        if (confirm(t('reset-room-q'))) {
             socket.emit('resetRoom', roomId);
         }
     };
     const deleteRoom = (): void => {
-        if (confirm('Delete room?')) {
+        if (confirm(t('delete-room-q'))) {
             socket.emit('deleteRoom', roomId);
         }
     };
@@ -232,7 +234,7 @@ const RoomRoute = (): JSX.Element => {
 
             {!room.data.gameInProgress && !(user.username in room.data.players) && (
                 <Alert severity="warning" sx={{ mb: 2 }} variant="outlined">
-                    You are not in the game
+                    {t('you-are-not-in-the-game')}
                 </Alert>
             )}
 
@@ -284,8 +286,8 @@ const RoomRoute = (): JSX.Element => {
                             onChange={(_, value) => handleVote(value as 'stay' | 'leave' | null)}
                             sx={{ mt: 2 }}
                         >
-                            <ToggleButton value="stay">Stay</ToggleButton>
-                            <ToggleButton value="leave">Leave</ToggleButton>
+                            <ToggleButton value="stay">{t('stay')}</ToggleButton>
+                            <ToggleButton value="leave">{t('leave')}</ToggleButton>
                         </ToggleButtonGroup>
                     )}
                     {voteDelay && <DurationBarMemo duration={voteDelay} />}
@@ -297,11 +299,11 @@ const RoomRoute = (): JSX.Element => {
             {!room.data.roundInProgress &&
                 (user.username in room.data.players ? (
                     <Button fullWidth onClick={leaveGame} variant="outlined" sx={{ mt: 1 }}>
-                        Leave game
+                        {t('leave-game')}
                     </Button>
                 ) : (
                     <Button fullWidth onClick={joinGame} variant="outlined" sx={{ mt: 1 }}>
-                        Join game
+                        {t('join-game')}
                     </Button>
                 ))}
 
@@ -309,7 +311,7 @@ const RoomRoute = (): JSX.Element => {
                 <>
                     {room.data.gameInProgress && !room.data.roundInProgress && (
                         <Button variant="outlined" fullWidth sx={{ mt: 1 }} onClick={startRound}>
-                            Start Round
+                            {t('start-round')}
                         </Button>
                     )}
                     {!room.data.gameInProgress && (
@@ -320,7 +322,7 @@ const RoomRoute = (): JSX.Element => {
                             disabled={Object.keys(room.data.players).length === 0}
                             onClick={startGame}
                         >
-                            Start Game
+                            {t('start-game')}
                         </Button>
                     )}
                     <Button
@@ -330,11 +332,11 @@ const RoomRoute = (): JSX.Element => {
                         disabled={Object.keys(room.data.players).length === 0 || room.data.roundInProgress}
                         onClick={() => setRemovePlayers(!removePlayers)}
                     >
-                        Manage players
+                        {t('manage-players')}
                     </Button>
                     {room.data.gameInProgress && !room.data.roundInProgress && (
                         <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={endGame}>
-                            End game
+                            {t('end-game')}
                         </Button>
                     )}
                     {room.data.gameInProgress && room.data.roundInProgress && (
@@ -346,18 +348,18 @@ const RoomRoute = (): JSX.Element => {
                             onClick={endRound}
                             disabled={room.data.currentRound.voteEndTime !== null}
                         >
-                            End round
+                            {t('end-round')}
                         </Button>
                     )}
                     {(!room.data.gameInProgress || room.data.roundInProgress) && (
                         <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={resetRoom}>
-                            Reset room
+                            {t('reset-room')}
                         </Button>
                     )}
                     {!room.data.gameInProgress && (
                         <>
                             <Button variant="outlined" color="error" fullWidth sx={{ mt: 1 }} onClick={deleteRoom}>
-                                Delete Room
+                                {t('delete-room')}
                             </Button>
                             <Divider sx={{ mt: 2, mb: 1 }} />
                             <SettingsFormMemo settings={room.settings} setSettings={setSettings} />

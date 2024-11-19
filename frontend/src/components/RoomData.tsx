@@ -1,5 +1,6 @@
 import { Grid2 as Grid, Paper, Typography, useTheme } from '@mui/material';
 import { type JSX, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { Card, TrapCard } from '@/common/types';
 
@@ -23,6 +24,7 @@ const propsEqual = (oldProps: Props, newProps: Props): boolean =>
     JSON.stringify(oldProps.inPlay) === JSON.stringify(newProps.inPlay);
 
 const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, cheats, deck, inPlay }: Props): JSX.Element => {
+    const { t } = useTranslation();
     const theme = useTheme();
 
     const pointsCard: { ev: number | null; prob: number | null } = { ev: null, prob: null };
@@ -58,18 +60,18 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, cheats, d
         <Grid container columnSpacing={2} rowSpacing={1} sx={{ mt: 2 }}>
             <Grid size={4}>
                 <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
-                    round {gameNumber > 1 ? `${gameNumber}-${roundNumber}` : roundNumber}
+                    {t('round')} {gameNumber > 1 ? `${gameNumber}-${roundNumber}` : roundNumber}
                 </Typography>
             </Grid>
             <Grid size={4}>
                 <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
-                    deck size {deckSize}
+                    {t('deck-size')} {deckSize}
                 </Typography>
             </Grid>
 
             <Grid size={4}>
                 <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
-                    on ground {pointsOnGround}
+                    {t('on-ground')} {pointsOnGround}
                 </Typography>
             </Grid>
             {cheats && (

@@ -13,12 +13,14 @@ import {
     Typography,
 } from '@mui/material';
 import { type JSX, type SyntheticEvent, useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { SocketEventContext } from '../app/StateProvider';
 import { socket } from '../socket';
 
 const HomeRoute = (): JSX.Element => {
+    const { t } = useTranslation();
     const { rooms } = useContext(SocketEventContext);
 
     const [newRoom, setNewRoom] = useState<string>('');
@@ -48,9 +50,9 @@ const HomeRoute = (): JSX.Element => {
             }}
         >
             <Box sx={{ flex: 1 }}>
-                <Typography variant="h5">Rooms</Typography>
+                <Typography variant="h5">{t('rooms')}</Typography>
                 {rooms.length === 0 ? (
-                    <Typography>No rooms</Typography>
+                    <Typography>{t('no-rooms')}</Typography>
                 ) : (
                     <List component={Paper} sx={{ mt: 2 }} disablePadding>
                         {rooms
@@ -75,8 +77,7 @@ const HomeRoute = (): JSX.Element => {
                         <TextField
                             fullWidth
                             variant="outlined"
-                            label="Create new room"
-                            value={newRoom}
+                            label={t('create-new-room')}
                             error={error}
                             onChange={(event) => {
                                 setError(false);
@@ -85,7 +86,7 @@ const HomeRoute = (): JSX.Element => {
                         />
                         {feedback && <FormHelperText variant="standard">{feedback}</FormHelperText>}
                         <Button fullWidth variant="outlined" type="submit" sx={{ mt: 1 }}>
-                            Create room
+                            {t('create-room')}
                         </Button>
                     </FormControl>
                 </form>

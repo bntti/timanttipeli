@@ -1,5 +1,6 @@
 import { Box, Button, FormControl, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
 import { type JSX, type SyntheticEvent, memo, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { type Settings, settingsSchema } from '@/common/types';
 
@@ -8,6 +9,7 @@ const propsEqual = (oldProps: Props, newProps: Props): boolean =>
     JSON.stringify(oldProps.settings) === JSON.stringify(newProps.settings);
 
 const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
+    const { t } = useTranslation();
     const [error, setError] = useState<boolean>(false);
 
     const [allowCheats, setAllowCheats] = useState<boolean>(settings.allowCheats);
@@ -51,20 +53,20 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
     };
 
     const fields = [
-        { label: 'Votes show duration (s)', value: voteShowTime, setValue: setVoteShowTime },
-        { label: 'Votes show duration 1 player (s)', value: voteShowTime1, setValue: setVoteShowTime1 },
-        { label: 'New card show duration (s)', value: cardTime, setValue: setCardTime },
-        { label: 'New card show duration 1 player (s)', value: cardTime1, setValue: setCardTime1 },
-        { label: 'After vote delay (s)', value: afterVoteTime, setValue: setAfterVoteTime },
+        { label: t('votes-show-duration'), value: voteShowTime, setValue: setVoteShowTime },
+        { label: t('votes-show-duration-1'), value: voteShowTime1, setValue: setVoteShowTime1 },
+        { label: t('new-card-show-duration'), value: cardTime, setValue: setCardTime },
+        { label: t('new-card-show-duration-1'), value: cardTime1, setValue: setCardTime1 },
+        { label: t('after-vote-delay'), value: afterVoteTime, setValue: setAfterVoteTime },
     ];
 
     return (
         <>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="subtitle1">Settings</Typography>
+                <Typography variant="subtitle1">{t('settings')}</Typography>
                 {unsaved && (
                     <Typography variant="body2" color="info">
-                        Unsaved changes
+                        {t('unsaved-changes')}
                     </Typography>
                 )}
             </Box>
@@ -73,7 +75,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
                 <FormControl fullWidth error={error}>
                     <FormControlLabel
                         control={<Switch checked={allowCheats} onChange={() => setAllowCheats(!allowCheats)} />}
-                        label="Allow cheats"
+                        label={t('allow-cheats')}
                     />
                     {fields.map((field) => (
                         <TextField
@@ -93,7 +95,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
                         />
                     ))}
                     <Button fullWidth variant={unsaved ? 'contained' : 'outlined'} type="submit" sx={{ mt: 1 }}>
-                        Save settings
+                        {t('save-settings')}
                     </Button>
                 </FormControl>
             </form>

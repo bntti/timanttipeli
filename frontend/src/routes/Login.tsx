@@ -1,10 +1,12 @@
 import { Button, Container, Paper, TextField, Typography } from '@mui/material';
 import { type JSX, type SyntheticEvent, useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';
 
 const LoginRoute = (): JSX.Element => {
+    const { t } = useTranslation();
     const { state } = useLocation() as { state?: { from: string } };
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
@@ -25,17 +27,17 @@ const LoginRoute = (): JSX.Element => {
     return (
         <Container component={Paper} sx={{ pt: 2.5, pb: 3 }}>
             <Typography variant="h5" sx={{ mb: 2 }}>
-                Select username
+                {t('select-username')}
             </Typography>
             <form onSubmit={handleSetUsername}>
                 <TextField
                     fullWidth
-                    label="Username"
+                    label={t('username')}
                     value={username}
                     onChange={(event) => setUsername(event.target.value)}
                 />
                 <Button variant="contained" type="submit" sx={{ mt: 1 }}>
-                    Log in
+                    {t('log-in')}
                 </Button>
             </form>
         </Container>

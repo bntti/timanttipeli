@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 
+// TODO: Translate :(
 const RulesRoute = (): JSX.Element => (
     <>
         <Typography variant="h4" sx={{ mb: 2 }}>

@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { type JSX, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { Card } from '@/common/types';
 import CardSquare from './CardSquare';
@@ -13,16 +14,18 @@ const propsEqual = (oldProps: Props, newProps: Props): boolean =>
     oldProps.gameEnded === newProps.gameEnded;
 
 const CardDialog = ({ open, duration, card, gameEnded }: Props): JSX.Element => {
+    const { t } = useTranslation();
+
     if (open && card === null) throw new Error('Tried to show null card in CardDialog');
 
     return (
         <Dialog open={open} sx={{ background: gameEnded ? '#f005' : '' }}>
-            <DialogTitle sx={{ pb: 0 }}>Card</DialogTitle>
+            <DialogTitle sx={{ pb: 0 }}>{t('card')}</DialogTitle>
             <DialogContent sx={{ p: 1 }}>
                 {card !== null && <CardSquare size="large" card={card} />}
                 {gameEnded && (
                     <Typography width="100px" textAlign="center" color="error">
-                        The cave collapsed
+                        {t('the-cave-collapsed')}
                     </Typography>
                 )}
             </DialogContent>

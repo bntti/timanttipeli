@@ -3,25 +3,26 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import PersonIcon from '@mui/icons-material/Person';
 import { Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, Typography, useTheme } from '@mui/material';
 import { type JSX, useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { ThemeContext, UserContext } from '../app/StateProvider';
 
 const UserButton = (): JSX.Element => {
+    const { t } = useTranslation();
     const theme = useTheme();
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
     const { colorMode } = useContext(ThemeContext);
 
     const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-    const [anchorWidth, setAnchorWidth] = useState<number | null>(null);
 
     const menuOpen = Boolean(anchorEl);
 
     if (user === null) {
         return (
             <Typography color="inherit">
-                <em>Not Logged in</em>
+                <em>{t('not-logged-in')}</em>
             </Typography>
         );
     }
@@ -30,10 +31,7 @@ const UserButton = (): JSX.Element => {
         <>
             <Button
                 color="inherit"
-                onClick={(event) => {
-                    setAnchorEl(event.currentTarget);
-                    setAnchorWidth(event.currentTarget.offsetWidth);
-                }}
+                onClick={(event) => setAnchorEl(event.currentTarget)}
                 style={{ textTransform: 'none' }}
             >
                 <Box sx={{ marginRight: 1, marginTop: 1 }}>
@@ -44,9 +42,9 @@ const UserButton = (): JSX.Element => {
             </Button>
 
             <Menu anchorEl={anchorEl} open={menuOpen} onClose={() => setAnchorEl(null)}>
-                <MenuItem onClick={colorMode.toggleTheme} sx={{ width: anchorWidth ?? '100%' }}>
+                <MenuItem onClick={colorMode.toggleTheme}>
                     <ListItemIcon>{theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness3 />}</ListItemIcon>
-                    <ListItemText>Theme</ListItemText>
+                    <ListItemText>{t('theme')}</ListItemText>
                 </MenuItem>
 
                 <MenuItem
@@ -58,7 +56,7 @@ const UserButton = (): JSX.Element => {
                     <ListItemIcon>
                         <Logout />
                     </ListItemIcon>
-                    <ListItemText>Logout</ListItemText>
+                    <ListItemText>{t('log-out')}</ListItemText>
                 </MenuItem>
             </Menu>
         </>

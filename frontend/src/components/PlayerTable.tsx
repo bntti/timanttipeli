@@ -12,6 +12,7 @@ import {
     useTheme,
 } from '@mui/material';
 import { type JSX, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Props =
     | {
@@ -57,6 +58,7 @@ const PlayerTable = ({
     pointsGained = null,
     hasRelic = null,
 }: Props): JSX.Element => {
+    const { t } = useTranslation();
     const theme = useTheme();
     const roundInProgress =
         roundPlayers !== null &&
@@ -94,21 +96,21 @@ const PlayerTable = ({
                 <TableHead>
                     <TableRow>
                         <TableCell sx={{ width: !removePlayers && gameInProgress ? '50%' : '70%' }}>
-                            <Typography>Player</Typography>
+                            <Typography>{t('player')}</Typography>
                         </TableCell>
                         {removePlayers && (
                             <TableCell>
-                                <Typography>Manage</Typography>
+                                <Typography>{t('manage')}</Typography>
                             </TableCell>
                         )}
                         {!removePlayers && gameInProgress && (
                             <TableCell>
-                                <Typography color={roundInProgress ? '' : 'gray'}>Voted</Typography>
+                                <Typography color={roundInProgress ? '' : 'gray'}>{t('voted')}</Typography>
                             </TableCell>
                         )}
                         {!removePlayers && (
                             <TableCell sx={{ width: '30%' }}>
-                                <Typography>Points</Typography>
+                                <Typography>{t('points')}</Typography>
                             </TableCell>
                         )}
                     </TableRow>
@@ -142,7 +144,7 @@ const PlayerTable = ({
                                         variant="outlined"
                                         onClick={() => kickPlayer(player)}
                                     >
-                                        Kick
+                                        {t('kick')}
                                     </Button>
                                 </TableCell>
                             )}
