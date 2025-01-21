@@ -47,6 +47,7 @@ const validateRoomId = (roomId: number, socketRooms: Set<string> | null = null, 
 
 const runServer = (): void => {
     const app = express();
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     const server = http.createServer(app);
     const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, { connectionStateRecovery: {} });
     server.listen(5000);

@@ -1,4 +1,5 @@
 import { Typography } from '@mui/material';
+import type { JSX } from 'react';
 
 const RulesRoute = (): JSX.Element => (
     <>
