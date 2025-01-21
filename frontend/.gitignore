@@ -25,3 +25,6 @@ dist-ssr
 
 # Old translation files
 translation_old.json
+
+# Typescript cache?
+*.tsbuildinfo

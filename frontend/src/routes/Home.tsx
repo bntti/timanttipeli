@@ -37,7 +37,7 @@ const HomeRoute = (): JSX.Element => {
         }
         setError(false);
         setFeedback('');
-        socket.emit('createRoom', newRoom, (roomId) => navigate(`/room/${roomId}`));
+        socket.emit('createRoom', newRoom, async (roomId) => navigate(`/room/${roomId}`));
     };
 
     if (rooms === null) return <Typography>Loading rooms...</Typography>;
