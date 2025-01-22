@@ -1,6 +1,6 @@
 {
     "name": "timanttipeli-frontend",
-    "version": "2.6.4",
+    "version": "2.6.5",
     "scripts": {
         "build": "tsc -b && vite build",
         "dev": "vite",
