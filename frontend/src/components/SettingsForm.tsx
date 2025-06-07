@@ -11,6 +11,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
     const [error, setError] = useState<boolean>(false);
 
     const [allowCheats, setAllowCheats] = useState<boolean>(settings.allowCheats);
+    const [goldGoldGold, setGoldGoldGold] = useState<boolean>(settings.goldGoldGold);
     const [voteShowTime, setVoteShowTime] = useState<string>(settings.voteShowTime.toString());
     const [voteShowTime1, setVoteShowTime1] = useState<string>(settings.voteShowTime1.toString());
     const [cardTime, setCardTime] = useState<string>(settings.cardTime.toString());
@@ -19,6 +20,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
 
     const unsaved =
         allowCheats !== settings.allowCheats ||
+        goldGoldGold !== settings.goldGoldGold ||
         voteShowTime !== (settings.voteShowTime / 1000).toString() ||
         voteShowTime1 !== (settings.voteShowTime1 / 1000).toString() ||
         cardTime !== (settings.cardTime / 1000).toString() ||
@@ -38,6 +40,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
         try {
             const newSettings = settingsSchema.parse({
                 allowCheats,
+                goldGoldGold,
                 voteShowTime: parseFloat(voteShowTime) * 1000,
                 voteShowTime1: parseFloat(voteShowTime1) * 1000,
                 cardTime: parseFloat(cardTime) * 1000,
@@ -74,6 +77,10 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
                     <FormControlLabel
                         control={<Switch checked={allowCheats} onChange={() => setAllowCheats(!allowCheats)} />}
                         label="Allow cheats"
+                    />
+                    <FormControlLabel
+                        control={<Switch checked={goldGoldGold} onChange={() => setGoldGoldGold(!goldGoldGold)} />}
+                        label="Gold Gold Gold"
                     />
                     {fields.map((field) => (
                         <TextField

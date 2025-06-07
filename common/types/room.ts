@@ -4,6 +4,7 @@ import { CardSchema } from './card';
 
 export const settingsSchema = z.object({
     allowCheats: z.boolean(),
+    goldGoldGold: z.boolean(),
     voteShowTime: z.union([z.literal(0), z.number().int().gt(99)]),
     voteShowTime1: z.union([z.literal(0), z.number().int().gt(99)]),
     cardTime: z.union([z.literal(0), z.number().int().gt(99)]),

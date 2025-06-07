@@ -12,6 +12,19 @@ const relicCards: RelicCard[] = [
     { type: 'relic', value: 12 },
 ];
 
+const goldGoldGoldCards: RelicCard[] = [
+    { type: 'relic', value: 5 },
+    { type: 'relic', value: 7 },
+    { type: 'relic', value: 8 },
+    { type: 'relic', value: 10 },
+    { type: 'relic', value: 12 },
+    { type: 'relic', value: 14 },
+    { type: 'relic', value: 16 },
+    { type: 'relic', value: 18 },
+    { type: 'relic', value: 20 },
+    { type: 'relic', value: 22 },
+];
+
 const baseDeck: Card[] = [
     { type: 'points', value: 17 },
     { type: 'points', value: 15 },
@@ -51,6 +64,7 @@ export const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
     name,
     settings: {
         allowCheats: true,
+        goldGoldGold: false,
         voteShowTime: 2000,
         voteShowTime1: 1000,
         cardTime: 2000,
@@ -72,7 +86,14 @@ const createDeck = (room: Room): Card[] => {
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (USE_RELICS) {
-        for (let i = 0; i <= room.data.roundsDone % 5; i++) result.push(relicCards[i]);
+        if (room.settings.goldGoldGold) {
+            for (let i = 0; i <= room.data.roundsDone % 10; i++) {
+                result.push(goldGoldGoldCards[i]);
+                if (goldGoldGoldCards[i].value <= 12) result.push(goldGoldGoldCards[i]);
+            }
+        } else {
+            for (let i = 0; i <= room.data.roundsDone % 5; i++) result.push(relicCards[i]);
+        }
     }
     for (const card of room.data.removedCards) {
         const index = result.indexOf(card);
@@ -83,7 +104,7 @@ const createDeck = (room: Room): Card[] => {
 };
 
 const handleRoundEnd = (room: Room, card?: TrapCard): void => {
-    assert(room.data.roundInProgress);
+    assert.ok(room.data.roundInProgress);
     for (const [player, points] of Object.entries(room.data.currentRound.pointsGained)) {
         room.data.players[player] += points;
     }
@@ -101,7 +122,7 @@ const handleRoundEnd = (room: Room, card?: TrapCard): void => {
 };
 
 const handleDraw = (room: Room): void => {
-    assert(room.data.roundInProgress);
+    assert.ok(room.data.roundInProgress);
     const round = room.data.currentRound;
 
     const index = Math.floor(Math.random() * round.deck.length);
@@ -128,7 +149,7 @@ const handleDraw = (room: Room): void => {
 };
 
 export const handleVotes = (room: Room, endRound: boolean = false): void => {
-    assert(room.data.roundInProgress);
+    assert.ok(room.data.roundInProgress);
     const round = room.data.currentRound;
 
     // Force everyone to leave if round was forcibly ended
@@ -184,7 +205,7 @@ export const handleVotes = (room: Room, endRound: boolean = false): void => {
 };
 
 export const startGame = (room: Room): void => {
-    assert(!room.data.gameInProgress);
+    assert.ok(!room.data.gameInProgress);
     room.data = {
         ...room.data,
         gameInProgress: true,
@@ -196,8 +217,8 @@ export const startGame = (room: Room): void => {
 };
 
 export const startRound = (room: Room): void => {
-    assert(room.data.gameInProgress && !room.data.roundInProgress);
-    assert(Object.keys(room.data.players).length > 0);
+    assert.ok(room.data.gameInProgress && !room.data.roundInProgress);
+    assert.ok(Object.keys(room.data.players).length > 0);
 
     const roundPoints: { [key: string]: number } = {};
     for (const player of Object.keys(room.data.players)) roundPoints[player] = 0;
@@ -226,8 +247,8 @@ export const startRound = (room: Room): void => {
 };
 
 export const handleLeave = (room: Room, player: string): void => {
-    assert(!room.data.roundInProgress);
-    assert(player in room.data.players);
+    assert.ok(!room.data.roundInProgress);
+    assert.ok(player in room.data.players);
 
     delete room.data.players[player];
     if (room.data.gameInProgress && Object.keys(room.data.players).length === 0) {

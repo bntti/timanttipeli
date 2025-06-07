@@ -225,6 +225,8 @@ const RoomRoute = (): JSX.Element => {
 
     if (room === null) return <Typography>Loading room...</Typography>;
     if (room.hidden) return <Navigate to="/" />;
+
+    const numRounds = room.settings.goldGoldGold ? 10 : 5;
     return (
         <>
             <VoteDialogMemo open={votesOpen} duration={votesOpenDuration} lastVote={lastVote} />
@@ -259,8 +261,8 @@ const RoomRoute = (): JSX.Element => {
             {room.data.gameInProgress && (
                 <>
                     <RoomDataMemo
-                        gameNumber={Math.floor(room.data.roundsDone / 5) + 1}
-                        roundNumber={(room.data.roundsDone % 5) + 1}
+                        gameNumber={Math.floor(room.data.roundsDone / numRounds) + 1}
+                        roundNumber={(room.data.roundsDone % numRounds) + 1}
                         deckSize={room.data.deckSize}
                         pointsOnGround={room.data.roundInProgress ? room.data.currentRound.pointsOnGround : null}
                         cheats={room.settings.allowCheats && user.cheats}

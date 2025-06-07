@@ -159,7 +159,7 @@ const runServer = (): void => {
                     // Wait delay
                     setTimeout(() => {
                         const updatedRound = rooms[roomId].data.currentRound;
-                        assert(updatedRound !== null);
+                        assert.ok(updatedRound !== null);
 
                         updatedRound.voteEndTime = null;
                         handleVotes(rooms[roomId]);
