@@ -1,4 +1,4 @@
-import { Grid2 as Grid, Paper, Typography, useTheme } from '@mui/material';
+import { Grid, Paper, Typography, useTheme } from '@mui/material';
 import { type JSX, memo } from 'react';
 
 import type { Card, TrapCard } from '@/common/types';

@@ -1,4 +1,4 @@
-import { Box, Divider, Grid2 as Grid, Paper, Typography } from '@mui/material';
+import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 import { type JSX, memo } from 'react';
 
 import type { Card, TrapCard } from '@/common/types';
