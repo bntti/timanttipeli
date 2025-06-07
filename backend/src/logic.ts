@@ -232,7 +232,6 @@ export const startRound = (room: Room): void => {
     const roundPoints: { [key: string]: number } = {};
     for (const player of Object.keys(room.data.players)) roundPoints[player] = 0;
 
-    if (room.data.roundsDone % 5 === 0) room.data.removedCards = [];
     const deck = createDeck(room);
     room.data = {
         ...room.data,
