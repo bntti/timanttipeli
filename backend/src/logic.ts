@@ -58,6 +58,14 @@ const baseDeck: Card[] = [
     { type: 'trap', trap: 'spider' },
 ];
 
+const goldGoldGoldExtraCards: Card[] = [
+    { type: 'trap', trap: 'boulder' },
+    { type: 'trap', trap: 'fire' },
+    { type: 'trap', trap: 'log' },
+    { type: 'trap', trap: 'snake' },
+    { type: 'trap', trap: 'spider' },
+];
+
 export const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
     id,
     hidden: false,
@@ -82,7 +90,7 @@ export const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
 });
 
 const createDeck = (room: Room): Card[] => {
-    const result = [...baseDeck];
+    const result = room.settings.goldGoldGold ? [...baseDeck, ...goldGoldGoldExtraCards] : [...baseDeck];
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (USE_RELICS) {
@@ -110,10 +118,11 @@ const handleRoundEnd = (room: Room, card?: TrapCard): void => {
     }
     if (card) room.data.removedCards.push(card);
 
+    const numRounds = room.settings.goldGoldGold ? 10 : 5;
     room.data = {
         ...room.data,
         roundInProgress: false,
-        removedCards: (room.data.roundsDone + 1) % 5 === 0 ? [] : room.data.removedCards,
+        removedCards: (room.data.roundsDone + 1) % numRounds === 0 ? [] : room.data.removedCards,
         roundsDone: room.data.roundsDone + 1,
         lastCard: card ?? null,
         currentRound: null,
