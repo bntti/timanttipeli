@@ -22,7 +22,7 @@ const roomBaseSchema = z.object({
 const roomSchema = z.union([
     roomBaseSchema.extend({
         data: z.object({
-            players: z.record(z.literal(0)),
+            players: z.record(z.string(), z.literal(0)),
             gameInProgress: z.literal(false),
             roundInProgress: z.literal(false),
             removedCards: z.array(CardSchema).length(0),
@@ -32,34 +32,34 @@ const roomSchema = z.union([
     }),
     roomBaseSchema.extend({
         data: z.object({
-            players: z.record(z.number().int().nonnegative()),
+            players: z.record(z.string(), z.number().int().nonnegative()),
             gameInProgress: z.literal(true),
             roundInProgress: z.literal(false),
             deckSize: z.number().int().nonnegative(),
             removedCards: z.array(CardSchema),
             roundsDone: z.number().int().nonnegative(),
-            lastVote: z.record(z.enum(['stay', 'leave'])),
+            lastVote: z.record(z.string(), z.enum(['stay', 'leave'])),
             lastCard: CardSchema.nullable(),
             currentRound: z.literal(null),
         }),
     }),
     roomBaseSchema.extend({
         data: z.object({
-            players: z.record(z.number().int().nonnegative()),
+            players: z.record(z.string(), z.number().int().nonnegative()),
             gameInProgress: z.literal(true),
             roundInProgress: z.literal(true),
             deckSize: z.number().int().nonnegative(),
             removedCards: z.array(CardSchema),
             roundsDone: z.number().int().nonnegative(),
-            lastVote: z.record(z.enum(['stay', 'leave'])),
+            lastVote: z.record(z.string(), z.enum(['stay', 'leave'])),
             lastCard: CardSchema.nullable(),
             currentRound: z.object({
                 deck: z.array(CardSchema),
                 inPlay: z.array(CardSchema),
-                votes: z.record(z.enum(['stay', 'leave'])),
+                votes: z.record(z.string(), z.enum(['stay', 'leave'])),
                 voteEndTime: z.number().int().nonnegative().nullable(),
                 players: z.array(z.string()).nonempty(),
-                pointsGained: z.record(z.number()),
+                pointsGained: z.record(z.string(), z.number()),
                 hasRelic: z.array(z.string()),
                 pointsPerPlayer: z.number().int(),
                 pointsOnGround: z.number().int(),

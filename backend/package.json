@@ -1,6 +1,6 @@
 {
     "name": "timanttipeli-backend",
-    "version": "2.5.1",
+    "version": "2.5.2",
     "scripts": {
         "build": "tsc && node ./esbuild.mjs",
         "dev": "tsx watch src/index.ts",
@@ -9,15 +9,15 @@
     "dependencies": {
         "express": "^5.1.0",
         "socket.io": "^4.8.1",
-        "zod": "^3.25.56"
+        "zod": "^4.1.12"
     },
     "devDependencies": {
         "@types/express": "^5.0.3",
-        "esbuild": "^0.25.5",
-        "tsx": "^4.19.4",
-        "typescript": "^5.8.3"
+        "esbuild": "^0.25.11",
+        "tsx": "^4.20.6",
+        "typescript": "^5.9.3"
     },
     "engines": {
-        "node": "^22"
+        "node": "^24"
     }
 }

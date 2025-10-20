@@ -30,7 +30,7 @@ type Props =
           gameInProgress: boolean;
           removePlayers: boolean;
           kickPlayer: (username: string) => void;
-          roundPlayers: [string, ...string[]];
+          roundPlayers: string[];
           votes: string[];
           pointsPerPlayer: number;
           pointsGained: { [key: string]: number };

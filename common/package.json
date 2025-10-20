@@ -1,11 +1,11 @@
 {
     "dependencies": {
-        "zod": "^3.25.56"
+        "zod": "^4.1.12"
     },
     "devDependencies": {
-        "@types/node": "^22.15.30"
+        "@types/node": "^24.8.1"
     },
     "engines": {
-        "node": "^22"
+        "node": "^24"
     }
 }

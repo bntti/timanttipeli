@@ -23,6 +23,9 @@ const RoomRoute = (): JSX.Element => {
     const { roomId: roomIdParam } = useParams() as { roomId: string };
     const roomId = parseInt(roomIdParam);
 
+    // Used to check if newRoomData changed
+    const [oldRoom, setOldRoom] = useState<Room | null>(null);
+
     const [room, setRoom] = useState<Room | null>(null);
     const [removePlayers, setRemovePlayers] = useState<boolean>(false);
 
@@ -167,13 +170,11 @@ const RoomRoute = (): JSX.Element => {
         [room, serverTime, showVoteAndCard, showCard],
     );
 
-    useEffect(() => {
+    if (newRoomData !== oldRoom) {
+        setOldRoom(newRoomData);
         if (newRoomData !== null) handleSetRoom(newRoomData);
-    }, [handleSetRoom, newRoomData]);
-
-    useEffect(() => {
-        if (room?.data.roundInProgress) setVote(room.data.currentRound.votes[user.username] ?? null);
-    }, [user, room]);
+        if (newRoomData?.data.roundInProgress) setVote(newRoomData.data.currentRound.votes[user.username] ?? null);
+    }
 
     const joinGame = (): void => {
         socket.emit('joinGame', roomId, user.username);

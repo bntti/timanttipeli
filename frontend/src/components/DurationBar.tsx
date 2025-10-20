@@ -9,18 +9,18 @@ const indeterminate1Keyframes = keyframes({
 type Props = { duration: number };
 const propsEqual = (oldProps: Props, newProps: Props): boolean => oldProps.duration === newProps.duration;
 
-const DurationBar = ({ duration }: Props): JSX.Element => {
-    const StyledLinearProgress = styled(LinearProgress)({
-        '& .MuiLinearProgress-bar1Indeterminate': {
-            width: 'auto',
-            animation: `${indeterminate1Keyframes} ${duration}ms linear forwards`,
-        },
-        '& .MuiLinearProgress-bar2Indeterminate': {
-            display: 'none',
-        },
-    });
+const StyledLinearProgress = styled(LinearProgress)(({ duration }: Props) => ({
+    '& .MuiLinearProgress-bar1Indeterminate': {
+        width: 'auto',
+        animation: `${indeterminate1Keyframes} ${duration}ms linear forwards`,
+    },
+    '& .MuiLinearProgress-bar2Indeterminate': {
+        display: 'none',
+    },
+}));
 
-    return <StyledLinearProgress variant="indeterminate" />;
+const DurationBar = ({ duration }: Props): JSX.Element => {
+    return <StyledLinearProgress duration={duration} variant="indeterminate" />;
 };
 
 const DurationBarMemo = memo(DurationBar, propsEqual);
