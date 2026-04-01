@@ -1,6 +1,6 @@
 {
     "name": "timanttipeli-backend",
-    "version": "2.5.6",
+    "version": "2.5.7",
     "scripts": {
         "build": "tsc && node ./esbuild.mjs",
         "dev": "tsx watch src/index.ts",

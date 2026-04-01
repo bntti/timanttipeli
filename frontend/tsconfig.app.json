@@ -33,7 +33,7 @@
         "pretty": true,
         "resolveJsonModule": true,
 
-        "baseUrl": ".",
+        "rootDir": "../",
         "paths": { "@/common/*": ["../common/*"] }
     },
     "include": ["src"]
