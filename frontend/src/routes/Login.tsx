@@ -9,7 +9,7 @@ const LoginRoute = (): JSX.Element => {
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
 
-    const [username, setUsername] = useState<string>('');
+    const [username, setUsername] = useState('');
 
     const handleSetUsername = (event: SyntheticEvent): void => {
         event.preventDefault();

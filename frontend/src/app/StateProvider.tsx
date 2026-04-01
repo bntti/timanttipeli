@@ -21,7 +21,7 @@ type UserContextType = {
     user: User | null;
     setUser: Dispatch<SetStateAction<User | null>>;
 };
-export const UserContext = createContext<UserContextType>({} as UserContextType);
+export const UserContext = createContext({} as UserContextType);
 
 export const UserStateProvider = ({ children }: { children: ReactNode }): JSX.Element => {
     const [user, setUser] = useState<User | null>(null);
@@ -30,7 +30,7 @@ export const UserStateProvider = ({ children }: { children: ReactNode }): JSX.El
 };
 
 type SocketEventContextType = { rooms: Room[] | null; room: Room | null; serverTime: number | null };
-export const SocketEventContext = createContext<SocketEventContextType>({} as SocketEventContextType);
+export const SocketEventContext = createContext({} as SocketEventContextType);
 
 export const SocketEventStateProvider = ({ children }: { children: ReactNode }): JSX.Element => {
     const [rooms, setRooms] = useState<Room[] | null>(null);
@@ -58,4 +58,4 @@ export const SocketEventStateProvider = ({ children }: { children: ReactNode }):
 };
 
 type ThemeContextType = { colorMode: { toggleTheme: () => void } };
-export const ThemeContext = createContext<ThemeContextType>({} as ThemeContextType);
+export const ThemeContext = createContext({} as ThemeContextType);

@@ -8,15 +8,15 @@ const propsEqual = (oldProps: Props, newProps: Props): boolean =>
     JSON.stringify(oldProps.settings) === JSON.stringify(newProps.settings);
 
 const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
-    const [error, setError] = useState<boolean>(false);
+    const [error, setError] = useState(false);
 
-    const [allowCheats, setAllowCheats] = useState<boolean>(settings.allowCheats);
-    const [goldGoldGold, setGoldGoldGold] = useState<boolean>(settings.goldGoldGold);
-    const [voteShowTime, setVoteShowTime] = useState<string>(settings.voteShowTime.toString());
-    const [voteShowTime1, setVoteShowTime1] = useState<string>(settings.voteShowTime1.toString());
-    const [cardTime, setCardTime] = useState<string>(settings.cardTime.toString());
-    const [cardTime1, setCardTime1] = useState<string>(settings.cardTime1.toString());
-    const [afterVoteTime, setAfterVoteTime] = useState<string>(settings.afterVoteTime.toString());
+    const [allowCheats, setAllowCheats] = useState(settings.allowCheats);
+    const [goldGoldGold, setGoldGoldGold] = useState(settings.goldGoldGold);
+    const [voteShowTime, setVoteShowTime] = useState(settings.voteShowTime.toString());
+    const [voteShowTime1, setVoteShowTime1] = useState(settings.voteShowTime1.toString());
+    const [cardTime, setCardTime] = useState(settings.cardTime.toString());
+    const [cardTime1, setCardTime1] = useState(settings.cardTime1.toString());
+    const [afterVoteTime, setAfterVoteTime] = useState(settings.afterVoteTime.toString());
 
     const unsaved =
         allowCheats !== settings.allowCheats ||

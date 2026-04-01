@@ -1,5 +1,6 @@
 import { fixupPluginRules } from '@eslint/compat';
 import eslint from '@eslint/js';
+import { defineConfig } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import reactPlugin from 'eslint-plugin-react';
@@ -12,9 +13,10 @@ import tseslint from 'typescript-eslint';
 
 // Inspiration taken from https://github.com/typescript-eslint/typescript-eslint/blob/main/eslint.config.mjs
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-export default tseslint.config(
+export default defineConfig(
     // Register all of the plugins up-front
     {
         plugins: {

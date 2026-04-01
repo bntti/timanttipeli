@@ -21,9 +21,9 @@ import { socket } from '../socket';
 const HomeRoute = (): JSX.Element => {
     const { rooms } = useContext(SocketEventContext);
 
-    const [newRoom, setNewRoom] = useState<string>('');
-    const [error, setError] = useState<boolean>(false);
-    const [feedback, setFeedback] = useState<string>('');
+    const [newRoom, setNewRoom] = useState('');
+    const [error, setError] = useState(false);
+    const [feedback, setFeedback] = useState('');
     const navigate = useNavigate();
 
     const createRoom = (event: SyntheticEvent): void => {

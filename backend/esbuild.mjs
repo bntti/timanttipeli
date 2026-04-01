@@ -10,4 +10,7 @@ build({
     packages: 'external',
     platform: 'node',
     sourcemap: true,
-}).catch(() => process.exit(1));
+}).catch(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    process.exit(1);
+});

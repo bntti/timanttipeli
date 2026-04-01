@@ -27,19 +27,19 @@ const RoomRoute = (): JSX.Element => {
     const [oldRoom, setOldRoom] = useState<Room | null>(null);
 
     const [room, setRoom] = useState<Room | null>(null);
-    const [removePlayers, setRemovePlayers] = useState<boolean>(false);
+    const [removePlayers, setRemovePlayers] = useState(false);
 
     const [vote, setVote] = useState<'stay' | 'leave' | null>(null);
     const [voteDelay, setVoteDelay] = useState<number | null>(null);
 
     const [lastVote, setLastVote] = useState<{ [key: string]: 'stay' | 'leave' }>({});
-    const [votesOpen, setVotesOpen] = useState<boolean>(false);
-    const [votesOpenDuration, setVotesOpenDuration] = useState<number>(2);
+    const [votesOpen, setVotesOpen] = useState(false);
+    const [votesOpenDuration, setVotesOpenDuration] = useState(2);
 
     const [currentCard, setCurrentCard] = useState<Card | null>(null);
-    const [gameEnded, setGameEnded] = useState<boolean>(false);
-    const [cardOpen, setCardOpen] = useState<boolean>(false);
-    const [cardOpenDuration, setCardOpenDuration] = useState<number>(2);
+    const [gameEnded, setGameEnded] = useState(false);
+    const [cardOpen, setCardOpen] = useState(false);
+    const [cardOpenDuration, setCardOpenDuration] = useState(2);
 
     // Join and leave room
     useEffect(() => {
