@@ -173,7 +173,7 @@ export const handleVotes = (room: Room, endRound: boolean = false): void => {
     for (const [player, vote] of Object.entries(round.votes)) {
         if (vote === 'leave') {
             // Not actually this type but doesn't break anything
-            round.players = round.players.filter((rPlayer) => rPlayer !== player) as [string, ...string[]];
+            round.players = round.players.filter((rPlayer) => rPlayer !== player);
 
             round.pointsGained[player] = round.pointsPerPlayer + Math.floor(round.pointsOnGround / numLeave);
             if (numLeave === 1) {
@@ -244,7 +244,7 @@ export const startRound = (room: Room): void => {
             inPlay: [],
             votes: {},
             voteEndTime: null,
-            players: Object.keys(room.data.players) as [string, ...string[]],
+            players: Object.keys(room.data.players),
             pointsGained: {},
             hasRelic: [],
             pointsPerPlayer: 0,

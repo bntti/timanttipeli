@@ -57,18 +57,18 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, cheats, d
     return (
         <Grid container columnSpacing={2} rowSpacing={1} sx={{ mt: 2 }}>
             <Grid size={4}>
-                <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
+                <Typography component={Paper} align="center" sx={{ p: 1 }}>
                     round {gameNumber > 1 ? `${gameNumber}-${roundNumber}` : roundNumber}
                 </Typography>
             </Grid>
             <Grid size={4}>
-                <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
+                <Typography component={Paper} align="center" sx={{ p: 1 }}>
                     deck size {deckSize}
                 </Typography>
             </Grid>
 
             <Grid size={4}>
-                <Typography component={Paper} textAlign="center" sx={{ p: 1 }}>
+                <Typography component={Paper} align="center" sx={{ p: 1 }}>
                     on ground {pointsOnGround}
                 </Typography>
             </Grid>
@@ -77,7 +77,7 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, cheats, d
                     <Grid size={4}>
                         <Typography
                             component={Paper}
-                            textAlign="center"
+                            align="center"
                             sx={{
                                 p: 1,
                                 border: '1px solid',
@@ -91,7 +91,7 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, cheats, d
                     <Grid size={4}>
                         <Typography
                             component={Paper}
-                            textAlign="center"
+                            align="center"
                             sx={{
                                 p: 1,
                                 border: '1px solid',
@@ -105,7 +105,7 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, cheats, d
                     <Grid size={4}>
                         <Typography
                             component={Paper}
-                            textAlign="center"
+                            align="center"
                             sx={{
                                 p: 1,
                                 border: '1px solid',

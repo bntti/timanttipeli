@@ -10,7 +10,7 @@ const propsEqual = (oldProps: Props, newProps: Props): boolean =>
 
 const RemovedCards = ({ removedCards }: Props): JSX.Element => (
     <Paper sx={{ mt: 2, pl: 1, pr: 1, pt: 1 }}>
-        <Typography textAlign="center">Removed cards</Typography>
+        <Typography align="center">Removed cards</Typography>
         <Box
             sx={{
                 display: 'flex',

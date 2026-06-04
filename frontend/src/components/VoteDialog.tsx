@@ -43,7 +43,7 @@ const VoteDialog = ({ open, duration, lastVote }: Props): JSX.Element => {
                     </Grid>
                 </Grid>
                 {stay.length === 0 && (
-                    <Typography textAlign="center" sx={{ mt: 1 }}>
+                    <Typography align="center" sx={{ mt: 1 }}>
                         Everyone left the cave
                     </Typography>
                 )}

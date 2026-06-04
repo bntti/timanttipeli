@@ -10,11 +10,11 @@ type Props = { duration: number };
 const propsEqual = (oldProps: Props, newProps: Props): boolean => oldProps.duration === newProps.duration;
 
 const StyledLinearProgress = styled(LinearProgress)(({ duration }: Props) => ({
-    '& .MuiLinearProgress-bar1Indeterminate': {
+    '& .MuiLinearProgress-bar1': {
         width: 'auto',
         animation: `${indeterminate1Keyframes} ${duration}ms linear forwards`,
     },
-    '& .MuiLinearProgress-bar2Indeterminate': {
+    '& .MuiLinearProgress-bar2': {
         display: 'none',
     },
 }));

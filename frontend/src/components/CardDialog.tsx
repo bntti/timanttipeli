@@ -21,7 +21,7 @@ const CardDialog = ({ open, duration, card, gameEnded }: Props): JSX.Element => 
             <DialogContent sx={{ p: 1 }}>
                 {card !== null && <CardSquare size="large" card={card} />}
                 {gameEnded && (
-                    <Typography width="100px" textAlign="center" color="error">
+                    <Typography sx={{ width: '100px' }} align="center" color="error">
                         The cave collapsed
                     </Typography>
                 )}
