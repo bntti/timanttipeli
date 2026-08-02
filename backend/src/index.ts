@@ -55,7 +55,7 @@ const runServer = (): void => {
         socket.emit('rooms', rooms);
 
         socket.on('createRoom', (name, callback) => {
-            if (!(typeof callback === 'function')) return;
+            if (typeof callback !== 'function') return;
 
             const roomId = rooms.length;
             rooms.push(generateRoom(roomId, name));
@@ -88,7 +88,7 @@ const runServer = (): void => {
         socket.on('joinGame', (roomId, username) => {
             if (!validateRoomId(roomId, socket.rooms)) return;
             if (rooms[roomId].data.roundInProgress) return;
-            if (!(typeof username === 'string')) return;
+            if (typeof username !== 'string') return;
 
             rooms[roomId].data.players[username] = 0;
 

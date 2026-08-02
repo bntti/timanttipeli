@@ -13,7 +13,7 @@ import { Link, useLocation } from 'react-router-dom';
 import UserButton from './UserButton';
 import { UserContext } from '../app/StateProvider';
 
-const ToolBar = (): JSX.Element => {
+const Toolbar_ = (): JSX.Element => {
     const { user, setUser } = useContext(UserContext);
     const location = useLocation();
 
@@ -55,4 +55,4 @@ const ToolBar = (): JSX.Element => {
     );
 };
 
-export default ToolBar;
+export default Toolbar_;

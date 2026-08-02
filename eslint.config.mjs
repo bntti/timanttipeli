@@ -91,15 +91,26 @@ export default defineConfig(
             '@typescript-eslint/return-await': 'error',
             '@typescript-eslint/switch-exhaustiveness-check': 'error',
 
+            'unicorn/consistent-boolean-name': 'off',
             'unicorn/filename-case': 'off',
+            'unicorn/logical-assignment-operators': 'off', // This rule is a bit broken, enable when fixed
+            'unicorn/max-nested-calls': 'off',
+            'unicorn/name-replacements': 'off',
             'unicorn/no-array-reduce': 'off',
             'unicorn/no-await-expression-member': 'off',
+            'unicorn/no-break-in-nested-loop': 'off',
+            'unicorn/no-computed-property-existence-check': 'off',
             'unicorn/no-negated-condition': 'off',
             'unicorn/no-nested-ternary': 'off',
+            'unicorn/no-non-function-verb-prefix': 'off',
             'unicorn/no-null': 'off',
             'unicorn/no-process-exit': 'error', // Turn off if CLI app
+            'unicorn/no-unused-array-method-return': 'off',
+            'unicorn/prefer-await': 'off',
             'unicorn/prefer-module': 'off',
+            'unicorn/prefer-number-coercion': 'off',
             'unicorn/prefer-number-properties': 'off',
+            'unicorn/prefer-simple-condition-first': 'off',
             'unicorn/prefer-top-level-await': 'off', // Not supported by cjs :(
             'unicorn/prevent-abbreviations': 'off',
             'unicorn/switch-case-braces': 'off',
@@ -189,6 +200,7 @@ export default defineConfig(
                     ignore: ['vite-env.d.ts'],
                 },
             ],
+            'unicorn/no-declarations-before-early-exit': 'off',
 
             'react/button-has-type': 'error',
             'react/destructuring-assignment': 'warn',

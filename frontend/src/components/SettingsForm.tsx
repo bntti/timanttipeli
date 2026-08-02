@@ -27,7 +27,9 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
         cardTime1 !== (settings.cardTime1 / 1000).toString() ||
         afterVoteTime !== (settings.afterVoteTime / 1000).toString();
 
+    // TODO: Fix the react-hooks warning
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setVoteShowTime((settings.voteShowTime / 1000).toString());
         setVoteShowTime1((settings.voteShowTime1 / 1000).toString());
         setCardTime((settings.cardTime / 1000).toString());

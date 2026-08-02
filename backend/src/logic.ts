@@ -171,21 +171,20 @@ export const handleVotes = (room: Room, endRound: boolean = false): void => {
     const numLeave = Object.values(round.votes).filter((vote) => vote === 'leave').length;
 
     for (const [player, vote] of Object.entries(round.votes)) {
-        if (vote === 'leave') {
-            // Not actually this type but doesn't break anything
-            round.players = round.players.filter((rPlayer) => rPlayer !== player);
+        if (vote !== 'leave') continue;
 
-            round.pointsGained[player] = round.pointsPerPlayer + Math.floor(round.pointsOnGround / numLeave);
-            if (numLeave === 1) {
-                for (const card of round.inPlay) {
-                    if (card.type === 'relic') {
-                        round.pointsGained[player] += card.value;
-                        round.hasRelic.push(player);
-                        room.data.removedCards.push(card);
-                    }
-                }
-                round.inPlay = round.inPlay.filter((card) => card.type !== 'relic');
+        // Not actually this type but doesn't break anything
+        round.players = round.players.filter((rPlayer) => rPlayer !== player);
+
+        round.pointsGained[player] = round.pointsPerPlayer + Math.floor(round.pointsOnGround / numLeave);
+        if (numLeave === 1) {
+            for (const card of round.inPlay) {
+                if (card.type !== 'relic') continue;
+                round.pointsGained[player] += card.value;
+                round.hasRelic.push(player);
+                room.data.removedCards.push(card);
             }
+            round.inPlay = round.inPlay.filter((card) => card.type !== 'relic');
         }
     }
 

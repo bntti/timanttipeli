@@ -2,11 +2,11 @@ import { Container, CssBaseline, ThemeProvider, createTheme } from '@mui/materia
 import { type JSX, useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
+import Toolbar from './Toolbar';
 import { ThemeContext } from '../app/StateProvider';
-import ToolBar from '../components/ToolBar';
 
 const Root = (): JSX.Element => {
-    const defaultTheme = globalThis.localStorage.getItem('theme') as 'dark' | 'light' | null;
+    const defaultTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
     const [mode, setMode] = useState<'light' | 'dark'>(defaultTheme ?? 'light');
 
     const colorMode = useMemo(
@@ -14,7 +14,7 @@ const Root = (): JSX.Element => {
             colorMode: {
                 toggleTheme: () => {
                     setMode((prevMode) => {
-                        globalThis.localStorage.setItem('theme', prevMode === 'light' ? 'dark' : 'light');
+                        localStorage.setItem('theme', prevMode === 'light' ? 'dark' : 'light');
                         return prevMode === 'light' ? 'dark' : 'light';
                     });
                 },
@@ -37,7 +37,7 @@ const Root = (): JSX.Element => {
         <ThemeContext.Provider value={colorMode}>
             <ThemeProvider theme={theme}>
                 <CssBaseline enableColorScheme />
-                <ToolBar />
+                <Toolbar />
                 <Container sx={{ paddingBottom: '30px' }}>
                     <Outlet />
                 </Container>
