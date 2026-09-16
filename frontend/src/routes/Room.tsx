@@ -4,7 +4,7 @@ import { Alert, Button, Divider, ToggleButton, ToggleButtonGroup, Typography } f
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
-import type { Card, Room, Settings } from '@/common/types';
+import type { Card, Room, Settings } from '@timanttipeli/common';
 
 import type { User } from '../app/StateProvider';
 

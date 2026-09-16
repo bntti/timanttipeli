@@ -1,12 +1,13 @@
 {
-    "name": "timanttipeli-backend",
-    "version": "2.5.9",
+    "name": "@timanttipeli/backend",
+    "version": "2.5.10",
     "scripts": {
         "build": "tsc && node ./esbuild.mjs",
         "dev": "tsx watch src/index.ts",
         "start": "node --enable-source-maps dist/index.mjs"
     },
     "dependencies": {
+        "@timanttipeli/common": "workspace:*",
         "express": "^5.2.1",
         "socket.io": "^4.8.3",
         "zod": "^4.3.6"

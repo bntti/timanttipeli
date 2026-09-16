@@ -4,9 +4,9 @@ import assert from 'node:assert';
 import http from 'node:http';
 import { Server } from 'socket.io';
 
-import type { ClientToServerEvents, Room, ServerToClientEvents } from '@/common/types';
+import type { ClientToServerEvents, Room, ServerToClientEvents } from '@timanttipeli/common';
 
-import { roomIdSchema, settingsSchema, usernameSchema, voteSchema } from '@/common/types';
+import { roomIdSchema, settingsSchema, usernameSchema, voteSchema } from '@timanttipeli/common';
 
 import { generateRoom, handleLeave, handleVotes, startGame, startRound } from './logic';
 

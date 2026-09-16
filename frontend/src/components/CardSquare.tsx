@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 
 import { Box, Typography, useTheme } from '@mui/material';
 
-import type { Card } from '@/common/types';
+import type { Card } from '@timanttipeli/common';
 
 const CardSquare = ({ card, size = 'small' }: { card: Card; size?: 'small' | 'large' }): JSX.Element => {
     const theme = useTheme();

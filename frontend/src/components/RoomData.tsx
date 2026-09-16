@@ -3,7 +3,7 @@ import type { JSX } from 'react';
 import { Grid, Paper, Typography, useTheme } from '@mui/material';
 import { memo } from 'react';
 
-import type { Card, TrapCard } from '@/common/types';
+import type { Card, TrapCard } from '@timanttipeli/common';
 
 type Props = {
     gameNumber: number;

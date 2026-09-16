@@ -3,7 +3,7 @@ import type { JSX } from 'react';
 import { Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { memo } from 'react';
 
-import type { Card } from '@/common/types';
+import type { Card } from '@timanttipeli/common';
 
 import CardSquare from './CardSquare';
 import DurationBarMemo from './DurationBar';

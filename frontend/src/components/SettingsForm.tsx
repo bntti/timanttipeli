@@ -6,9 +6,9 @@ import type { JSX, SyntheticEvent } from 'react';
 import { Box, Button, FormControl, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
 import { memo, useEffect, useState } from 'react';
 
-import type { Settings } from '@/common/types';
+import type { Settings } from '@timanttipeli/common';
 
-import { settingsSchema } from '@/common/types';
+import { settingsSchema } from '@timanttipeli/common';
 
 type Props = { settings: Settings; setSettings: (settings: Settings) => void };
 const propsEqual = (oldProps: Props, newProps: Props): boolean =>

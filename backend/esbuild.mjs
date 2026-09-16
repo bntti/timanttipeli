@@ -4,11 +4,11 @@ import { build } from 'esbuild';
 build({
     bundle: true,
     entryPoints: ['./src/index.ts'],
+    external: ['express', 'socket.io', 'zod'],
     format: 'esm',
     minify: true,
     outExtension: { '.js': '.mjs' },
     outdir: './dist',
-    packages: 'external',
     platform: 'node',
     sourcemap: true,
 }).catch(() => {

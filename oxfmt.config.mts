@@ -5,6 +5,7 @@ export default defineConfig({
     singleQuote: true,
     tabWidth: 4,
     sortImports: {
+        internalPattern: ['@timanttipeli/'],
         groups: [
             'type-import',
             ['value-builtin', 'value-external'],

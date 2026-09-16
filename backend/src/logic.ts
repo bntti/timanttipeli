@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 
-import type { Card, RelicCard, Room, TrapCard } from '@/common/types';
+import type { Card, RelicCard, Room, TrapCard } from '@timanttipeli/common';
 
 const USE_RELICS = true;
 

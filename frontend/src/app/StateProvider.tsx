@@ -6,7 +6,7 @@ import type { Dispatch, JSX, ReactNode, SetStateAction } from 'react';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 
-import type { Room } from '../../../common/types';
+import type { Room } from '@timanttipeli/common';
 
 import { socket } from '../socket';
 
