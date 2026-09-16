@@ -1,12 +1,14 @@
+import type { JSX } from 'react';
+
 import { Dialog, DialogContent, DialogTitle, Divider, Grid, List, ListItem, Paper, Typography } from '@mui/material';
-import { type JSX, memo } from 'react';
+import { memo } from 'react';
 
 import DurationBarMemo from './DurationBar';
 
 type Props = {
     open: boolean;
     duration: number;
-    lastVote: { [key: string]: 'stay' | 'leave' };
+    lastVote: Record<string, 'stay' | 'leave'>;
 };
 const propsEqual = (oldProps: Props, newProps: Props): boolean =>
     oldProps.open === newProps.open &&

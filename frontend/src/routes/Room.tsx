@@ -1,9 +1,14 @@
+import type { JSX } from 'react';
+
 import { Alert, Button, Divider, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-import { type JSX, useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
 import type { Card, Room, Settings } from '@/common/types';
-import { SocketEventContext, type User, UserContext } from '../app/StateProvider';
+
+import type { User } from '../app/StateProvider';
+
+import { SocketEventContext, UserContext } from '../app/StateProvider';
 import CardDialogMemo from '../components/CardDialog';
 import DurationBarMemo from '../components/DurationBar';
 import PlayerTableMemo from '../components/PlayerTable';
@@ -21,7 +26,7 @@ const RoomRoute = (): JSX.Element => {
         serverTime: number;
     };
     const { roomId: roomIdParam } = useParams() as { roomId: string };
-    const roomId = parseInt(roomIdParam);
+    const roomId = Math.trunc(Number(roomIdParam));
 
     // Used to check if newRoomData changed
     const [oldRoom, setOldRoom] = useState<Room | null>(null);
@@ -32,7 +37,7 @@ const RoomRoute = (): JSX.Element => {
     const [vote, setVote] = useState<'stay' | 'leave' | null>(null);
     const [voteDelay, setVoteDelay] = useState<number | null>(null);
 
-    const [lastVote, setLastVote] = useState<{ [key: string]: 'stay' | 'leave' }>({});
+    const [lastVote, setLastVote] = useState<Record<string, 'stay' | 'leave'>>({});
     const [votesOpen, setVotesOpen] = useState(false);
     const [votesOpenDuration, setVotesOpenDuration] = useState(2);
 
@@ -100,11 +105,8 @@ const RoomRoute = (): JSX.Element => {
                 setVotesOpen(false);
 
                 // All players left
-                if (newRoom.data.lastCard === null) {
-                    setRoom(newRoom);
-                } else {
-                    showCard(newRoom);
-                }
+                if (newRoom.data.lastCard === null) setRoom(newRoom);
+                else showCard(newRoom);
             }, openDuration);
         },
         [showCard, room],
@@ -125,9 +127,9 @@ const RoomRoute = (): JSX.Element => {
             // Vote timer
             if (
                 room.data.roundInProgress &&
-                !room.data.currentRound.voteEndTime &&
+                room.data.currentRound.voteEndTime === null &&
                 newRoom.data.roundInProgress &&
-                newRoom.data.currentRound.voteEndTime
+                newRoom.data.currentRound.voteEndTime !== null
             ) {
                 setRoom({
                     ...room,
@@ -173,16 +175,16 @@ const RoomRoute = (): JSX.Element => {
     if (newRoomData !== oldRoom) {
         setOldRoom(newRoomData);
         if (newRoomData !== null) handleSetRoom(newRoomData);
-        if (newRoomData?.data.roundInProgress) setVote(newRoomData.data.currentRound.votes[user.username] ?? null);
+        if (newRoomData !== null && newRoomData.data.roundInProgress)
+            setVote(newRoomData.data.currentRound.votes[user.username] ?? null);
     }
 
     const joinGame = (): void => {
         socket.emit('joinGame', roomId, user.username);
     };
     const leaveGame = (): void => {
-        if (!room?.data.gameInProgress || confirm('Leave game?')) {
+        if (room === null || !room.data.gameInProgress || confirm('Leave game?'))
             socket.emit('leaveGame', roomId, user.username);
-        }
     };
     const kickPlayer = (username: string): void => {
         socket.emit('kickPlayer', roomId, username);
@@ -197,28 +199,20 @@ const RoomRoute = (): JSX.Element => {
         socket.emit('startRound', roomId);
     };
     const endGame = (): void => {
-        if (confirm('End game?')) {
-            socket.emit('endGame', roomId);
-        }
+        if (confirm('End game?')) socket.emit('endGame', roomId);
     };
     const endRound = (): void => {
-        if (confirm('End round?')) {
-            socket.emit('endRound', roomId);
-        }
+        if (confirm('End round?')) socket.emit('endRound', roomId);
     };
     const resetRoom = (): void => {
-        if (confirm('Reset room?')) {
-            socket.emit('resetRoom', roomId);
-        }
+        if (confirm('Reset room?')) socket.emit('resetRoom', roomId);
     };
     const deleteRoom = (): void => {
-        if (confirm('Delete room?')) {
-            socket.emit('deleteRoom', roomId);
-        }
+        if (confirm('Delete room?')) socket.emit('deleteRoom', roomId);
     };
     const handleVote = (value: 'stay' | 'leave' | null): void => {
         // Don't allow removing vote when vote in progress
-        if (voteDelay && value === null) return;
+        if (voteDelay !== null && value === null) return;
 
         setVote(value);
         socket.emit('vote', roomId, user.username, value);
@@ -291,7 +285,7 @@ const RoomRoute = (): JSX.Element => {
                             <ToggleButton value="leave">Leave</ToggleButton>
                         </ToggleButtonGroup>
                     )}
-                    {voteDelay && <DurationBarMemo duration={voteDelay} />}
+                    {voteDelay !== null && <DurationBarMemo duration={voteDelay} />}
                 </>
             )}
 

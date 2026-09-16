@@ -68,7 +68,10 @@ const roomSchema = z.union([
     }),
 ]);
 
-export const roomResponseSchema = z.object({ room: roomSchema, serverTime: z.number().int().nonnegative() });
+export const roomResponseSchema = z.object({
+    room: roomSchema,
+    serverTime: z.number().int().nonnegative(),
+});
 export const roomsSchema = z.array(roomBaseSchema);
 
 export type Settings = z.infer<typeof settingsSchema>;

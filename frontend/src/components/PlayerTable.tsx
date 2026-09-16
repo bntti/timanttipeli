@@ -1,3 +1,5 @@
+import type { JSX } from 'react';
+
 import { Block, Check, Close, HourglassBottom } from '@mui/icons-material';
 import {
     Button,
@@ -11,11 +13,11 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { type JSX, memo } from 'react';
+import { memo } from 'react';
 
 type Props =
     | {
-          roomPlayers: { [key: string]: number };
+          roomPlayers: Record<string, number>;
           gameInProgress: boolean;
           removePlayers: boolean;
           kickPlayer: (username: string) => void;
@@ -26,14 +28,14 @@ type Props =
           hasRelic?: null;
       }
     | {
-          roomPlayers: { [key: string]: number };
+          roomPlayers: Record<string, number>;
           gameInProgress: boolean;
           removePlayers: boolean;
           kickPlayer: (username: string) => void;
           roundPlayers: string[];
           votes: string[];
           pointsPerPlayer: number;
-          pointsGained: { [key: string]: number };
+          pointsGained: Record<string, number>;
           hasRelic: string[];
       };
 const propsEqual = (oldProps: Props, newProps: Props): boolean =>
@@ -68,20 +70,20 @@ const PlayerTable = ({
     const getPointsText = (player: string): JSX.Element => {
         const points = roomPlayers[player];
         if (!roundInProgress) return <Typography>{points}</Typography>;
-        if (roundPlayers.includes(player)) {
+        if (roundPlayers.includes(player))
             return (
                 <Typography>
                     {points} + ({pointsPerPlayer})
                 </Typography>
             );
-        }
-        if (hasRelic.includes(player)) {
+
+        if (hasRelic.includes(player))
             return (
                 <Typography>
                     {points} + <strong style={{ color: 'yellow' }}>{pointsGained[player]}</strong>
                 </Typography>
             );
-        }
+
         return (
             <Typography>
                 {points} + {pointsGained[player]}
@@ -122,11 +124,14 @@ const PlayerTable = ({
                                     borderBottom: 0,
                                 },
                                 background:
+                                    // TODO: Remove the nested ternary
+                                    // oxlint-disable no-nested-ternary
                                     roundInProgress && !roundPlayers.includes(player)
                                         ? theme.palette.mode === 'light'
                                             ? '#0002'
                                             : '#aaa1'
                                         : '#0000',
+                                // oxlint-enable no-nested-ternary
                             }}
                         >
                             <TableCell>

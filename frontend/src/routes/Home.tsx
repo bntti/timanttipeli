@@ -1,3 +1,5 @@
+import type { JSX, SyntheticEvent } from 'react';
+
 import {
     Box,
     Button,
@@ -12,7 +14,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { type JSX, type SyntheticEvent, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { SocketEventContext } from '../app/StateProvider';
@@ -35,7 +37,7 @@ const HomeRoute = (): JSX.Element => {
         }
         setError(false);
         setFeedback('');
-        socket.emit('createRoom', newRoom, async (roomId) => navigate(`/room/${roomId}`));
+        socket.emit('createRoom', newRoom, (roomId) => void navigate(`/room/${roomId}`));
     };
 
     if (rooms === null) return <Typography>Loading rooms...</Typography>;

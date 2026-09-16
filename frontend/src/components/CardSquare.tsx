@@ -1,5 +1,6 @@
-import { Box, Typography, useTheme } from '@mui/material';
 import type { JSX } from 'react';
+
+import { Box, Typography, useTheme } from '@mui/material';
 
 import type { Card } from '@/common/types';
 

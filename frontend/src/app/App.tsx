@@ -1,14 +1,17 @@
+import type { JSX, PropsWithChildren, ReactNode } from 'react';
+
+// oxlint-disable react/no-multi-comp
 import { Typography } from '@mui/material';
-import { type JSX, type PropsWithChildren, type ReactNode, useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { Navigate, RouterProvider, createBrowserRouter, useNavigate } from 'react-router-dom';
 
-import { UserContext, UserSchema } from './StateProvider';
 import Root from '../components/Root';
 import HomeRoute from '../routes/Home';
 import LoginRoute from '../routes/Login';
 import LogoutRoute from '../routes/Logout';
 import RoomRoute from '../routes/Room';
 import RulesRoute from '../routes/Rules';
+import { UserContext, UserSchema } from './StateProvider';
 
 const RequireAuth = ({ children }: PropsWithChildren): ReactNode => {
     const { user, setUser } = useContext(UserContext);
@@ -18,19 +21,19 @@ const RequireAuth = ({ children }: PropsWithChildren): ReactNode => {
 
     useEffect(() => {
         if (user !== null) return;
-        if (storageUser) {
+        if (storageUser !== null)
             try {
                 const newUser = UserSchema.parse(JSON.parse(storageUser));
                 setUser(newUser);
             } catch (error) {
+                // oxlint-disable-next-line no-console
                 console.error(error);
-                navigate('/logout');
+                void navigate('/logout');
             }
-        }
     }, [user, storageUser, setUser, navigate]);
 
     if (user !== null) return children;
-    if (storageUser) return <Typography>Loading</Typography>;
+    if (storageUser !== null) return <Typography>Loading</Typography>;
 
     return <Navigate replace to="/login" state={{ from: location.pathname }} />;
 };

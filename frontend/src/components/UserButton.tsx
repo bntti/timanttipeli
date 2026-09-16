@@ -1,8 +1,10 @@
+import type { JSX } from 'react';
+
 import { Brightness3, Brightness7, Logout } from '@mui/icons-material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import PersonIcon from '@mui/icons-material/Person';
 import { Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, Typography, useTheme } from '@mui/material';
-import { type JSX, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ThemeContext, UserContext } from '../app/StateProvider';
@@ -18,13 +20,12 @@ const UserButton = (): JSX.Element => {
 
     const menuOpen = Boolean(anchorEl);
 
-    if (user === null) {
+    if (user === null)
         return (
             <Typography color="inherit">
                 <em>Not Logged in</em>
             </Typography>
         );
-    }
 
     return (
         <>
@@ -52,7 +53,7 @@ const UserButton = (): JSX.Element => {
                 <MenuItem
                     onClick={() => {
                         setAnchorEl(null);
-                        navigate('/logout');
+                        void navigate('/logout');
                     }}
                 >
                     <ListItemIcon>

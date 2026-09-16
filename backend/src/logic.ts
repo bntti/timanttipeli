@@ -92,17 +92,15 @@ export const generateRoom = (id: number = -1, name: string = '-1'): Room => ({
 const createDeck = (room: Room): Card[] => {
     const result = room.settings.goldGoldGold ? [...baseDeck, ...goldGoldGoldExtraCards] : [...baseDeck];
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (USE_RELICS) {
-        if (room.settings.goldGoldGold) {
+    // TODO: Make this part more readable if reasonable
+    if (USE_RELICS)
+        if (room.settings.goldGoldGold)
             for (let i = 0; i <= room.data.roundsDone % 10; i++) {
                 result.push(goldGoldGoldCards[i]);
                 if (goldGoldGoldCards[i].value <= 12) result.push(goldGoldGoldCards[i]);
             }
-        } else {
-            for (let i = 0; i <= room.data.roundsDone % 5; i++) result.push(relicCards[i]);
-        }
-    }
+        else for (let i = 0; i <= room.data.roundsDone % 5; i++) result.push(relicCards[i]);
+
     for (const card of room.data.removedCards) {
         const index = result.indexOf(card);
         result.splice(index, 1);
@@ -113,9 +111,9 @@ const createDeck = (room: Room): Card[] => {
 
 const handleRoundEnd = (room: Room, card?: TrapCard): void => {
     assert.ok(room.data.roundInProgress);
-    for (const [player, points] of Object.entries(room.data.currentRound.pointsGained)) {
+    for (const [player, points] of Object.entries(room.data.currentRound.pointsGained))
         room.data.players[player] += points;
-    }
+
     if (card) room.data.removedCards.push(card);
 
     const numRounds = room.settings.goldGoldGold ? 10 : 5;
@@ -135,7 +133,7 @@ const handleDraw = (room: Room): void => {
     const round = room.data.currentRound;
 
     const index = Math.floor(Math.random() * round.deck.length);
-    const card = round.deck.splice(index, 1)[0];
+    const [card] = round.deck.splice(index, 1);
     room.data.lastCard = card;
 
     if (card.type === 'points') {
@@ -162,10 +160,9 @@ export const handleVotes = (room: Room, endRound: boolean = false): void => {
     const round = room.data.currentRound;
 
     // Force everyone to leave if round was forcibly ended
+    // oxlint-disable-next-line curly
     if (endRound) {
-        for (const player of round.players) {
-            round.votes[player] = 'leave';
-        }
+        for (const player of round.players) round.votes[player] = 'leave';
     }
 
     const numLeave = Object.values(round.votes).filter((vote) => vote === 'leave').length;
@@ -228,7 +225,7 @@ export const startRound = (room: Room): void => {
     assert.ok(room.data.gameInProgress && !room.data.roundInProgress);
     assert.ok(Object.keys(room.data.players).length > 0);
 
-    const roundPoints: { [key: string]: number } = {};
+    const roundPoints: Record<string, number> = {};
     for (const player of Object.keys(room.data.players)) roundPoints[player] = 0;
 
     const deck = createDeck(room);
@@ -257,8 +254,8 @@ export const handleLeave = (room: Room, player: string): void => {
     assert.ok(!room.data.roundInProgress);
     assert.ok(player in room.data.players);
 
+    // TODO: Use a map instead
+    // oxlint-disable-next-line typescript/no-dynamic-delete
     delete room.data.players[player];
-    if (room.data.gameInProgress && Object.keys(room.data.players).length === 0) {
-        room.data = generateRoom().data;
-    }
+    if (room.data.gameInProgress && Object.keys(room.data.players).length === 0) room.data = generateRoom().data;
 };

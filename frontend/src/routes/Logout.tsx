@@ -1,5 +1,7 @@
+import type { JSX } from 'react';
+
 import { Typography } from '@mui/material';
-import { type JSX, useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';
@@ -11,7 +13,7 @@ const LogoutRoute = (): JSX.Element => {
     useEffect(() => {
         setUser(null);
         localStorage.removeItem('user');
-        navigate('/login');
+        void navigate('/login');
     }, [navigate, setUser]);
 
     return <Typography>Logging out...</Typography>;

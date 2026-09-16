@@ -1,17 +1,13 @@
+// oxlint-disable promise/prefer-await-to-callbacks typescript/strict-void-return
 import express from 'express';
 import assert from 'node:assert';
 import http from 'node:http';
 import { Server } from 'socket.io';
 
-import {
-    type ClientToServerEvents,
-    type Room,
-    type ServerToClientEvents,
-    roomIdSchema,
-    settingsSchema,
-    usernameSchema,
-    voteSchema,
-} from '@/common/types';
+import type { ClientToServerEvents, Room, ServerToClientEvents } from '@/common/types';
+
+import { roomIdSchema, settingsSchema, usernameSchema, voteSchema } from '@/common/types';
+
 import { generateRoom, handleLeave, handleVotes, startGame, startRound } from './logic';
 
 const rooms: Room[] = [];
@@ -24,16 +20,17 @@ const getRoomIdError = (roomId: number, socketRooms: Set<string> | null = null, 
         if (!joining && !socketRooms.has(roomId.toString())) return 'Client not in roomId';
         if (socketRooms.size > 2) {
             const badRooms = [];
-            for (const room of socketRooms) {
-                if (/^\d+$/u.test(room) && parseInt(room) !== roomId) badRooms.push(room);
-            }
+            for (const room of socketRooms)
+                // TODO: Use strings as room ids
+                if (/^\d+$/u.test(room) && Math.trunc(Number(room)) !== roomId) badRooms.push(room);
+
             for (const badRoom of badRooms) socketRooms.delete(badRoom);
         }
 
+        // TODO: Make this code more clear
         const targetRoomCount = joining ? 1 : 2;
-        if (socketRooms.size !== targetRoomCount) {
+        if (socketRooms.size !== targetRoomCount)
             return `ERROR: User has weird number of rooms (${socketRooms.size} !== ${targetRoomCount})`;
-        }
     }
     if (!(roomId in rooms)) return 'roomId not in rooms';
     return '';
@@ -48,7 +45,9 @@ const validateRoomId = (roomId: number, socketRooms: Set<string> | null = null, 
 const runServer = (): void => {
     const app = express();
     const server = http.createServer(app);
-    const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, { connectionStateRecovery: {} });
+    const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
+        connectionStateRecovery: {},
+    });
     server.listen(5000);
 
     io.on('connection', (socket) => {
@@ -60,7 +59,6 @@ const runServer = (): void => {
             const roomId = rooms.length;
             rooms.push(generateRoom(roomId, name));
             io.emit('rooms', rooms);
-
             callback(roomId);
         });
 
@@ -69,7 +67,10 @@ const runServer = (): void => {
             if (!settingsSchema.safeParse(settings).success) return;
 
             rooms[roomId].settings = settings;
-            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.to(roomId.toString()).emit('roomState', {
+                room: rooms[roomId],
+                serverTime: Date.now(),
+            });
         });
 
         socket.on('joinRoom', async (roomId) => {
@@ -92,7 +93,10 @@ const runServer = (): void => {
 
             rooms[roomId].data.players[username] = 0;
 
-            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.to(roomId.toString()).emit('roomState', {
+                room: rooms[roomId],
+                serverTime: Date.now(),
+            });
         });
 
         socket.on('leaveGame', (roomId, username) => {
@@ -101,7 +105,10 @@ const runServer = (): void => {
 
             handleLeave(rooms[roomId], username);
 
-            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.to(roomId.toString()).emit('roomState', {
+                room: rooms[roomId],
+                serverTime: Date.now(),
+            });
         });
 
         socket.on('kickPlayer', (roomId, username) => {
@@ -110,19 +117,25 @@ const runServer = (): void => {
 
             handleLeave(rooms[roomId], username);
 
-            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.to(roomId.toString()).emit('roomState', {
+                room: rooms[roomId],
+                serverTime: Date.now(),
+            });
         });
 
         socket.on('startGame', (roomId) => {
             if (!validateRoomId(roomId, socket.rooms)) return;
             if (rooms[roomId].data.gameInProgress) return;
 
-            if (Object.keys(rooms[roomId].data.players).length === 0) {
-                // error: 'Too few players to start' // TODO: Error handling
+            if (Object.keys(rooms[roomId].data.players).length === 0)
+                // TODO: Return the error to the caller
                 return;
-            }
+
             startGame(rooms[roomId]);
-            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.to(roomId.toString()).emit('roomState', {
+                room: rooms[roomId],
+                serverTime: Date.now(),
+            });
         });
 
         socket.on('startRound', (roomId) => {
@@ -131,7 +144,10 @@ const runServer = (): void => {
             if (Object.keys(rooms[roomId].data.players).length === 0) return;
 
             startRound(rooms[roomId]);
-            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.to(roomId.toString()).emit('roomState', {
+                room: rooms[roomId],
+                serverTime: Date.now(),
+            });
         });
 
         socket.on('vote', (roomId, username, vote) => {
@@ -144,16 +160,22 @@ const runServer = (): void => {
             if (!(username in room.data.players)) return;
 
             const round = room.data.currentRound;
-            if (vote === null && !round.voteEndTime) delete room.data.currentRound.votes[username];
+            if (vote === null && round.voteEndTime === null)
+                // TODO: Convert to a set
+                // oxlint-disable-next-line typescript/no-dynamic-delete
+                delete room.data.currentRound.votes[username];
             else if (vote !== null) room.data.currentRound.votes[username] = vote;
 
             // All votes
-            if (Object.keys(round.votes).length === round.players.length) {
+            if (Object.keys(round.votes).length === round.players.length)
                 if (round.players.length === 1 || room.settings.afterVoteTime === 0) {
                     handleVotes(rooms[roomId]);
-                } else if (!round.voteEndTime) {
+                } else if (round.voteEndTime === null) {
                     round.voteEndTime = Date.now() + room.settings.afterVoteTime;
-                    io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+                    io.to(roomId.toString()).emit('roomState', {
+                        room: rooms[roomId],
+                        serverTime: Date.now(),
+                    });
 
                     // Wait delay
                     setTimeout(() => {
@@ -163,14 +185,19 @@ const runServer = (): void => {
                         updatedRound.voteEndTime = null;
                         handleVotes(rooms[roomId]);
 
-                        io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+                        io.to(roomId.toString()).emit('roomState', {
+                            room: rooms[roomId],
+                            serverTime: Date.now(),
+                        });
                     }, room.settings.afterVoteTime);
                 }
-            }
 
             // Don't emit during vote timer
-            if (!round.voteEndTime)
-                io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            if (round.voteEndTime === null)
+                io.to(roomId.toString()).emit('roomState', {
+                    room: rooms[roomId],
+                    serverTime: Date.now(),
+                });
         });
 
         socket.on('endRound', (roomId) => {
@@ -180,7 +207,10 @@ const runServer = (): void => {
 
             handleVotes(rooms[roomId], true);
 
-            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.to(roomId.toString()).emit('roomState', {
+                room: rooms[roomId],
+                serverTime: Date.now(),
+            });
         });
 
         socket.on('endGame', (roomId) => {
@@ -191,21 +221,30 @@ const runServer = (): void => {
             rooms[roomId].data = generateRoom().data;
             rooms[roomId].data.players = Object.fromEntries(players.map((player) => [player, 0]));
 
-            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.to(roomId.toString()).emit('roomState', {
+                room: rooms[roomId],
+                serverTime: Date.now(),
+            });
         });
 
         socket.on('resetRoom', (roomId) => {
             if (!validateRoomId(roomId, socket.rooms)) return;
 
             rooms[roomId] = generateRoom(rooms[roomId].id, rooms[roomId].name);
-            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.to(roomId.toString()).emit('roomState', {
+                room: rooms[roomId],
+                serverTime: Date.now(),
+            });
         });
 
         socket.on('deleteRoom', (roomId) => {
             if (!validateRoomId(roomId, socket.rooms)) return;
 
             rooms[roomId].hidden = true;
-            io.to(roomId.toString()).emit('roomState', { room: rooms[roomId], serverTime: Date.now() });
+            io.to(roomId.toString()).emit('roomState', {
+                room: rooms[roomId],
+                serverTime: Date.now(),
+            });
             io.emit('rooms', rooms);
         });
     });

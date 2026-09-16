@@ -1,21 +1,21 @@
-/* eslint-disable react-refresh/only-export-components */
+// oxlint-disable react/no-multi-comp
+// TODO: Fix this problem instead of disabling
+// oxlint-disable react/only-export-components
+import type { Dispatch, JSX, ReactNode, SetStateAction } from 'react';
 
-import {
-    type Dispatch,
-    type JSX,
-    type ReactNode,
-    type SetStateAction,
-    createContext,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import type { Room } from '../../../common/types';
+
 import { socket } from '../socket';
 
-export const UserSchema = z.strictObject({ username: z.string(), admin: z.boolean(), cheats: z.boolean() });
+// TODO: Rename schemas to lowercase
+export const UserSchema = z.strictObject({
+    username: z.string(),
+    admin: z.boolean(),
+    cheats: z.boolean(),
+});
 export type User = z.infer<typeof UserSchema>;
 type UserContextType = {
     user: User | null;
@@ -29,7 +29,11 @@ export const UserStateProvider = ({ children }: { children: ReactNode }): JSX.El
     return <UserContext.Provider value={providerState}>{children}</UserContext.Provider>;
 };
 
-type SocketEventContextType = { rooms: Room[] | null; room: Room | null; serverTime: number | null };
+type SocketEventContextType = {
+    rooms: Room[] | null;
+    room: Room | null;
+    serverTime: number | null;
+};
 export const SocketEventContext = createContext({} as SocketEventContextType);
 
 export const SocketEventStateProvider = ({ children }: { children: ReactNode }): JSX.Element => {

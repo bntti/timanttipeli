@@ -1,7 +1,10 @@
+import type { JSX } from 'react';
+
 import { Box, Paper, Typography } from '@mui/material';
-import { type JSX, memo } from 'react';
+import { memo } from 'react';
 
 import type { Card } from '@/common/types';
+
 import CardSquare from './CardSquare';
 
 type Props = { removedCards: Card[] };
@@ -20,6 +23,8 @@ const RemovedCards = ({ removedCards }: Props): JSX.Element => (
             }}
         >
             {removedCards.map((card, i) => (
+                // TODO: Fix the warning
+                // oxlint-disable-next-line react/no-array-index-key
                 <CardSquare key={i} card={card} />
             ))}
         </Box>

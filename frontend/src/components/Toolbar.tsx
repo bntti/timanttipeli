@@ -1,3 +1,5 @@
+import type { JSX } from 'react';
+
 import {
     AddModeratorOutlined,
     AutoFixNormal,
@@ -6,20 +8,20 @@ import {
     MenuBook,
     RemoveModeratorOutlined,
 } from '@mui/icons-material';
-import { AppBar, IconButton, Toolbar } from '@mui/material';
-import { type JSX, useContext } from 'react';
+import { AppBar, IconButton, Toolbar as MuiToolbar } from '@mui/material';
+import { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import UserButton from './UserButton';
 import { UserContext } from '../app/StateProvider';
+import UserButton from './UserButton';
 
-const Toolbar_ = (): JSX.Element => {
+const Toolbar = (): JSX.Element => {
     const { user, setUser } = useContext(UserContext);
     const location = useLocation();
 
     return (
         <AppBar position="static" sx={{ mb: 2.5 }}>
-            <Toolbar>
+            <MuiToolbar>
                 <IconButton color="inherit" component={Link} to="/" size="large">
                     <Home />
                 </IconButton>
@@ -50,9 +52,9 @@ const Toolbar_ = (): JSX.Element => {
                     </>
                 )}
                 <UserButton />
-            </Toolbar>
+            </MuiToolbar>
         </AppBar>
     );
 };
 
-export default Toolbar_;
+export default Toolbar;

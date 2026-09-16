@@ -1,5 +1,7 @@
+import type { JSX } from 'react';
+
 import { Grid, Paper, Typography, useTheme } from '@mui/material';
-import { type JSX, memo } from 'react';
+import { memo } from 'react';
 
 import type { Card, TrapCard } from '@/common/types';
 
@@ -31,8 +33,9 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, cheats, d
 
     if (cheats && deck && inPlay) {
         const numPointsCards = deck.filter((card) => card.type === 'points').length;
-        if (numPointsCards === 0) pointsCard.ev = 0;
-        else {
+        if (numPointsCards === 0) {
+            pointsCard.ev = 0;
+        } else {
             pointsCard.ev = deck.reduce(
                 (ev, card) => (card.type === 'points' ? ev + card.value / numPointsCards : ev),
                 0,
@@ -42,8 +45,9 @@ const RoomData = ({ gameNumber, roundNumber, deckSize, pointsOnGround, cheats, d
         pointsCard.prob = Math.round((numPointsCards / deck.length) * 100);
 
         const numRelicCards = deck.filter((card) => card.type === 'relic').length;
-        if (numRelicCards === 0) relicCard.ev = 0;
-        else {
+        if (numRelicCards === 0) {
+            relicCard.ev = 0;
+        } else {
             relicCard.ev = deck.reduce((ev, card) => (card.type === 'relic' ? ev + card.value / numRelicCards : ev), 0);
             relicCard.ev = Math.round(relicCard.ev * 10) / 10;
         }

@@ -1,7 +1,10 @@
+import type { JSX } from 'react';
+
 import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
-import { type JSX, memo } from 'react';
+import { memo } from 'react';
 
 import type { Card, TrapCard } from '@/common/types';
+
 import CardSquare from './CardSquare';
 
 type Props = { inPlay: Card[] };
@@ -30,6 +33,8 @@ const RoundCards = ({ inPlay }: Props): JSX.Element => (
                 {inPlay
                     .filter((card) => card.type !== 'trap')
                     .map((card, i) => (
+                        // TODO: Fix the warning
+                        // oxlint-disable-next-line react/no-array-index-key
                         <CardSquare key={i} card={card} />
                     ))}
             </Box>
@@ -47,6 +52,8 @@ const RoundCards = ({ inPlay }: Props): JSX.Element => (
                 {inPlay
                     .filter((card): card is TrapCard => card.type === 'trap')
                     .map((card, i) => (
+                        // TODO: Fix the warning
+                        // oxlint-disable-next-line react/no-array-index-key
                         <CardSquare key={i} card={card} />
                     ))}
             </Box>

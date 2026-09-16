@@ -1,7 +1,14 @@
-import { Box, Button, FormControl, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
-import { type JSX, type SyntheticEvent, memo, useEffect, useState } from 'react';
+// oxlint-disable react/set-state-in-effect
+// TODO: Fix this instead of disabling the rule
+// oxlint-disable react/no-deriving-state-in-effects
+import type { JSX, SyntheticEvent } from 'react';
 
-import { type Settings, settingsSchema } from '@/common/types';
+import { Box, Button, FormControl, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
+import { memo, useEffect, useState } from 'react';
+
+import type { Settings } from '@/common/types';
+
+import { settingsSchema } from '@/common/types';
 
 type Props = { settings: Settings; setSettings: (settings: Settings) => void };
 const propsEqual = (oldProps: Props, newProps: Props): boolean =>
@@ -27,9 +34,7 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
         cardTime1 !== (settings.cardTime1 / 1000).toString() ||
         afterVoteTime !== (settings.afterVoteTime / 1000).toString();
 
-    // TODO: Fix the react-hooks warning
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setVoteShowTime((settings.voteShowTime / 1000).toString());
         setVoteShowTime1((settings.voteShowTime1 / 1000).toString());
         setCardTime((settings.cardTime / 1000).toString());
@@ -40,14 +45,15 @@ const SettingsForm = ({ settings, setSettings }: Props): JSX.Element => {
     const handleSubmit = (event: SyntheticEvent): void => {
         event.preventDefault();
         try {
+            // TODO: Use zod for all string -> number conversions
             const newSettings = settingsSchema.parse({
                 allowCheats,
                 goldGoldGold,
-                voteShowTime: parseFloat(voteShowTime) * 1000,
-                voteShowTime1: parseFloat(voteShowTime1) * 1000,
-                cardTime: parseFloat(cardTime) * 1000,
-                cardTime1: parseFloat(cardTime1) * 1000,
-                afterVoteTime: parseFloat(afterVoteTime) * 1000,
+                voteShowTime: Number(voteShowTime) * 1000,
+                voteShowTime1: Number(voteShowTime1) * 1000,
+                cardTime: Number(cardTime) * 1000,
+                cardTime1: Number(cardTime1) * 1000,
+                afterVoteTime: Number(afterVoteTime) * 1000,
             });
             setSettings(newSettings);
         } catch {

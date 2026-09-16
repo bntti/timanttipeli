@@ -1,9 +1,11 @@
+import type { JSX } from 'react';
+
 import { Container, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import { type JSX, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import Toolbar from './Toolbar';
 import { ThemeContext } from '../app/StateProvider';
+import Toolbar from './Toolbar';
 
 const Root = (): JSX.Element => {
     const defaultTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;

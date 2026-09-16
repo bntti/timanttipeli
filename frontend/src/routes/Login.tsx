@@ -1,5 +1,7 @@
+import type { JSX, SyntheticEvent } from 'react';
+
 import { Button, Container, Paper, TextField, Typography } from '@mui/material';
-import { type JSX, type SyntheticEvent, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { UserContext } from '../app/StateProvider';
@@ -18,8 +20,8 @@ const LoginRoute = (): JSX.Element => {
         setUser(user);
         localStorage.setItem('user', JSON.stringify(user));
 
-        if (state?.from) navigate(state.from);
-        else navigate('/');
+        if (state !== undefined && state.from) void navigate(state.from);
+        else void navigate('/');
     };
 
     return (

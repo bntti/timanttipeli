@@ -1,5 +1,7 @@
+import type { JSX } from 'react';
+
 import { LinearProgress, keyframes, styled } from '@mui/material';
-import { type JSX, memo } from 'react';
+import { memo } from 'react';
 
 const indeterminate1Keyframes = keyframes({
     '0%': { left: '-35%', right: '100%' },
@@ -19,9 +21,9 @@ const StyledLinearProgress = styled(LinearProgress)(({ duration }: Props) => ({
     },
 }));
 
-const DurationBar = ({ duration }: Props): JSX.Element => {
-    return <StyledLinearProgress duration={duration} variant="indeterminate" />;
-};
+const DurationBar = ({ duration }: Props): JSX.Element => (
+    <StyledLinearProgress duration={duration} variant="indeterminate" />
+);
 
 const DurationBarMemo = memo(DurationBar, propsEqual);
 export default DurationBarMemo;

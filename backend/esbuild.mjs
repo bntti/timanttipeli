@@ -1,3 +1,4 @@
+/* oxlint-disable promise/prefer-await-to-then */
 import { build } from 'esbuild';
 
 build({
@@ -11,6 +12,5 @@ build({
     platform: 'node',
     sourcemap: true,
 }).catch(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     process.exit(1);
 });
