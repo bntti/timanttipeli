@@ -29,9 +29,6 @@ importers:
 
   backend:
     dependencies:
-      '@timanttipeli/common':
-        specifier: workspace:*
-        version: link:../common
       express:
         specifier: ^5.2.1
         version: 5.2.1
@@ -42,6 +39,9 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
+      '@timanttipeli/common':
+        specifier: workspace:*
+        version: link:../common
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6

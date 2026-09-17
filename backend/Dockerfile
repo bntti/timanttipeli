@@ -1,37 +1,27 @@
-FROM node:24-alpine AS build
+FROM node:24-alpine AS base
+RUN npm install --global pnpm@12
 
-WORKDIR /app
-RUN mkdir backend common
-
-# Install packages
-WORKDIR /app/common
-COPY common/package.json common/yarn.lock ./
-RUN yarn install
-
-WORKDIR /app/backend
-COPY backend/package.json backend/yarn.lock ./
-RUN yarn install
-
-# Copy code
-WORKDIR /app/common
-COPY common/types types
-
-WORKDIR /app/backend
-COPY backend/tsconfig.json backend/esbuild.mjs ./
-COPY backend/src ./src
-
-RUN yarn build
-
-
-FROM node:24-alpine AS app
+FROM base AS build
 WORKDIR /app
 
-ENV NODE_ENV=production
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY common/package.json common/package.json
+COPY backend/package.json backend/package.json
 
-COPY backend/package.json backend/yarn.lock ./
-RUN yarn install && yarn cache clean
+RUN pnpm install --frozen-lockfile
 
-COPY --from=build /app/backend/dist ./
+COPY common common
+COPY backend backend
+
+RUN pnpm --filter @timanttipeli/backend build
+
+FROM base AS prod
+WORKDIR /app
+
+COPY --from=build /app/backend/package.json ./package.json
+COPY --from=build /app/backend/dist ./dist
+
+RUN pnpm install --prod --no-frozen-lockfile
 
 EXPOSE 5000
-ENTRYPOINT ["node", "index.mjs"]
+CMD ["pnpm", "start"]

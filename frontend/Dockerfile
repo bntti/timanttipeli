@@ -1,28 +1,19 @@
-FROM node:24-alpine AS build
+FROM node:24-alpine AS base
+RUN npm install --global pnpm@12
 
+FROM base AS build
 WORKDIR /app
-RUN mkdir frontend
 
-# Install packages
-WORKDIR /app/common
-COPY common/package.json common/yarn.lock ./
-RUN yarn install
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY common/package.json common/package.json
+COPY frontend/package.json frontend/package.json
 
-WORKDIR /app/frontend
-COPY frontend/package.json frontend/yarn.lock ./
-RUN yarn install --production
+RUN pnpm install --frozen-lockfile
 
-# Copy code
-WORKDIR /app/common
-COPY common/types types
+COPY common common
+COPY frontend frontend
 
-WORKDIR /app/frontend
-COPY frontend/tsconfig.json frontend/tsconfig.app.json frontend/tsconfig.node.json ./
-COPY frontend/index.html frontend/vite.config.mts ./
-COPY frontend/src ./src
-
-RUN yarn build
-
+RUN pnpm --filter @timanttipeli/frontend build
 
 FROM nginx:alpine AS run
 
