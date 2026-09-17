@@ -3,9 +3,7 @@ import { defineConfig } from 'oxfmt';
 export default defineConfig({
     printWidth: 120,
     singleQuote: true,
-    tabWidth: 4,
     sortImports: {
-        internalPattern: ['@timanttipeli/'],
         groups: [
             'type-import',
             ['value-builtin', 'value-external'],
@@ -15,5 +13,7 @@ export default defineConfig({
             ['value-parent', 'value-sibling', 'value-index'],
             'unknown',
         ],
+        internalPattern: ['@timanttipeli/'],
     },
+    tabWidth: 4,
 });

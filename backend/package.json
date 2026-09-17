@@ -2,7 +2,7 @@
     "name": "@timanttipeli/backend",
     "version": "2.5.10",
     "scripts": {
-        "build": "tsc && node ./esbuild.mjs",
+        "build": "tsc && node ./esbuild.mts",
         "dev": "tsx watch src/index.ts",
         "start": "node --enable-source-maps dist/index.mjs"
     },

@@ -1,5 +1,6 @@
 import { defineConfig } from 'oxlint';
 
+// oxlint-disable eslint/sort-keys
 export default defineConfig({
     plugins: [
         'eslint',
@@ -24,91 +25,79 @@ export default defineConfig({
         style: 'warn',
         restriction: 'warn',
     },
+    // oxlint-enable eslint/sort-keys
     rules: {
         '@typescript-eslint/explicit-function-return-type': ['warn', { allowExpressions: true }],
-        'import/max-dependencies': 'off',
         'eslint/complexity': 'off',
-        'eslint/no-warning-comments': 'off',
-        'import/no-default-export': 'off',
-        'eslint/no-void': 'off',
-        'eslint/no-magic-numbers': 'off',
-        'typescript/consistent-type-definitions': ['warn', 'type'],
-        'eslint/no-duplicate-imports': ['warn', { allowSeparateTypeImports: true }],
-        'eslint/one-var': 'off',
-        'eslint/max-statements': 'off',
-        'unicorn/no-null': 'off',
-        'eslint/max-lines': 'off',
-        'import/prefer-default-export': 'off',
-        'eslint/no-undefined': 'off',
-        'eslint/no-plusplus': 'off',
-        'unicorn/no-array-reduce': 'off',
-        'unicorn/max-nested-calls': 'off',
-        'eslint/no-continue': 'off',
-        'import/exports-last': 'off',
+        'eslint/curly': ['warn', 'multi', 'consistent'],
         'eslint/default-case': 'off',
-        'unicorn/switch-case-braces': ['warn', 'avoid'],
-        'eslint/max-lines-per-function': 'off',
-        'eslint/no-ternary': 'off',
-        'typescript/no-confusing-void-expression': ['warn', { ignoreArrowShorthand: true }],
-        'import/no-named-export': 'off',
-        'typescript/no-inferrable-types': ['warn', { ignoreParameters: true }],
-        'react/function-component-definition': ['warn', { namedComponents: 'arrow-function' }],
         'eslint/id-length': 'off',
+        'eslint/max-lines': 'off',
+        'eslint/max-lines-per-function': 'off',
+        'eslint/max-statements': 'off',
+        'eslint/no-continue': 'off',
+        'eslint/no-duplicate-imports': ['warn', { allowSeparateTypeImports: true }],
+        'eslint/no-magic-numbers': 'off',
+        'eslint/no-plusplus': 'off',
+        'eslint/no-ternary': 'off',
+        'eslint/no-undefined': 'off',
         'eslint/no-unused-vars': [
             'error',
             {
                 argsIgnorePattern: '^_',
             },
         ],
-        'eslint/curly': ['warn', 'multi', 'consistent'],
-
-        // TODO: Fix, conflicts with sorting
+        'eslint/no-void': 'off',
+        'eslint/no-warning-comments': 'off',
+        'eslint/one-var': 'off',
         'eslint/sort-imports': 'off',
-        // TODO: Enable for this file
         'eslint/sort-keys': 'off',
-        // TODO: Consider enabling
+        'import/exports-last': 'off',
         'import/group-exports': 'off',
-
-        // Broken: doesn't seem to work
+        'import/max-dependencies': 'off',
+        'import/no-default-export': 'off',
+        'import/no-named-export': 'off',
+        'import/prefer-default-export': 'off',
+        'react/function-component-definition': ['warn', { namedComponents: 'arrow-function' }],
+        'typescript/consistent-type-definitions': ['warn', 'type'],
+        'typescript/no-confusing-void-expression': ['warn', { ignoreArrowShorthand: true }],
+        'typescript/no-inferrable-types': ['warn', { ignoreParameters: true }],
         'typescript/prefer-readonly-parameter-types': 'off',
+        'unicorn/max-nested-calls': 'off',
+        'unicorn/no-array-reduce': 'off',
+        'unicorn/no-null': 'off',
+        'unicorn/switch-case-braces': ['warn', 'avoid'],
     },
     overrides: [
         {
-            files: ['**/*.mjs'],
+            files: ['**/*.mts'],
             rules: {
-                // 'eslint/sort-keys': ['warn', 'asc', { allowLineSeparatedGroups: true }],
+                'eslint/no-console': 'off',
                 'eslint/sort-keys': 'warn',
-                'unicorn/no-process-exit': 'off',
-
-                // Types are not working properly for some reason
-                'typescript/no-unsafe-call': 'off',
-                'typescript/no-unsafe-member-access': 'off',
-
-                // TODO: Figure out which to use
                 'node/no-top-level-await': 'off',
-                'unicorn/prefer-top-level-await': 'off',
+                'unicorn/no-process-exit': 'off',
             },
         },
         {
             files: ['backend/src/**/*.ts', 'common/src/**/*.ts'],
             rules: {
-                'import/no-nodejs-modules': 'off',
                 'eslint/no-console': 'off',
+                'import/no-nodejs-modules': 'off',
             },
         },
         {
             files: ['frontend/src/**/*.{ts,mts,tsx}'],
             rules: {
-                'typescript/no-unsafe-type-assertion': 'off',
-                'unicorn/filename-case': ['warn', { case: 'pascalCase' }],
+                'eslint/no-alert': 'off',
                 'import/no-relative-parent-imports': 'off',
+                'react/forbid-component-props': 'off',
+                'react/jsx-filename-extension': ['warn', { extensions: ['jsx', 'tsx'] }],
+                'react/jsx-handler-names': 'off',
                 'react/jsx-max-depth': 'off',
                 'react/jsx-no-literals': 'off',
                 'react/react-in-jsx-scope': 'off',
-                'react/jsx-handler-names': 'off',
-                'react/jsx-filename-extension': ['warn', { extensions: ['jsx', 'tsx'] }],
-                'eslint/no-alert': 'off',
-                'react/forbid-component-props': 'off',
+                'typescript/no-unsafe-type-assertion': 'off',
+                'unicorn/filename-case': ['warn', { case: 'pascalCase' }],
             },
         },
         // Allow camelcase for some frontend files
